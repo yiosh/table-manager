@@ -1,5 +1,5 @@
 <template>
-  <v-app style="background:#d8d8d8">
+  <v-app style="background:#d8d8d8; padding: 2em;">
     <!-- <v-container fluid fill-height v-show="loading == true">
       <v-layout fill-height>
         <v-flex class="text-xs-center" align-self-center>
@@ -53,8 +53,8 @@ export default {
     BaseNotification
   },
   data: () => ({
-    title: null
-    // loading: true
+    title: null,
+    orientation: 0
   }),
   computed: {
     layout() {
@@ -96,13 +96,6 @@ export default {
     if (!layoutId) {
       alert('Please add a "layout_id paramenter!"');
     } else {
-      if (orientation == 1) {
-        this.$store.dispatch("setOrientation", {
-          width: 1200,
-          height: 792
-        });
-      }
-
       this.$store.dispatch("setLayout", layoutId);
       this.$store.dispatch("table/fetchTableTypes", null, { root: true });
       this.$store.dispatch("table/getTables", layoutId, { root: true });

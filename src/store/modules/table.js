@@ -1,4 +1,6 @@
 import TMService from "@/services/TMService";
+import _findIndex from "lodash/findIndex";
+import _find from "lodash/find";
 
 export const namespaced = true;
 
@@ -34,33 +36,31 @@ export const mutations = {
     state.counter++;
   },
   UPDATE_TABLE(state, payload) {
-    let indexToEdit = _.findIndex(state.groups, group => {
+    // let indexToEdit = _.findIndex(state.groups, group => {
+    //   return group.table.id == payload.id;
+    // });
+    const groupToEdit = _find(state.groups, group => {
       return group.table.id == payload.id;
     });
-    const groupToEdit = _.find(state.groups, group => {
-      return group.table.id == payload.id;
-    });
-
-    console.log("Edit", groupToEdit);
 
     const tableToEdit = groupToEdit.table;
-    if (payload.type == "circle") {
-      state.groups[indexToEdit].table.tableConfig.radius = payload.size;
+    if (payload.typeId == 2) {
+      tableToEdit.tableConfig.radius = payload.size;
     }
 
-    if (payload.type == "square") {
-      state.groups[indexToEdit].table.tableConfig.height = payload.size;
-      state.groups[indexToEdit].table.tableConfig.width = payload.size;
+    if (payload.typeId == 3) {
+      tableToEdit.tableConfig.height = payload.size;
+      tableToEdit.tableConfig.width = payload.size;
     }
 
-    if (payload.type == "rectangle") {
-      state.groups[indexToEdit].table.tableConfig.height = payload.size;
-      state.groups[indexToEdit].table.tableConfig.width = payload.size * 2;
+    if (payload.typeId == 4) {
+      tableToEdit.tableConfig.height = payload.size;
+      tableToEdit.tableConfig.width = payload.size * 2;
     }
 
-    if (payload.type == "ellipse") {
-      state.groups[indexToEdit].table.tableConfig.radiusX = payload.size * 2;
-      state.groups[indexToEdit].table.tableConfig.radiusY = payload.size;
+    if (payload.typeId == 5) {
+      tableToEdit.tableConfig.radiusX = payload.size * 2;
+      tableToEdit.tableConfig.radiusY = payload.size;
     }
 
     let type;
@@ -81,9 +81,6 @@ export const mutations = {
         type = "ellipse";
         break;
     }
-
-    console.log("tableToEdit", tableToEdit);
-    console.log("tableConfig", state.groups[indexToEdit].table.tableConfig);
 
     tableToEdit.tableConfig.scaleX = payload.scaleX;
     tableToEdit.tableConfig.scaleY = payload.scaleY;
@@ -198,11 +195,13 @@ export const actions = {
       .then(() => {
         console.log("payload", payload);
         commit("UPDATE_TABLE", payload);
+
         const notification = {
           type: "success",
           message: "Tavolo aggiornato!"
         };
         dispatch("notification/add", notification, { root: true });
+        // dispatch("redrawCanvas", null, { root: true });
       })
       .catch(function(error) {
         const notification = {

@@ -269,7 +269,7 @@ export default {
       let textConfig = {
         name: textName,
         number,
-        text: name + (number == 0 ? "" : number),
+        text: name + " " + (number == 0 ? "" : number),
         fontSize: 18,
         fontFamily: "Poppins",
         fontStyle: "bold",
@@ -286,7 +286,7 @@ export default {
       let ellipseTextConfig = {
         name: textName,
         number,
-        text: name + (number == 0 ? "" : number),
+        text: name + " " + (number == 0 ? "" : number),
         fontSize: 18,
         fontFamily: "Poppins",
         fontStyle: "bold",
@@ -300,7 +300,7 @@ export default {
       let rettangoloTextConfig = {
         name: textName,
         number,
-        text: name + (number == 0 ? "" : number),
+        text: name + " " + (number == 0 ? "" : number),
         fontSize: 18,
         fontFamily: "Poppins",
         fontStyle: "bold",

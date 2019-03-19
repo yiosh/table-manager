@@ -180,7 +180,7 @@ export const getters = {
   guests: state => tableId => {
     return state.guests.filter(guest => guest.table_id === tableId);
   },
-  guestTotals(state) {
+  guestTotals(state, getters, rootState) {
     const guests = state.guests;
     let guestTotals = {
       people: 0,
@@ -210,6 +210,8 @@ export const getters = {
     totalText += " Sedie: " + guestTotals.chairs + ",";
     totalText += " Seggiolone: " + guestTotals.highchairs;
 
+    let y = rootState.layout.orientation == 1 ? 1150 : 750;
+
     let total = {
       name: "totaleCounter",
       text: totalText,
@@ -219,7 +221,7 @@ export const getters = {
       fill: "black",
       width: 600,
       x: 14,
-      y: 750
+      y
     };
     return total;
   }

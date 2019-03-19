@@ -9,12 +9,18 @@
   >
     <Toolbar></Toolbar>
     <v-stage
-      :class="{ grid: this.$store.state.layout.orientation == 0 }"
+      :style="{ backgroundImage: `url(${stageBackground})` }"
       @click="stageClick"
       ref="stage"
       :config="stageConfig"
     >
       <v-layer ref="layer">
+        <v-rect
+          v-if="this.$store.state.layout.mappa != ''"
+          ref="background"
+          :config="backgroundConfig"
+          @click="stageClick"
+        ></v-rect>
         <v-group
           :ref="group.name"
           @click="tableSelect(group.name)"
@@ -27,6 +33,7 @@
             v-if="group.table.type === 'circle'"
             :ref="group.table.tableConfig.name"
             @click="tableSelect(group.name)"
+            @dblclick="dblClick"
             @transformend="handleTableTransform"
             :config="group.table.tableConfig"
           ></v-circle>
@@ -66,7 +73,6 @@
 import axios from "axios";
 import Toolbar from "./Toolbar";
 import { EventBus } from "../event-bus.js";
-import _ from "lodash";
 import { mapState, mapGetters } from "vuex";
 
 export default {
@@ -79,6 +85,38 @@ export default {
     selectedTable: null
   }),
   computed: {
+    backgroundConfig() {
+      let image = new Image();
+      image.src = this.$store.state.layout.mappa;
+
+      let config = {
+        x: 0,
+        y: 0,
+        width: 1200,
+        height: 792,
+        fillPatternImage: image
+      };
+
+      if (this.$store.state.layout.orientation == 1) {
+        config.width = 792;
+        config.height = 1200;
+      }
+
+      return config;
+    },
+    stageBackground() {
+      let url;
+      if (this.$store.state.layout.orientation == 0) {
+        url = `https://${this.hostname}/fl_app/tableManager/assets/grid.png`;
+      }
+      if (this.$store.state.layout.orientation == 1) {
+        url = `https://${
+          this.hostname
+        }/fl_app/tableManager/assets/vertical-grid.png`;
+      }
+
+      return url;
+    },
     hostname() {
       return this.$store.state.hostname;
     },
@@ -88,37 +126,25 @@ export default {
     stageConfig() {
       return this.$store.state.configKonva;
     },
-
-    // groups() {
-    //   return this.$store.state.groups;
-    // },
-    // guestTotals() {
-    //   let guestTotals = this.$store.getters.guestTotals;
-    //   let totalText = "TOTALE:\n";
-    //   totalText += "Persone: " + guestTotals.people + ",";
-    //   totalText += " Bambini: " + guestTotals.babies + ",";
-    //   totalText += " Sedie: " + guestTotals.chairs + ",";
-    //   totalText += " Seggiolone: " + guestTotals.highchairs;
-
-    //   let total = {
-    //     name: "totaleCounter",
-    //     text: totalText,
-    //     fontSize: 18,
-    //     fontFamily: "Poppins",
-    //     fontStyle: "bold",
-    //     fill: "black",
-    //     width: 600,
-    //     x: 14,
-    //     y: 750
-    //   };
-    //   return total;
-    // },
     ...mapState(["table"]),
     ...mapGetters({ guestTotals: "guest/guestTotals" })
   },
   methods: {
     log(e) {
       console.log(e);
+    },
+    dblClick() {
+      if (this.selectedTable) {
+        EventBus.$emit("edit-table-select");
+      } else {
+        const notification = {
+          type: "warning",
+          message: "Seleziona una tabella da modificare"
+        };
+        this.$store.dispatch("notification/add", notification, {
+          root: true
+        });
+      }
     },
     tableTypeDeparser(type) {
       let id;
@@ -184,6 +210,7 @@ export default {
     },
     stageClick(e) {
       let stage = this.$store.state.stage;
+      console.log(e);
       // if click on empty area - remove all transformers
       if (e.target === stage) {
         if (this.$store.state.selectedGroup != null) {
@@ -198,12 +225,11 @@ export default {
     tableSelect(groupName) {
       let stage = this.$store.state.stage;
       let group = stage.find("." + groupName)[0];
-      console.log("Target", group);
-      console.log("group", group);
-      let shape = _.find(group.children, child => {
-        return child.nodeType === "Shape";
-      });
-      console.log("Shape", shape);
+
+      // let shape = _.find(group.children, child => {
+      //   return child.nodeType === "Shape";
+      // });
+
       if (this.$store.state.selectedGroup != group.attrs) {
         let name = "." + String(groupName) + "-tbl";
         stage.find("Transformer").destroy();
@@ -221,7 +247,6 @@ export default {
         layer.draw();
 
         this.selectedTable = group;
-        console.log("selectedTable", this.selectedTable.attrs.table);
         this.$store.dispatch("selectGroup", group.attrs);
         EventBus.$emit("table-select", group);
       }
@@ -235,13 +260,9 @@ export default {
 </script>
 
 <style scoped>
-.grid {
-  background-image: url(../assets/grid.png);
-}
-
 .vertical {
   width: 792px;
-  height: 1200px;
+  /* height: 1200px; */
 }
 
 .horizontal {

@@ -1,13 +1,12 @@
 <template>
   <v-layout row justify-center>
-    <v-dialog max-width="1250" v-model="dialog">
-      <!-- <v-btn slot="activator" @click="previewCanvas()" color="primary" dark
-        >Preview</v-btn
-      >-->
+    <v-dialog
+      :max-width="this.$store.state.layout.orientation == 0 ? 1220 : 810"
+      v-model="dialog"
+    >
       <v-card>
-        <!-- <v-card-title>Guest List</v-card-title> -->
         <v-divider></v-divider>
-        <v-card-text style="padding:0">
+        <v-card-text style="padding: 0">
           <iframe :src="src" frameborder="0"></iframe>
         </v-card-text>
         <v-divider></v-divider>
@@ -39,6 +38,23 @@ export default {
       dialog: false
     };
   },
+  computed: {
+    backgroundImageUrl() {
+      let url;
+      if (this.$store.state.layout.orientation == 0) {
+        url = `https://${this.hostname}/fl_app/tableManager/assets/grid.png`;
+      }
+      if (this.$store.state.layout.orientation == 1) {
+        url = `https://${
+          this.hostname
+        }/fl_app/tableManager/assets/vertical-grid.png`;
+      }
+      if (this.$store.state.layout.mappa) {
+        url = this.$store.state.layout.mappa;
+      }
+      return url;
+    }
+  },
   methods: {
     previewCanvas() {
       let dataURL = this.$store.state.stage.toDataURL({ pixelRatio: 1 });
@@ -57,16 +73,31 @@ export default {
       this.dialog = false;
     },
     ImagetoPrint(source) {
-      return (
-        "<html><head><script>function step1(){\n" +
-        "setTimeout('step2()', 10);}\n" +
-        "function step2(){window.print();window.close()}\n" +
-        "</scri" +
-        "pt></head><body onload='step1()'>\n" +
-        "<img src='" +
-        source +
-        "' /></body></html>"
-      );
+      if (this.$store.state.layout.mappa != "") {
+        return (
+          "<html><head><script>function step1(){\n" +
+          "setTimeout('step2()', 10);}\n" +
+          "function step2(){window.print();window.close()}\n" +
+          "</scri" +
+          `pt></head><body style="background-image: url(${
+            this.backgroundImageUrl
+          });" onload='step1()'>\n` +
+          "<img src='" +
+          source +
+          "' /></body></html>"
+        );
+      } else {
+        return (
+          "<html><head><script>function step1(){\n" +
+          "setTimeout('step2()', 10);}\n" +
+          "function step2(){window.print();window.close()}\n" +
+          "</scri" +
+          `pt></head><body onload='step1()'>\n` +
+          "<img src='" +
+          source +
+          "' /></body></html>"
+        );
+      }
     },
     PrintImage(source) {
       let pwa = window.open("", "_new");

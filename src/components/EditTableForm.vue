@@ -298,8 +298,8 @@ export default {
         JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
       ) {
         this.$store.dispatch("table/updateTable", newItem);
-        this.$store.state.stage.draw();
         this.defaultItem = Object.assign({}, newItem);
+        this.$store.state.stage.draw();
 
         // axios
         //   .get(
