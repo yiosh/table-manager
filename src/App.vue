@@ -88,11 +88,7 @@ export default {
     document.title = this.$store.state.layout.layout_name
       ? this.$store.state.layout.layout_name + " - Table Manager V2"
       : "Table Manager V2";
-  },
-  created() {
-    this.$store.dispatch("startProgress");
     const layoutId = this.getQueryVariable("layout_id");
-    const orientation = this.$store.state.layout.orientation;
     if (!layoutId) {
       alert('Please add a "layout_id paramenter!"');
     } else {
@@ -100,6 +96,9 @@ export default {
       this.$store.dispatch("table/fetchTableTypes", null, { root: true });
       this.$store.dispatch("table/getTables", layoutId, { root: true });
     }
+  },
+  created() {
+    this.$store.dispatch("startProgress");
   }
 };
 </script>
