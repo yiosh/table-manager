@@ -16,7 +16,7 @@
     >
       <v-layer ref="layer">
         <v-rect
-          v-if="this.$store.state.layout.mappa != ''"
+          v-if="this.$store.state.layout.mappa"
           ref="background"
           :config="backgroundConfig"
           @click="stageClick"
