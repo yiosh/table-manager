@@ -16,7 +16,7 @@
     >
       <v-layer ref="layer">
         <v-rect
-          v-if="this.$store.state.layout.mappa"
+          v-if="imageSrc"
           ref="background"
           :config="backgroundConfig"
           @click="stageClick"
@@ -82,12 +82,17 @@ export default {
   },
   data: () => ({
     dialog: false,
-    selectedTable: null
+    selectedTable: null,
+    otherBackground: null
   }),
   computed: {
+    imageSrc() {
+      let src = this.$store.state.layout.mappa || "";
+      return src;
+    },
     backgroundConfig() {
       let image = new Image();
-      image.src = this.$store.state.layout.mappa;
+      image.src = this.imageSrc;
 
       let config = {
         x: 0,
@@ -255,6 +260,10 @@ export default {
   mounted() {
     this.$store.dispatch("setStage", this.$refs.stage.getStage());
     this.$store.dispatch("setLayer", this.$refs.layer);
+    // if (this.$store.state.layout.mappa) {
+    //   this.otherBackground = this.$store.state.layout.mappa;
+    //   // this.$store.state.stage.draw();
+    // }
   }
 };
 </script>
