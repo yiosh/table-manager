@@ -20,7 +20,7 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
     </v-toolbar>-->
-    <v-content v-show="loading == false">
+    <v-content v-show="loading === false">
       <div class="main-container">
         <v-layout row wrap justify-center align-content-center>
           <v-flex xs12 align-self-center style="margin: auto">
