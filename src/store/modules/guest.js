@@ -189,6 +189,11 @@ export const getters = {
       highchairs: 0
     };
 
+    let peopleLabel = "PAX";
+    let babiesLabel = "Baby";
+    let chairsLabel = "Sedie";
+    let highchairsLabel = "0/2";
+
     guests.forEach(guest => {
       if (Number(guest.peoples) > 0) {
         guestTotals.people += Number(guest.peoples);
@@ -204,11 +209,12 @@ export const getters = {
       }
     });
 
+    // Text for total counters in the canvas footer
     let totalText = "TOTALE:\n";
-    totalText += "Persone: " + guestTotals.people + ",";
-    totalText += " Bambini: " + guestTotals.babies + ",";
-    totalText += " Sedie: " + guestTotals.chairs + ",";
-    totalText += " Seggiolone: " + guestTotals.highchairs;
+    totalText += peopleLabel + ": " + guestTotals.people + ", ";
+    totalText += babiesLabel + ": " + guestTotals.babies + ", ";
+    totalText += chairsLabel + ": " + guestTotals.chairs + ", ";
+    totalText += highchairsLabel + ": " + guestTotals.highchairs;
 
     let y = rootState.layout.orientation == 1 ? 1150 : 750;
 
