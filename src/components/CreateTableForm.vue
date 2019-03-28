@@ -265,6 +265,7 @@ export default {
       let tableName = "g" + uID + "-tbl";
       let textName = name ? name : "g" + uID + "-txt";
       let guestCounterName = "gc" + uID;
+      let guestCounterTotalName = "gct" + uID;
       let table = {};
       let textConfig = {
         name: textName,
@@ -291,10 +292,11 @@ export default {
         fontFamily: "Poppins",
         fontStyle: "bold",
         fill: "black",
+        align: "center",
         verticalAlign: "middle",
         rotation: angolare,
         offsetY: size / 2,
-        offsetX: (size * 2) / 2
+        offsetX: size / 2
       };
 
       let rettangoloTextConfig = {
@@ -314,12 +316,12 @@ export default {
         nomeCliente
       };
 
-      let offsetX = (size * 2) / 2 - 5;
-      let offsetY = size / 2 - 30;
+      let offsetX = size / 3;
+      let offsetY = (size / 5) * -1;
 
       if (type == "ellipse") {
-        offsetY = (size / 4) * -1;
-        offsetX = (size / 4) * 3;
+        offsetY = (size / 10) * -1;
+        offsetX = size / 2;
       }
 
       let guestCounters = {
@@ -342,21 +344,44 @@ export default {
         }
       };
 
+      let guestCountersTotal = {
+        name: guestCounterTotalName,
+        text: "Tot:0",
+        fontSize: 12,
+        fontFamily: "Poppins",
+        fontStyle: "bold",
+        fill: "black",
+        align: "center",
+        verticalAlign: "middle",
+        rotation: angolare,
+        offsetY: offsetY - size / 2,
+        offsetX,
+        total: 0
+      };
+
       if (tableGuests.length > 0) {
         tableGuests.forEach(guest => {
           if (Number(guest.peoples) > 0) {
             guestCounters.counters.people += Number(guest.peoples);
+            guestCountersTotal.total += Number(guest.peoples);
           }
           if (Number(guest.baby) > 0) {
             guestCounters.counters.babies += Number(guest.baby);
+            guestCountersTotal.total += Number(guest.baby);
           }
           if (Number(guest.chairs_only) > 0) {
             guestCounters.counters.chairs += Number(guest.chairs_only);
+            guestCountersTotal.total += Number(guest.chairs_only);
           }
           if (Number(guest.high_chair) > 0) {
             guestCounters.counters.highchairs += Number(guest.high_chair);
+            guestCountersTotal.total += Number(guest.high_chair);
           }
         });
+      }
+
+      if (guestCountersTotal.total > 0) {
+        guestCountersTotal.text = "T: " + guestCountersTotal.total;
       }
 
       if (guestCounters.counters.people > 0) {
@@ -372,7 +397,7 @@ export default {
       }
 
       if (guestCounters.counters.highchairs > 0) {
-        guestCounters.text += " XS" + guestCounters.counters.highchairs;
+        guestCounters.text += " H" + guestCounters.counters.highchairs;
       }
 
       switch (type) {
@@ -466,6 +491,10 @@ export default {
         guestCounters,
         table
       };
+
+      if (guestCountersTotal.total > 0) {
+        group.guestCountersTotal = guestCountersTotal;
+      }
 
       const details = {
         layoutId: this.$store.state.layout.id,

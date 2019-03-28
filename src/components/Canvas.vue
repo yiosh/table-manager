@@ -61,6 +61,11 @@
             :ref="group.guestCounters.name"
             :config="group.guestCounters"
           ></v-text>
+          <v-text
+            v-if="group.guestCountersTotal"
+            :ref="group.guestCountersTotal.name"
+            :config="group.guestCountersTotal"
+          ></v-text>
         </v-group>
         <v-text ref="totaleCounter" :config="guestTotals"></v-text>
       </v-layer>
