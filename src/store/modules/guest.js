@@ -169,7 +169,7 @@ export const actions = {
     counters.text = `${counters.people > 0 ? "P" + counters.people : ""} ${
       counters.babies > 0 ? "B" + counters.babies : ""
     } ${counters.chairs > 0 ? "S" + counters.chairs : ""} ${
-      counters.highchairs > 0 ? "XS" + counters.highchairs : ""
+      counters.highchairs > 0 ? "H" + counters.highchairs : ""
     }`;
 
     let total =
