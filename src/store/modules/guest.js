@@ -172,7 +172,11 @@ export const actions = {
       counters.highchairs > 0 ? "XS" + counters.highchairs : ""
     }`;
 
+    let total =
+      counters.people + counters.babies + counters.chairs + counters.highchairs;
+
     rootState.table.groups[groupIndex].guestCounters.text = counters.text;
+    rootState.table.groups[groupIndex].guestCountersTotal.text = "T: " + total;
   }
 };
 
