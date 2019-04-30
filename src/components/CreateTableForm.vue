@@ -25,7 +25,10 @@
               100,
               100,
               Number(createTableForm.angolare),
-              true
+              [],
+              true,
+              createTableForm.borderColor,
+              createTableForm.backgroundColor
             )
           "
           v-model="valid"
@@ -84,37 +87,13 @@
             </v-layout>
 
             <v-layout>
-              <v-flex xs12 sm3 md4 class="py-2">
-                <p>Scala X</p>
-                <v-slider
-                  v-model="createTableForm.scaleX"
-                  step="0.1"
-                  min="1"
-                  max="5"
-                ></v-slider>
+              <v-flex xs12 sm6 md6 class="py-2">
+                <p>Border Color</p>
+                <compact-picker v-model="createTableForm.borderColor" />
               </v-flex>
-              <v-flex xs12 sm3 md2 class="py-2">
-                <v-text-field
-                  suffix="°"
-                  type="number"
-                  v-model="createTableForm.scaleX"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm3 md4 class="py-2">
-                <p>Scala Y</p>
-                <v-slider
-                  v-model="createTableForm.scaleY"
-                  step="0.1"
-                  min="1"
-                  max="5"
-                ></v-slider>
-              </v-flex>
-              <v-flex xs12 sm3 md2 class="py-2">
-                <v-text-field
-                  suffix="°"
-                  type="number"
-                  v-model="createTableForm.scaleY"
-                ></v-text-field>
+              <v-flex xs12 sm6 md6 class="py-2">
+                <p>Background Color</p>
+                <compact-picker v-model="createTableForm.backgroundColor" />
               </v-flex>
             </v-layout>
 
@@ -158,9 +137,13 @@
 import { EventBus } from "../event-bus.js";
 import { mapState } from "vuex";
 import { mapGetters } from "vuex";
+import { Compact } from "vue-color";
 
 export default {
   name: "CreateTableForm",
+  components: {
+    "compact-picker": Compact
+  },
   data: () => ({
     dialog: false,
     valid: true,
@@ -173,7 +156,9 @@ export default {
       angolare: 0,
       text: "",
       number: 0,
-      nomeCliente: ""
+      nomeCliente: "",
+      borderColor: "#000000",
+      backgroundColor: "#ffffff"
     },
     nameRules: [v => !!v || "Inserisci nome tavolo per procedere"]
   }),
@@ -253,8 +238,18 @@ export default {
       y = 100,
       angolare = 0,
       newTable = false,
-      tableGuests = []
+      tableGuests = [],
+      borderColor,
+      backgroundColor
     ) {
+      console.log("b", borderColor, "ba", backgroundColor);
+      borderColor =
+        typeof borderColor != "object" ? borderColor : borderColor.hex;
+      backgroundColor =
+        typeof backgroundColor != "object"
+          ? backgroundColor
+          : backgroundColor.hex;
+      console.log("border", borderColor, ", back", backgroundColor);
       let uID =
         "_" +
         Math.random()
@@ -274,7 +269,7 @@ export default {
         fontSize: 18,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: "black",
+        fill: borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -291,7 +286,7 @@ export default {
         fontSize: 18,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: "black",
+        fill: borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -306,7 +301,7 @@ export default {
         fontSize: 18,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: "black",
+        fill: borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -330,7 +325,7 @@ export default {
         fontSize: 12,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: "black",
+        fill: borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -350,7 +345,7 @@ export default {
         fontSize: 12,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: "black",
+        fill: borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -412,8 +407,8 @@ export default {
               scaleX,
               scaleY,
               rotation: angolare,
-              fill: "white",
-              stroke: "black",
+              fill: backgroundColor,
+              stroke: borderColor,
               strokeWidth: 2
             }
           };
@@ -432,8 +427,8 @@ export default {
               offsetX: size / 2,
               offsetY: size / 2,
               rotation: angolare,
-              fill: "white",
-              stroke: "black",
+              fill: backgroundColor,
+              stroke: borderColor,
               strokeWidth: 2
             }
           };
@@ -452,8 +447,8 @@ export default {
               offsetX: (size * 2) / 2,
               offsetY: size / 2,
               rotation: angolare,
-              fill: "white",
-              stroke: "black",
+              fill: backgroundColor,
+              stroke: borderColor,
               strokeWidth: 2
             }
           };
@@ -470,8 +465,8 @@ export default {
               scaleX,
               scaleY,
               rotation: angolare,
-              fill: "white",
-              stroke: "black",
+              fill: backgroundColor,
+              stroke: borderColor,
               strokeWidth: 2
             }
           };
@@ -506,7 +501,9 @@ export default {
         x,
         y,
         angolare,
-        nomeCliente
+        nomeCliente,
+        borderColor,
+        backgroundColor
       };
 
       let payload = {
@@ -547,7 +544,9 @@ export default {
             Number(payload.y),
             Number(payload.angolare),
             false,
-            tableGuests
+            tableGuests,
+            `#${payload.border_color}`,
+            `#${payload.background_color}`
           );
         });
       }

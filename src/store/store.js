@@ -17,7 +17,7 @@ export default new Vuex.Store({
   state: {
     hostname:
       location.hostname === "localhost"
-        ? "demo.condivision.cloud"
+        ? "dev.condivision.cloud"
         : location.hostname,
     selectedGroup: null,
     loading: true,

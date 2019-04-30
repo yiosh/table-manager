@@ -2,7 +2,7 @@ import axios from "axios";
 
 let hostname =
   location.hostname == "localhost"
-    ? "demo.condivision.cloud"
+    ? "dev.condivision.cloud"
     : location.hostname;
 
 const apiClient = axios.create({
@@ -38,10 +38,16 @@ export default {
     x,
     y,
     angolare,
-    nomeCliente
+    nomeCliente,
+    borderColor,
+    backgroundColor
   }) {
+    console.log("back", backgroundColor, "border", borderColor);
+    borderColor = borderColor.replace("#", "");
+    backgroundColor = backgroundColor.replace("#", "");
+
     return apiClient.get(
-      `/fl_api/tables-v1/?insert_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}`
+      `/fl_api/tables-v1/?insert_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_color=${borderColor}&background_color=${backgroundColor}`
     );
   },
   updateTable({
@@ -54,10 +60,12 @@ export default {
     scaleX,
     scaleY,
     angolare,
-    nomeCliente
+    nomeCliente,
+    borderColor,
+    backgroundColor
   }) {
     return apiClient.get(
-      `/fl_api/tables-v1/?update_table&token=1&layout_id=${layoutId}&table_id=${id}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&size=${size}&scale_x=${scaleX}&scale_y=${scaleY}&angolare=${angolare}&nome_cliente=${nomeCliente}`
+      `/fl_api/tables-v1/?update_table&token=1&layout_id=${layoutId}&table_id=${id}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&size=${size}&scale_x=${scaleX}&scale_y=${scaleY}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_color=${borderColor}&background_color=${backgroundColor}`
     );
   },
   deleteTable({ layoutId, tableId }) {

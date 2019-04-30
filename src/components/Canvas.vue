@@ -203,7 +203,23 @@ export default {
       let tableId = this.selectedTable.attrs.table.id;
       let layoutId = this.$store.state.layout.id;
       let rotation = shape.rotation.toFixed(2);
-      console.log("tableId", tableId);
+      let { scaleX, scaleY } = shape;
+      console.log("shape", shape);
+      if (shape.scaleX != 1 || shape.scaleY != 1) {
+        axios
+          .get(
+            `https://${
+              this.hostname
+            }/fl_api/tables-v1/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
+          )
+          .then(function(response) {
+            console.log("Response", response);
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+        console.log("Shape scaled", rotation);
+      }
       axios
         .get(
           `https://${
@@ -246,7 +262,7 @@ export default {
         // create new transformer
         var tr = new window.Konva.Transformer({
           rotateEnabled: true,
-          resizeEnabled: false,
+          // resizeEnabled: false,
           rotationSnaps: [0, 90, 180, 270]
         });
 

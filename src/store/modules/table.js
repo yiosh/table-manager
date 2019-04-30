@@ -1,5 +1,4 @@
 import TMService from "@/services/TMService";
-import _findIndex from "lodash/findIndex";
 import _find from "lodash/find";
 
 export const namespaced = true;
@@ -62,6 +61,14 @@ export const mutations = {
       tableToEdit.tableConfig.radiusX = payload.size * 2;
       tableToEdit.tableConfig.radiusY = payload.size;
     }
+
+    tableToEdit.tableConfig.stroke = `#${payload.borderColor}`;
+    tableToEdit.textConfig.fill = `#${payload.borderColor}`;
+    groupToEdit.guestCounters.fill = `#${payload.borderColor}`;
+    groupToEdit.guestCountersTotal.fill = `#${payload.borderColor}`;
+    tableToEdit.tableConfig.fill = `#${payload.backgroundColor}`;
+
+    console.log("groupToEdit", groupToEdit);
 
     let type;
     switch (payload.typeId) {
@@ -143,8 +150,10 @@ export const actions = {
   },
   addTable({ commit, dispatch }, payload) {
     if (payload.isNew === true) {
+      console.log("payload", payload);
       TMService.addTable(payload.details)
         .then(function(response) {
+          console.log("response", response);
           payload.group.table.id = response.data.id;
 
           const notification = {
