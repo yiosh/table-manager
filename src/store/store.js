@@ -15,6 +15,7 @@ export default new Vuex.Store({
     guest
   },
   state: {
+    guestListDialog: false,
     error: false,
     hostname:
       location.hostname === "localhost"
@@ -41,6 +42,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    GUEST_LIST_DIALOG(state, payload) {
+      state.guestListDialog = payload;
+    },
     ERROR(state) {
       state.error = true;
     },
@@ -84,7 +88,6 @@ export default new Vuex.Store({
     endProgress({ state }) {
       NProgress.done();
       state.loading = false;
-      console.log("layoutend", state.layout);
     },
     setStage(state, payload) {
       state.commit("SET_STAGE", payload);

@@ -76,24 +76,37 @@ export default {
     handleDialog(element) {
       switch (element) {
         case "people":
-          EventBus.$emit("guest-list-select");
+          if (this.$store.state.selectedGroup != null) {
+            this.$store.commit("GUEST_LIST_DIALOG", true);
+          } else {
+            const notification = {
+              type: "warning",
+              message:
+                "Devi selezionare un tavolo per aprire la sua lista degli ospiti"
+            };
+            this.$store.dispatch("notification/add", notification, {
+              root: true
+            });
+          }
           break;
         case "print":
-          console.log("clicked");
           EventBus.$emit("preview-select");
           break;
       }
     }
   },
   created() {
-    EventBus.$on("handle-drawer", () => {
-      this.drawer = !this.drawer;
+    // EventBus.$on("handle-drawer", () => {
+    //   this.drawer = !this.drawer;
+    // });
+    EventBus.$on("dblclick-tbl", () => {
+      this.handleDialog("people");
     });
 
     EventBus.$on("fetch-done", () => {
-      this.items = [{ title: "Anteprima", icon: "print" }];
+      this.items = [{ title: "Anteprima", icon: "print", ref: "print" }];
       if (this.$store.state.layout.evento_id !== "0") {
-        this.items.unshift({ title: "Elenco degli Ospiti", icon: "people" });
+        this.items.unshift({ title: "Elenco degli Ospiti", icon: "people", ref: "guestlist" });
       }
     });
   }

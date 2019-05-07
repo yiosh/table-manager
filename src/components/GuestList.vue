@@ -1,6 +1,6 @@
 <template>
   <v-layout row justify-center>
-    <v-dialog v-model="dialog">
+    <v-dialog :value="guestListDialog">
       <v-card>
         <v-toolbar flat dark color="#424242">
           <v-toolbar-title
@@ -10,7 +10,7 @@
           >
           <v-spacer></v-spacer>
 
-          <v-btn icon @click="dialog = false">
+          <v-btn icon @click="closeDialog">
             <v-icon>clear</v-icon>
           </v-btn>
         </v-toolbar>
@@ -159,7 +159,6 @@ export default {
       clientName: "",
       dialog: false,
       guestDialog: false,
-      dialogm1: "",
       guestTypes: [
         {
           text: "Organizzatore",
@@ -183,8 +182,8 @@ export default {
         }
       ],
       headers: [
-        { text: "Nome", value: "nome" },
         { text: "Cognome", value: "cognome" },
+        { text: "Nome", value: "nome" },
         { text: "People", value: "peoples" },
         { text: "Babies", value: "baby" },
         { text: "Chairs", value: "chairs_only" },
@@ -221,6 +220,9 @@ export default {
     };
   },
   computed: {
+    guestListDialog() {
+      return this.$store.state.guestListDialog;
+    },
     peopleLabel() {
       if (this.$store.state.labels.peoples_label) {
         return this.$store.state.labels.peoples_label;
@@ -259,6 +261,9 @@ export default {
     ...mapGetters({ guests: "guest/guests" })
   },
   methods: {
+    closeDialog() {
+      this.$store.commit('GUEST_LIST_DIALOG', false);
+    },
     editItem(item) {
       this.editForm = true;
       console.log("item", item);
@@ -319,9 +324,10 @@ export default {
     }
   },
   created() {
+    console.log("gg", document)
     // On table select grab the table's id and other data
     EventBus.$on("table-select", group => {
-      console.log("worked")
+      
       let table = group.attrs.table;
       this.tableId = table.id;
       this.tableName = table.textConfig.name;
@@ -332,6 +338,7 @@ export default {
     EventBus.$on("guest-list-select", () => {
       if (this.$store.state.selectedGroup != null) {
         this.dialog = true;
+        console.log("vm", this)
       } else {
         const notification = {
           type: "warning",

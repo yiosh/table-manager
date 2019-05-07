@@ -52,9 +52,9 @@ export default {
     ...mapState("notification", ["notifications"])
   },
   methods: {
-    handleDrawer() {
-      EventBus.$emit("handle-drawer");
-    },
+    // handleDrawer() {
+    //   EventBus.$emit("handle-drawer");
+    // },
     getQueryVariable(variable) {
       let query = window.location.search.substring(1);
       let vars = query.split("&");
@@ -81,6 +81,11 @@ export default {
         this.$store.dispatch("table/getTables", layoutId, { root: true });
       }
     }
+    document.addEventListener("dblclick", event => {
+      if (event.target.tagName == "CANVAS" && this.$store.state.selectedGroup !== null) {
+        this.$store.commit("GUEST_LIST_DIALOG", true);
+      }
+    });
   },
   created() {
     this.$store.dispatch("startProgress");

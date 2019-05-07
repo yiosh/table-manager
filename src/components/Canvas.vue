@@ -32,8 +32,6 @@
           <v-circle
             v-if="group.table.type === 'circle'"
             :ref="group.table.tableConfig.name"
-            @click="tableSelect(group.name)"
-            @dblclick="dblClick"
             @transformend="handleTableTransform"
             :config="group.table.tableConfig"
           ></v-circle>
@@ -41,14 +39,12 @@
             v-if="
               group.table.type === 'square' || group.table.type === 'rectangle'
             "
-            @click="tableSelect(group.name)"
             :ref="group.table.tableConfig.name"
             @transformend="handleTableTransform"
             :config="group.table.tableConfig"
           ></v-rect>
           <v-ellipse
             v-if="group.table.type === 'ellipse'"
-            @click="tableSelect(group.name)"
             :ref="group.table.tableConfig.name"
             @transformend="handleTableTransform"
             :config="group.table.tableConfig"
@@ -142,19 +138,6 @@ export default {
   methods: {
     log(e) {
       console.log(e);
-    },
-    dblClick() {
-      if (this.selectedTable) {
-        EventBus.$emit("edit-table-select");
-      } else {
-        const notification = {
-          type: "warning",
-          message: "Seleziona una tabella da modificare"
-        };
-        this.$store.dispatch("notification/add", notification, {
-          root: true
-        });
-      }
     },
     tableTypeDeparser(type) {
       let id;
@@ -252,25 +235,6 @@ export default {
       let stage = this.$store.state.stage;
       let group = stage.find("." + groupName)[0];
 
-      // let name = "." + String(groupName) + "-tbl";
-      // stage.find("Transformer").destroy();
-      // // create new transformer
-      // var tr = new window.Konva.Transformer({
-      //   rotateEnabled: true,
-      //   // resizeEnabled: false,
-      //   rotationSnaps: [0, 90, 180, 270]
-      // });
-
-      // let layer = this.$refs.layer.getStage(tr);
-      // tr.attachTo(stage.find(name)[0]);
-      // group.add(tr);
-      // layer.add(group);
-      // layer.draw();
-
-      // this.selectedTable = group;
-      // this.$store.dispatch("selectGroup", group.attrs);
-      // EventBus.$emit("table-select", group);
-
       if (
         !this.$store.state.selectedGroup ||
         this.$store.state.selectedGroup.name != group.attrs.name
@@ -300,10 +264,6 @@ export default {
   mounted() {
     this.$store.dispatch("setStage", this.$refs.stage.getStage());
     this.$store.dispatch("setLayer", this.$refs.layer);
-    // if (this.$store.state.layout.mappa) {
-    //   this.otherBackground = this.$store.state.layout.mappa;
-    //   // this.$store.state.stage.draw();
-    // }
   }
 };
 </script>
