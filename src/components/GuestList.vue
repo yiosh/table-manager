@@ -4,7 +4,8 @@
       <v-card>
         <v-toolbar flat dark color="#424242">
           <v-toolbar-title
-            >Elenco degli Ospiti - {{ tableName }}</v-toolbar-title
+            >Elenco degli Ospiti - {{ tableName }} {{ tableNumber }}
+            {{ clientName }}</v-toolbar-title
           >
           <v-spacer></v-spacer>
 
@@ -20,79 +21,89 @@
                 >Crea Nuovo Ospite</v-btn
               >
               <v-card>
-                <v-card-title>
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
+                <v-form @submit.prevent="save">
+                  <v-card-title>
+                    <span class="headline">{{ formTitle }}</span>
+                  </v-card-title>
 
-                <v-card-text>
-                  <v-container grid-list-md>
-                    <v-layout wrap>
-                      <v-flex xs12 sm6 md6>
-                        <v-text-field
-                          v-model="editedItem.nome"
-                          label="Nome"
-                        ></v-text-field>
-                      </v-flex>
-                      <v-flex xs12 sm6 md6>
-                        <v-text-field
-                          v-model="editedItem.cognome"
-                          label="Cognome"
-                        ></v-text-field>
-                      </v-flex>
-                      <v-flex xs12>
-                        <v-select
-                          item-text="text"
-                          item-value="value"
-                          v-model.number="editedItem.guest_type"
-                          :items="guestTypes"
-                          label="Tipo Ospite"
-                        ></v-select>
-                      </v-flex>
-                      <v-flex xs12 sm6 md3>
-                        <v-text-field
-                          v-model.number="editedItem.peoples"
-                          :rules="numberRules"
-                          label="Persone"
-                        ></v-text-field>
-                      </v-flex>
-                      <v-flex xs12 sm6 md3>
-                        <v-text-field
-                          v-model.number="editedItem.baby"
-                          :rules="numberRules"
-                          label="Bambini"
-                        ></v-text-field>
-                      </v-flex>
-                      <v-flex xs12 sm6 md3>
-                        <v-text-field
-                          v-model.number="editedItem.chairs_only"
-                          :rules="numberRules"
-                          label="Sedie"
-                        ></v-text-field>
-                      </v-flex>
-                      <v-flex xs12 sm6 md3>
-                        <v-text-field
-                          v-model.number="editedItem.high_chair"
-                          :rules="numberRules"
-                          label="Seggiolone"
-                        ></v-text-field>
-                      </v-flex>
-                      <v-flex xs12>
-                        <v-text-field
-                          v-model="editedItem.note_intolleranze"
-                          label="Nota"
-                        ></v-text-field>
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
-                </v-card-text>
+                  <v-card-text>
+                    <v-container grid-list-md>
+                      <v-layout wrap>
+                        <v-flex xs12 sm6 md6>
+                          <v-text-field
+                            v-model="editedItem.cognome"
+                            label="Cognome"
+                          ></v-text-field>
+                        </v-flex>
+                        <v-flex xs12 sm6 md6>
+                          <v-text-field
+                            v-model="editedItem.nome"
+                            label="Nome"
+                          ></v-text-field>
+                        </v-flex>
+                        <v-flex xs12 sm6 md3>
+                          <v-text-field
+                            v-model.number="editedItem.peoples"
+                            :rules="numberRules"
+                            :label="peopleLabel"
+                          ></v-text-field>
+                        </v-flex>
+                        <v-flex xs12 sm6 md3>
+                          <v-text-field
+                            v-model.number="editedItem.baby"
+                            :rules="numberRules"
+                            :label="babyLabel"
+                          ></v-text-field>
+                        </v-flex>
+                        <v-flex xs12 sm6 md3>
+                          <v-text-field
+                            v-model.number="editedItem.chairs_only"
+                            :rules="numberRules"
+                            :label="chairsLabel"
+                          ></v-text-field>
+                        </v-flex>
+                        <v-flex xs12 sm6 md3>
+                          <v-text-field
+                            v-model.number="editedItem.high_chair"
+                            :rules="numberRules"
+                            :label="highChairsLabel"
+                          ></v-text-field>
+                        </v-flex>
+                        <v-flex xs12>
+                          <v-text-field
+                            v-model="editedItem.note_intolleranze"
+                            label="Nota"
+                          ></v-text-field>
+                        </v-flex>
+                        <v-flex xs12>
+                          <v-select
+                            item-text="text"
+                            item-value="value"
+                            v-model.number="editedItem.guest_type"
+                            :items="guestTypes"
+                            label="Tipo Ospite"
+                          ></v-select>
+                        </v-flex>
+                        <v-flex xs12 v-if="!editForm">
+                          <v-checkbox
+                            v-model="saveAndContinue"
+                            label="Salva e aggiungi ancora"
+                          ></v-checkbox>
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
+                  </v-card-text>
 
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" flat @click="close"
-                    >Chiudi</v-btn
-                  >
-                  <v-btn color="blue darken-1" flat @click="save">Salva</v-btn>
-                </v-card-actions>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" flat @click="close"
+                      >Chiudi</v-btn
+                    >
+                    <v-btn color="blue darken-1" flat type="submit"
+                      >Salva</v-btn
+                    >
+                  </v-card-actions>
+                </v-form>
               </v-card>
             </v-dialog>
           </v-toolbar>
@@ -104,8 +115,8 @@
             no-data-text="Non ci sono ospiti in questo tavolo"
           >
             <template slot="items" slot-scope="props">
-              <td>{{ props.item.nome }}</td>
               <td>{{ props.item.cognome }}</td>
+              <td>{{ props.item.nome }}</td>
               <td>{{ props.item.peoples }}</td>
               <td>{{ props.item.baby }}</td>
               <td>{{ props.item.chairs_only }}</td>
@@ -139,8 +150,12 @@ export default {
   name: "GuestList",
   data() {
     return {
+      saveAndContinue: false,
+      editForm: false,
       tableId: null,
       tableName: "",
+      tableNumber: "",
+      clientName: "",
       dialog: false,
       guestDialog: false,
       dialogm1: "",
@@ -205,6 +220,34 @@ export default {
     };
   },
   computed: {
+    peopleLabel() {
+      if (this.$store.state.labels.peoples_label) {
+        return this.$store.state.labels.peoples_label;
+      } else {
+        return "Persone";
+      }
+    },
+    babyLabel() {
+      if (this.$store.state.labels.baby_label) {
+        return this.$store.state.labels.baby_label;
+      } else {
+        return "Bambini";
+      }
+    },
+    chairsLabel() {
+      if (this.$store.state.labels.chairs_only_label) {
+        return this.$store.state.labels.chairs_only_label;
+      } else {
+        return "Sedie";
+      }
+    },
+    highChairsLabel() {
+      if (this.$store.state.labels.high_chair_label) {
+        return this.$store.state.labels.high_chair_label;
+      } else {
+        return "Seggiolone";
+      }
+    },
     formTitle() {
       return this.editedIndex === -1 ? "Crea Nuovo Ospite" : "Modifica Ospite";
     },
@@ -216,6 +259,7 @@ export default {
   },
   methods: {
     editItem(item) {
+      this.editForm = true;
       console.log("item", item);
       item.peoples = Number(item.peoples);
       item.baby = Number(item.baby);
@@ -235,6 +279,9 @@ export default {
         this.$store.dispatch("guest/deleteGuest", guest);
     },
     close() {
+      if (this.editForm) {
+        this.editForm = false;
+      }
       this.guestDialog = false;
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
@@ -252,14 +299,32 @@ export default {
         const tableId = this.tableId;
         this.$store.dispatch("guest/addGuest", { tableId, guest });
       }
-      this.close();
+      if (!this.saveAndContinue) {
+        this.close();
+      }
+      if (this.editForm) {
+        this.editForm = false;
+      }
+      this.editedItem = Object.assign({}, this.defaultItem);
+    }
+  },
+  mounted() {
+    // Set dynamic guest list labels if they exist
+    if (this.$store.state.labels != {}) {
+      this.headers[2].text = this.$store.state.labels.peoples_label;
+      this.headers[3].text = this.$store.state.labels.baby_label;
+      this.headers[4].text = this.$store.state.labels.chairs_only_label;
+      this.headers[5].text = this.$store.state.labels.high_chair_label;
     }
   },
   created() {
+    // On table select grab the table's id and other data
     EventBus.$on("table-select", group => {
       let table = group.attrs.table;
       this.tableId = table.id;
       this.tableName = table.textConfig.name;
+      this.tableNumber = table.textConfig.number;
+      this.clientName = table.textConfig.nomeCliente;
     });
 
     EventBus.$on("guest-list-select", () => {

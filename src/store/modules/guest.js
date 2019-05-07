@@ -23,6 +23,7 @@ export const mutations = {
     let index = state.guests.findIndex(guest => {
       return guest.id == updatedGuest.id;
     });
+    console.log("updatedGuest", updatedGuest);
     Object.assign(state.guests[index], updatedGuest);
   },
   DELETE_GUEST(state, guest) {
@@ -193,10 +194,10 @@ export const getters = {
       highchairs: 0
     };
 
-    let peopleLabel = "PAX";
-    let babiesLabel = "Baby";
-    let chairsLabel = "Sedie";
-    let highchairsLabel = "0/2";
+    let peopleLabel = rootState.labels.peoples_label ? rootState.labels.peoples_label : "PAX";
+    let babiesLabel = rootState.labels.baby_label ? rootState.labels.baby_label : "Baby";
+    let chairsLabel = rootState.labels.chairs_only_label ? rootState.labels.chairs_only_label : "Sedie";
+    let highchairsLabel = rootState.labels.high_chair_label ? rootState.labels.high_chair_label : "0/2";
 
     guests.forEach(guest => {
       if (Number(guest.peoples) > 0) {

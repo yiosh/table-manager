@@ -28,7 +28,8 @@
               [],
               true,
               createTableForm.borderColor,
-              createTableForm.backgroundColor
+              createTableForm.backgroundColor,
+              createTableForm.noBorder
             )
           "
           v-model="valid"
@@ -88,11 +89,20 @@
 
             <v-layout>
               <v-flex xs12 sm6 md6 class="py-2">
-                <p>Border Color</p>
-                <compact-picker v-model="createTableForm.borderColor" />
+                <p>
+                  Colore Bordo
+                </p>
+                <compact-picker
+                  v-if="createTableForm.noBorder === false"
+                  v-model="createTableForm.borderColor"
+                />
+                <v-checkbox
+                  v-model="createTableForm.noBorder"
+                  label="Nessun Bordo"
+                ></v-checkbox>
               </v-flex>
               <v-flex xs12 sm6 md6 class="py-2">
-                <p>Background Color</p>
+                <p>Colore Sfondo</p>
                 <compact-picker v-model="createTableForm.backgroundColor" />
               </v-flex>
             </v-layout>
@@ -158,7 +168,8 @@ export default {
       number: 0,
       nomeCliente: "",
       borderColor: "#000000",
-      backgroundColor: "#ffffff"
+      backgroundColor: "#ffffff",
+      noBorder: false
     },
     nameRules: [v => !!v || "Inserisci nome tavolo per procedere"]
   }),
@@ -240,16 +251,17 @@ export default {
       newTable = false,
       tableGuests = [],
       borderColor,
-      backgroundColor
+      backgroundColor,
+      noBorder
     ) {
-      console.log("b", borderColor, "ba", backgroundColor);
+      // console.log("b", borderColor, "ba", backgroundColor);
       borderColor =
         typeof borderColor != "object" ? borderColor : borderColor.hex;
       backgroundColor =
         typeof backgroundColor != "object"
           ? backgroundColor
           : backgroundColor.hex;
-      console.log("border", borderColor, ", back", backgroundColor);
+      // console.log("border", borderColor, ", back", backgroundColor);
       let uID =
         "_" +
         Math.random()
@@ -262,6 +274,7 @@ export default {
       let guestCounterName = "gc" + uID;
       let guestCounterTotalName = "gct" + uID;
       let table = {};
+      console.log("nome", nomeCliente)
       let textConfig = {
         name: textName,
         number,
@@ -269,13 +282,12 @@ export default {
         fontSize: 18,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: borderColor,
+        fill: noBorder ? "#ffffff" : borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
         offsetY: size / 2,
         offsetX: size / 2,
-        // padding: 5,
         nomeCliente
       };
 
@@ -286,12 +298,13 @@ export default {
         fontSize: 18,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: borderColor,
+        fill: noBorder ? "#ffffff" : borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
         offsetY: size / 2,
-        offsetX: size / 2
+        offsetX: size / 2,
+        nomeCliente
       };
 
       let rettangoloTextConfig = {
@@ -301,7 +314,7 @@ export default {
         fontSize: 18,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: borderColor,
+        fill: noBorder ? "#ffffff" : borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -325,7 +338,7 @@ export default {
         fontSize: 12,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: borderColor,
+        fill: noBorder ? "#ffffff" : borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -345,7 +358,7 @@ export default {
         fontSize: 12,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: borderColor,
+        fill: noBorder ? "#ffffff" : borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -375,24 +388,30 @@ export default {
         });
       }
 
+      const showTablesTotal = this.$store.state.labels.show_tables_total;
+      const peoplesLetter = this.$store.state.labels.peoples_letter;
+      const babyLetter = this.$store.state.labels.baby_letter;
+      const chairsLetter = this.$store.state.labels.chairs_only_letter;
+      const highChairLetter = this.$store.state.labels.high_chair_letter;
+
       if (guestCountersTotal.total > 0) {
-        guestCountersTotal.text = "T: " + guestCountersTotal.total;
+        guestCountersTotal.text = showTablesTotal ? `${showTablesTotal}: ` + guestCountersTotal.total : "T: " + guestCountersTotal.total;
       }
 
       if (guestCounters.counters.people > 0) {
-        guestCounters.text += "P" + guestCounters.counters.people;
+        guestCounters.text += peoplesLetter ? `${peoplesLetter}:` + guestCounters.counters.people : "P" + guestCounters.counters.people;
       }
 
       if (guestCounters.counters.babies > 0) {
-        guestCounters.text += " B" + guestCounters.counters.babies;
+        guestCounters.text += babyLetter ? ` ${babyLetter}:` + guestCounters.counters.babies : " B" + guestCounters.counters.babies;
       }
 
       if (guestCounters.counters.chairs > 0) {
-        guestCounters.text += " S" + guestCounters.counters.chairs;
+        guestCounters.text += chairsLetter ? ` ${chairsLetter}:` + guestCounters.counters.chairs : " S" + guestCounters.counters.chairs;
       }
 
       if (guestCounters.counters.highchairs > 0) {
-        guestCounters.text += " H" + guestCounters.counters.highchairs;
+        guestCounters.text += highChairLetter ? ` ${highChairLetter}:` + guestCounters.counters.highchairs : " H" + guestCounters.counters.highchairs;
       }
 
       switch (type) {
@@ -408,8 +427,8 @@ export default {
               scaleY,
               rotation: angolare,
               fill: backgroundColor,
-              stroke: borderColor,
-              strokeWidth: 2
+              stroke: noBorder ? "" : borderColor,
+              strokeWidth: noBorder ? 0 : 2
             }
           };
           break;
@@ -428,8 +447,8 @@ export default {
               offsetY: size / 2,
               rotation: angolare,
               fill: backgroundColor,
-              stroke: borderColor,
-              strokeWidth: 2
+              stroke: noBorder ? "" : borderColor,
+              strokeWidth: noBorder ? 0 : 2
             }
           };
           break;
@@ -448,8 +467,8 @@ export default {
               offsetY: size / 2,
               rotation: angolare,
               fill: backgroundColor,
-              stroke: borderColor,
-              strokeWidth: 2
+              stroke: noBorder ? "" : borderColor,
+              strokeWidth: noBorder ? 0 : 2
             }
           };
           break;
@@ -466,8 +485,8 @@ export default {
               scaleY,
               rotation: angolare,
               fill: backgroundColor,
-              stroke: borderColor,
-              strokeWidth: 2
+              stroke: noBorder ? "" : borderColor,
+              strokeWidth: noBorder ? 0 : 2
             }
           };
           break;
@@ -502,7 +521,7 @@ export default {
         y,
         angolare,
         nomeCliente,
-        borderColor,
+        borderColor: noBorder ? "" : borderColor,
         backgroundColor
       };
 
@@ -521,8 +540,10 @@ export default {
     }
   },
   created() {
+    console.log("store", this.$store.state)
     EventBus.$on("fetch-done", () => {
       let tablesFetched = this.table.tablesFetched;
+      console.log("t:", tablesFetched)
       let tablesFetchedLength = tablesFetched.length;
       let guests = this.guest.guests;
       let tableGuests = [];
@@ -545,8 +566,9 @@ export default {
             Number(payload.angolare),
             false,
             tableGuests,
-            `#${payload.border_color}`,
-            `#${payload.background_color}`
+            payload.border_color ? `#${payload.border_color}` : "",
+            `#${payload.background_color}`,
+            payload.border_color ? false : true
           );
         });
       }

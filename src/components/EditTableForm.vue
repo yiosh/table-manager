@@ -67,11 +67,19 @@
 
             <v-layout>
               <v-flex xs12 sm6 md6 class="py-2">
-                <p>Border Color</p>
-                <compact-picker v-model="editedItem.borderColor" />
+                <p>Colore Bordo</p>
+                <compact-picker
+                  v-if="editedItem.noBorder === false"
+                  v-model="editedItem.borderColor"
+                />
+                <v-checkbox
+                  v-model="editedItem.noBorder"
+                  @change="defaultColor"
+                  label="Nessun Bordo"
+                ></v-checkbox>
               </v-flex>
               <v-flex xs12 sm6 md6 class="py-2">
-                <p>Background Color</p>
+                <p>Colore Sfondo</p>
                 <compact-picker v-model="editedItem.backgroundColor" />
               </v-flex>
             </v-layout>
@@ -140,7 +148,8 @@ export default {
       number: "",
       nomeCliente: "",
       borderColor: "#000000",
-      backgroundColor: "#ffffff"
+      backgroundColor: "#ffffff",
+      noBorder: false
     },
     defaultItem: {
       id: "",
@@ -153,7 +162,8 @@ export default {
       number: "",
       nomeCliente: "",
       borderColor: "#000000",
-      backgroundColor: "#ffffff"
+      backgroundColor: "#ffffff",
+      noBorder: false
     },
     // tableTypes: [],
     angolareRules: [
@@ -180,6 +190,11 @@ export default {
     ...mapState(["table"])
   },
   methods: {
+    defaultColor(value) {
+      if (!value) {
+        this.editedItem.borderColor = "#000000";
+      }
+    },
     enforceMandatory() {
       this.angolareCustom == true;
     },
@@ -255,7 +270,8 @@ export default {
         number: table.textConfig.number,
         nomeCliente: table.textConfig.nomeCliente,
         borderColor: table.tableConfig.stroke,
-        backgroundColor: table.tableConfig.fill
+        backgroundColor: table.tableConfig.fill,
+        noBorder: table.tableConfig.stroke ? false : true
       };
       this.editedItem = Object.assign({}, item);
       this.defaultItem = Object.assign({}, item);
@@ -292,7 +308,10 @@ export default {
         tableName: this.editedItem.text,
         tableNumber: this.editedItem.number,
         nomeCliente: this.editedItem.nomeCliente,
-        borderColor: borderColor.replace("#", ""),
+        borderColor:
+          this.editedItem.noBorder || this.editedItem.borderColor == ""
+            ? ""
+            : borderColor.replace("#", ""),
         backgroundColor: backgroundColor.replace("#", "")
       };
 

@@ -2,7 +2,7 @@ import axios from "axios";
 
 let hostname =
   location.hostname == "localhost"
-    ? "dev.condivision.cloud"
+    ? "demo.condivision.cloud"
     : location.hostname;
 
 const apiClient = axios.create({

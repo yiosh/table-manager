@@ -17,10 +17,11 @@ export default new Vuex.Store({
   state: {
     hostname:
       location.hostname === "localhost"
-        ? "dev.condivision.cloud"
+        ? "demo.condivision.cloud"
         : location.hostname,
     selectedGroup: null,
     loading: true,
+    labels: {},
     layout: {
       ambiente_id: "",
       created_at: "",
@@ -39,6 +40,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    SET_LABELS(state, payload) {
+      state.labels = Object.assign({}, payload);
+    },
     SET_LAYOUT(state, payload) {
       state.layout = Object.assign({}, payload);
       if (state.layout.orientation == 1) {
@@ -93,6 +97,9 @@ export default new Vuex.Store({
       TMService.fetchLayout(layoutId)
         .then(response => {
           console.log("layout", response.data.dati[0]);
+          if (response.data.info) {
+            commit("SET_LABELS", response.data.info);
+          }
           return commit("SET_LAYOUT", response.data.dati[0]);
         })
         .catch(error => {

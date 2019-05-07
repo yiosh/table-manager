@@ -62,10 +62,32 @@ export const mutations = {
       tableToEdit.tableConfig.radiusY = payload.size;
     }
 
-    tableToEdit.tableConfig.stroke = `#${payload.borderColor}`;
-    tableToEdit.textConfig.fill = `#${payload.borderColor}`;
-    groupToEdit.guestCounters.fill = `#${payload.borderColor}`;
-    groupToEdit.guestCountersTotal.fill = `#${payload.borderColor}`;
+    tableToEdit.tableConfig.stroke = payload.borderColor
+      ? `#${payload.borderColor}`
+      : "";
+
+    if (payload.borderColor) {
+      tableToEdit.tableConfig.strokeWidth = 2;
+    }
+
+    if (tableToEdit.textConfig) {
+      tableToEdit.textConfig.fill = payload.borderColor
+        ? `#${payload.borderColor}`
+        : "#ffffff";
+    }
+
+    if (groupToEdit.guestCounters) {
+      groupToEdit.guestCounters.fill = payload.borderColor
+        ? `#${payload.borderColor}`
+        : "#ffffff";
+    }
+
+    if (groupToEdit.guestCountersTotal) {
+      groupToEdit.guestCountersTotal.fill = payload.borderColor
+        ? `#${payload.borderColor}`
+        : "#ffffff";
+    }
+
     tableToEdit.tableConfig.fill = `#${payload.backgroundColor}`;
 
     console.log("groupToEdit", groupToEdit);
@@ -108,7 +130,11 @@ export const actions = {
       .then(response => {
         // handle success
         console.log("Tables Fetched:", response.data.dati);
-        commit("GET_TABLES", response.data.dati);
+        if (response.data.dati.length < 1) {
+          dispatch("endProgress", null, { root: true });
+        } else {
+          commit("GET_TABLES", response.data.dati);
+        }
         return layoutId;
       })
       .then(layoutId => {
@@ -220,6 +246,7 @@ export const actions = {
             "Si è verificato un problema durante l'aggiornamento del tavolo: " +
             error.message
         };
+        console.log("error", error);
         dispatch("notification/add", notification, { root: true });
       });
   }
