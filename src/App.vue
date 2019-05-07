@@ -1,26 +1,6 @@
 <template>
   <v-app style="background:#d8d8d8; padding: 2em;">
-    <!-- <v-container fluid fill-height v-show="loading == true">
-      <v-layout fill-height>
-        <v-flex class="text-xs-center" align-self-center>
-          <v-progress-circular
-            align-self-center
-            style="margin: auto"
-            :size="70"
-            :width="7"
-            color="blue"
-            indeterminate
-          ></v-progress-circular>
-        </v-flex>
-      </v-layout>
-    </v-container>-->
-    <!-- <v-toolbar v-show="loading == false" app>
-      <v-toolbar-title class="headline text-uppercase">
-        <span>Condivision Cloud Beta</span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-    </v-toolbar>-->
-    <v-content v-show="loading === false">
+    <v-content v-show="loading === false && error === false">
       <div class="main-container">
         <v-layout row wrap justify-center align-content-center>
           <v-flex xs12 align-self-center style="margin: auto">
@@ -29,7 +9,7 @@
         </v-layout>
       </div>
     </v-content>
-    <Sidebar v-show="loading == false"></Sidebar>
+    <Sidebar v-show="loading == false && error === false"></Sidebar>
     <BaseNotification
       v-for="notification in notifications"
       :notification="notification"
@@ -66,6 +46,9 @@ export default {
     loading() {
       return this.$store.state.loading;
     },
+    error() {
+      return this.$store.state.error;
+    },
     ...mapState("notification", ["notifications"])
   },
   methods: {
@@ -93,8 +76,10 @@ export default {
       alert('Please add a "layout_id paramenter!"');
     } else {
       this.$store.dispatch("setLayout", layoutId);
-      this.$store.dispatch("table/fetchTableTypes", null, { root: true });
-      this.$store.dispatch("table/getTables", layoutId, { root: true });
+      if (!this.$store.state.error) {
+        this.$store.dispatch("table/fetchTableTypes", null, { root: true });
+        this.$store.dispatch("table/getTables", layoutId, { root: true });
+      }
     }
   },
   created() {

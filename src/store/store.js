@@ -15,6 +15,7 @@ export default new Vuex.Store({
     guest
   },
   state: {
+    error: false,
     hostname:
       location.hostname === "localhost"
         ? "demo.condivision.cloud"
@@ -40,6 +41,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    ERROR(state) {
+      state.error = true;
+    },
     SET_LABELS(state, payload) {
       state.labels = Object.assign({}, payload);
     },
@@ -96,11 +100,24 @@ export default new Vuex.Store({
     setLayout({ commit, dispatch }, layoutId) {
       TMService.fetchLayout(layoutId)
         .then(response => {
-          console.log("layout", response.data.dati[0]);
-          if (response.data.info) {
+          const layout = response.data.dati[0];
+          const info = response.data.info;
+
+          if (info) {
             commit("SET_LABELS", response.data.info);
           }
-          return commit("SET_LAYOUT", response.data.dati[0]);
+          if (layout) {
+            console.log("layout", layout);
+            return commit("SET_LAYOUT", layout);
+          } else {
+            const notification = {
+              type: "error",
+              multiLine: false,
+              message: "Nessun layout è stato trovato"
+            };
+            dispatch("notification/add", notification, { root: true });
+            return commit("ERROR");
+          }
         })
         .catch(error => {
           // handle error

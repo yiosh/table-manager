@@ -394,10 +394,14 @@ export default {
       const chairsLetter = this.$store.state.labels.chairs_only_letter;
       const highChairLetter = this.$store.state.labels.high_chair_letter;
 
-      if (guestCountersTotal.total > 0) {
-        guestCountersTotal.text = showTablesTotal
-          ? `${showTablesTotal}: ` + guestCountersTotal.total
-          : "T: " + guestCountersTotal.total;
+      if (showTablesTotal) {
+        if (guestCountersTotal.total > 0) {
+          guestCountersTotal.text = showTablesTotal
+            ? `${showTablesTotal}: ` + guestCountersTotal.total
+            : "T: " + guestCountersTotal.total;
+        } else {
+          guestCountersTotal.text = "";
+        }
       } else {
         guestCountersTotal.text = "";
       }
