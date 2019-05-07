@@ -167,17 +167,35 @@ export const actions = {
       }
     });
 
-    counters.text = `${counters.people > 0 ? "P" + counters.people : ""} ${
-      counters.babies > 0 ? "B" + counters.babies : ""
-    } ${counters.chairs > 0 ? "S" + counters.chairs : ""} ${
-      counters.highchairs > 0 ? "H" + counters.highchairs : ""
-    }`;
+    const showTablesTotal = this.$store.state.labels.show_tables_total
+      ? `${this.$store.state.labels.show_tables_total}: `
+      : "T: ";
+    const peoplesLetter = this.$store.state.labels.peoples_letter
+      ? `${this.$store.state.labels.peoples_letter}: `
+      : "P";
+    const babyLetter = this.$store.state.labels.baby_letter
+      ? `${this.$store.state.labels.baby_letter}: `
+      : "B";
+    const chairsLetter = this.$store.state.labels.chairs_only_letter
+      ? `${this.$store.state.labels.chairs_only_letter}: `
+      : "S";
+    const highChairLetter = this.$store.state.labels.high_chair_letter
+      ? `${this.$store.state.labels.high_chair_letter}: `
+      : "H";
 
-    let total =
+    counters.text = `${
+      counters.people > 0 ? peoplesLetter + counters.people : ""
+    } ${counters.babies > 0 ? babyLetter + counters.babies : ""} ${
+      counters.chairs > 0 ? chairsLetter + counters.chairs : ""
+    } ${counters.highchairs > 0 ? highChairLetter + counters.highchairs : ""}`;
+
+    let total = 0;
+    total =
       counters.people + counters.babies + counters.chairs + counters.highchairs;
 
     rootState.table.groups[groupIndex].guestCounters.text = counters.text;
-    rootState.table.groups[groupIndex].guestCountersTotal.text = "T: " + total;
+    rootState.table.groups[groupIndex].guestCountersTotal.text =
+      showTablesTotal + total;
   }
 };
 
@@ -194,10 +212,18 @@ export const getters = {
       highchairs: 0
     };
 
-    let peopleLabel = rootState.labels.peoples_label ? rootState.labels.peoples_label : "PAX";
-    let babiesLabel = rootState.labels.baby_label ? rootState.labels.baby_label : "Baby";
-    let chairsLabel = rootState.labels.chairs_only_label ? rootState.labels.chairs_only_label : "Sedie";
-    let highchairsLabel = rootState.labels.high_chair_label ? rootState.labels.high_chair_label : "0/2";
+    let peopleLabel = rootState.labels.peoples_label
+      ? rootState.labels.peoples_label
+      : "PAX";
+    let babiesLabel = rootState.labels.baby_label
+      ? rootState.labels.baby_label
+      : "Baby";
+    let chairsLabel = rootState.labels.chairs_only_label
+      ? rootState.labels.chairs_only_label
+      : "Sedie";
+    let highchairsLabel = rootState.labels.high_chair_label
+      ? rootState.labels.high_chair_label
+      : "0/2";
 
     guests.forEach(guest => {
       if (Number(guest.peoples) > 0) {
