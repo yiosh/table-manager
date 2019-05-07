@@ -262,7 +262,7 @@ export default {
   },
   methods: {
     closeDialog() {
-      this.$store.commit('GUEST_LIST_DIALOG', false);
+      this.$store.commit("GUEST_LIST_DIALOG", false);
     },
     editItem(item) {
       this.editForm = true;
@@ -324,10 +324,9 @@ export default {
     }
   },
   created() {
-    console.log("gg", document)
+    console.log("gg", document);
     // On table select grab the table's id and other data
     EventBus.$on("table-select", group => {
-      
       let table = group.attrs.table;
       this.tableId = table.id;
       this.tableName = table.textConfig.name;
@@ -338,7 +337,7 @@ export default {
     EventBus.$on("guest-list-select", () => {
       if (this.$store.state.selectedGroup != null) {
         this.dialog = true;
-        console.log("vm", this)
+        console.log("vm", this);
       } else {
         const notification = {
           type: "warning",

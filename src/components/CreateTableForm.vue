@@ -388,7 +388,7 @@ export default {
         });
       }
 
-      const showTablesTotal = this.$store.state.labels.show_tables_total;
+      // const showTablesTotal = this.$store.state.labels.show_tables_total;
       const peoplesLetter = this.$store.state.labels.peoples_letter;
       const babyLetter = this.$store.state.labels.baby_letter;
       const chairsLetter = this.$store.state.labels.chairs_only_letter;

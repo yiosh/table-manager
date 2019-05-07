@@ -96,17 +96,14 @@ export default {
     }
   },
   created() {
-    // EventBus.$on("handle-drawer", () => {
-    //   this.drawer = !this.drawer;
-    // });
-    EventBus.$on("dblclick-tbl", () => {
-      this.handleDialog("people");
-    });
-
     EventBus.$on("fetch-done", () => {
       this.items = [{ title: "Anteprima", icon: "print", ref: "print" }];
       if (this.$store.state.layout.evento_id !== "0") {
-        this.items.unshift({ title: "Elenco degli Ospiti", icon: "people", ref: "guestlist" });
+        this.items.unshift({
+          title: "Elenco degli Ospiti",
+          icon: "people",
+          ref: "guestlist"
+        });
       }
     });
   }

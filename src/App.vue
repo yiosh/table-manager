@@ -21,7 +21,6 @@
 <script>
 import Sidebar from "@/components/Sidebar";
 import Canvas from "@/components/Canvas";
-import { EventBus } from "./event-bus.js";
 import { mapState } from "vuex";
 import BaseNotification from "@/components/baseComponents/BaseNotification";
 
@@ -82,7 +81,10 @@ export default {
       }
     }
     document.addEventListener("dblclick", event => {
-      if (event.target.tagName == "CANVAS" && this.$store.state.selectedGroup !== null) {
+      if (
+        event.target.tagName == "CANVAS" &&
+        this.$store.state.selectedGroup !== null
+      ) {
         this.$store.commit("GUEST_LIST_DIALOG", true);
       }
     });
