@@ -92,7 +92,6 @@ export default {
 
     EventBus.$on("fetch-done", () => {
       this.items = [{ title: "Anteprima", icon: "print" }];
-      console.log(this.$store.state.layout);
       if (this.$store.state.layout.evento_id !== "0") {
         this.items.unshift({ title: "Elenco degli Ospiti", icon: "people" });
       }

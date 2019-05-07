@@ -521,9 +521,8 @@ export default {
         table
       };
 
-      // if (guestCountersTotal.total > 0) {
+      // Add guest counters total once all calculations are done
       group.guestCountersTotal = guestCountersTotal;
-      // }
 
       const details = {
         layoutId: this.$store.state.layout.id,
