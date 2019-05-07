@@ -23,6 +23,7 @@ export const mutations = {
     let index = state.guests.findIndex(guest => {
       return guest.id == updatedGuest.id;
     });
+    console.log("updatedGuest", updatedGuest);
     Object.assign(state.guests[index], updatedGuest);
   },
   DELETE_GUEST(state, guest) {
@@ -166,13 +167,35 @@ export const actions = {
       }
     });
 
-    counters.text = `${counters.people > 0 ? "P" + counters.people : ""} ${
-      counters.babies > 0 ? "B" + counters.babies : ""
-    } ${counters.chairs > 0 ? "S" + counters.chairs : ""} ${
-      counters.highchairs > 0 ? "XS" + counters.highchairs : ""
-    }`;
+    const showTablesTotal = this.$store.state.labels.show_tables_total
+      ? `${this.$store.state.labels.show_tables_total}: `
+      : "T: ";
+    const peoplesLetter = this.$store.state.labels.peoples_letter
+      ? `${this.$store.state.labels.peoples_letter}: `
+      : "P";
+    const babyLetter = this.$store.state.labels.baby_letter
+      ? `${this.$store.state.labels.baby_letter}: `
+      : "B";
+    const chairsLetter = this.$store.state.labels.chairs_only_letter
+      ? `${this.$store.state.labels.chairs_only_letter}: `
+      : "S";
+    const highChairLetter = this.$store.state.labels.high_chair_letter
+      ? `${this.$store.state.labels.high_chair_letter}: `
+      : "H";
+
+    counters.text = `${
+      counters.people > 0 ? peoplesLetter + counters.people : ""
+    } ${counters.babies > 0 ? babyLetter + counters.babies : ""} ${
+      counters.chairs > 0 ? chairsLetter + counters.chairs : ""
+    } ${counters.highchairs > 0 ? highChairLetter + counters.highchairs : ""}`;
+
+    let total = 0;
+    total =
+      counters.people + counters.babies + counters.chairs + counters.highchairs;
 
     rootState.table.groups[groupIndex].guestCounters.text = counters.text;
+    rootState.table.groups[groupIndex].guestCountersTotal.text =
+      showTablesTotal + total;
   }
 };
 
@@ -180,7 +203,7 @@ export const getters = {
   guests: state => tableId => {
     return state.guests.filter(guest => guest.table_id === tableId);
   },
-  guestTotals(state) {
+  guestTotals(state, getters, rootState) {
     const guests = state.guests;
     let guestTotals = {
       people: 0,
@@ -188,6 +211,19 @@ export const getters = {
       chairs: 0,
       highchairs: 0
     };
+
+    let peopleLabel = rootState.labels.peoples_label
+      ? rootState.labels.peoples_label
+      : "PAX";
+    let babiesLabel = rootState.labels.baby_label
+      ? rootState.labels.baby_label
+      : "Baby";
+    let chairsLabel = rootState.labels.chairs_only_label
+      ? rootState.labels.chairs_only_label
+      : "Sedie";
+    let highchairsLabel = rootState.labels.high_chair_label
+      ? rootState.labels.high_chair_label
+      : "0/2";
 
     guests.forEach(guest => {
       if (Number(guest.peoples) > 0) {
@@ -204,11 +240,14 @@ export const getters = {
       }
     });
 
+    // Text for total counters in the canvas footer
     let totalText = "TOTALE:\n";
-    totalText += "Persone: " + guestTotals.people + ",";
-    totalText += " Bambini: " + guestTotals.babies + ",";
-    totalText += " Sedie: " + guestTotals.chairs + ",";
-    totalText += " Seggiolone: " + guestTotals.highchairs;
+    totalText += peopleLabel + ": " + guestTotals.people + ", ";
+    totalText += babiesLabel + ": " + guestTotals.babies + ", ";
+    totalText += chairsLabel + ": " + guestTotals.chairs + ", ";
+    totalText += highchairsLabel + ": " + guestTotals.highchairs;
+
+    let y = rootState.layout.orientation == 1 ? 1150 : 750;
 
     let total = {
       name: "totaleCounter",
@@ -219,7 +258,7 @@ export const getters = {
       fill: "black",
       width: 600,
       x: 14,
-      y: 750
+      y
     };
     return total;
   }

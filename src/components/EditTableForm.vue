@@ -66,33 +66,21 @@
             </v-layout>
 
             <v-layout>
-              <v-flex xs12 sm3 md4 class="py-2">
-                <p>Scala X</p>
-                <v-slider
-                  v-model="editedItem.scaleX"
-                  step="0.1"
-                  max="5"
-                ></v-slider>
+              <v-flex xs12 sm6 md6 class="py-2">
+                <p>Colore Bordo</p>
+                <compact-picker
+                  v-if="editedItem.noBorder === false"
+                  v-model="editedItem.borderColor"
+                />
+                <v-checkbox
+                  v-model="editedItem.noBorder"
+                  @change="defaultColor"
+                  label="Nessun Bordo"
+                ></v-checkbox>
               </v-flex>
-              <v-flex xs12 sm3 md2 class="py-2">
-                <v-text-field
-                  suffix="°"
-                  v-model="editedItem.scaleX"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm3 md4 class="py-2">
-                <p>Scala Y</p>
-                <v-slider
-                  v-model="editedItem.scaleY"
-                  step="0.1"
-                  max="5"
-                ></v-slider>
-              </v-flex>
-              <v-flex xs12 sm3 md2 class="py-2">
-                <v-text-field
-                  suffix="°"
-                  v-model="editedItem.scaleY"
-                ></v-text-field>
+              <v-flex xs12 sm6 md6 class="py-2">
+                <p>Colore Sfondo</p>
+                <compact-picker v-model="editedItem.backgroundColor" />
               </v-flex>
             </v-layout>
 
@@ -137,9 +125,13 @@
 <script>
 import { EventBus } from "../event-bus.js";
 import { mapState } from "vuex";
+import { Compact } from "vue-color";
 
 export default {
   name: "EditTableForm",
+  components: {
+    "compact-picker": Compact
+  },
   data: () => ({
     valid: true,
     layer: null,
@@ -154,7 +146,10 @@ export default {
       angolare: 0,
       text: "",
       number: "",
-      nomeCliente: ""
+      nomeCliente: "",
+      borderColor: "#000000",
+      backgroundColor: "#ffffff",
+      noBorder: false
     },
     defaultItem: {
       id: "",
@@ -165,7 +160,10 @@ export default {
       angolare: 0,
       text: "",
       number: "",
-      nomeCliente: ""
+      nomeCliente: "",
+      borderColor: "#000000",
+      backgroundColor: "#ffffff",
+      noBorder: false
     },
     // tableTypes: [],
     angolareRules: [
@@ -192,6 +190,11 @@ export default {
     ...mapState(["table"])
   },
   methods: {
+    defaultColor(value) {
+      if (!value) {
+        this.editedItem.borderColor = "#000000";
+      }
+    },
     enforceMandatory() {
       this.angolareCustom == true;
     },
@@ -243,6 +246,7 @@ export default {
     },
     fetchSelectedTable(group) {
       let table = group.attrs.table;
+      console.log("table", table);
       let size;
 
       if (table.type == "circle") {
@@ -264,7 +268,10 @@ export default {
         angolare: Number(table.tableConfig.rotation),
         text: table.textConfig.name,
         number: table.textConfig.number,
-        nomeCliente: table.textConfig.nomeCliente
+        nomeCliente: table.textConfig.nomeCliente,
+        borderColor: table.tableConfig.stroke,
+        backgroundColor: table.tableConfig.fill,
+        noBorder: table.tableConfig.stroke ? false : true
       };
       this.editedItem = Object.assign({}, item);
       this.defaultItem = Object.assign({}, item);
@@ -281,6 +288,15 @@ export default {
         angolare = 0;
       }
 
+      let borderColor =
+        typeof this.editedItem.borderColor != "object"
+          ? this.editedItem.borderColor
+          : this.editedItem.borderColor.hex;
+      let backgroundColor =
+        typeof this.editedItem.backgroundColor != "object"
+          ? this.editedItem.backgroundColor
+          : this.editedItem.backgroundColor.hex;
+
       let newItem = {
         layoutId: this.$store.state.layout.id,
         id: this.editedItem.id,
@@ -291,16 +307,22 @@ export default {
         angolare,
         tableName: this.editedItem.text,
         tableNumber: this.editedItem.number,
-        nomeCliente: this.editedItem.nomeCliente
+        nomeCliente: this.editedItem.nomeCliente,
+        borderColor:
+          this.editedItem.noBorder || this.editedItem.borderColor == ""
+            ? ""
+            : borderColor.replace("#", ""),
+        backgroundColor: backgroundColor.replace("#", "")
       };
+
+      console.log("newItem", newItem);
 
       if (
         JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
       ) {
         this.$store.dispatch("table/updateTable", newItem);
-        this.$store.state.stage.draw();
         this.defaultItem = Object.assign({}, newItem);
-
+        this.$store.state.stage.draw();
         // axios
         //   .get(
         //     `https://${

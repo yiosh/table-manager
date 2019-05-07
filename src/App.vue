@@ -1,5 +1,5 @@
 <template>
-  <v-app style="background:#d8d8d8">
+  <v-app style="background:#d8d8d8; padding: 2em;">
     <!-- <v-container fluid fill-height v-show="loading == true">
       <v-layout fill-height>
         <v-flex class="text-xs-center" align-self-center>
@@ -20,7 +20,7 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
     </v-toolbar>-->
-    <v-content v-show="loading == false">
+    <v-content v-show="loading === false">
       <div class="main-container">
         <v-layout row wrap justify-center align-content-center>
           <v-flex xs12 align-self-center style="margin: auto">
@@ -53,8 +53,8 @@ export default {
     BaseNotification
   },
   data: () => ({
-    title: null
-    // loading: true
+    title: null,
+    orientation: 0
   }),
   computed: {
     layout() {
@@ -88,25 +88,17 @@ export default {
     document.title = this.$store.state.layout.layout_name
       ? this.$store.state.layout.layout_name + " - Table Manager V2"
       : "Table Manager V2";
-  },
-  created() {
-    this.$store.dispatch("startProgress");
     const layoutId = this.getQueryVariable("layout_id");
-    const orientation = this.$store.state.layout.orientation;
     if (!layoutId) {
       alert('Please add a "layout_id paramenter!"');
     } else {
-      if (orientation == 1) {
-        this.$store.dispatch("setOrientation", {
-          width: 1200,
-          height: 792
-        });
-      }
-
       this.$store.dispatch("setLayout", layoutId);
       this.$store.dispatch("table/fetchTableTypes", null, { root: true });
       this.$store.dispatch("table/getTables", layoutId, { root: true });
     }
+  },
+  created() {
+    this.$store.dispatch("startProgress");
   }
 };
 </script>

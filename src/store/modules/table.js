@@ -1,4 +1,5 @@
 import TMService from "@/services/TMService";
+import _find from "lodash/find";
 
 export const namespaced = true;
 
@@ -34,34 +35,62 @@ export const mutations = {
     state.counter++;
   },
   UPDATE_TABLE(state, payload) {
-    let indexToEdit = _.findIndex(state.groups, group => {
+    // let indexToEdit = _.findIndex(state.groups, group => {
+    //   return group.table.id == payload.id;
+    // });
+    const groupToEdit = _find(state.groups, group => {
       return group.table.id == payload.id;
     });
-    const groupToEdit = _.find(state.groups, group => {
-      return group.table.id == payload.id;
-    });
-
-    console.log("Edit", groupToEdit);
 
     const tableToEdit = groupToEdit.table;
-    if (payload.type == "circle") {
-      state.groups[indexToEdit].table.tableConfig.radius = payload.size;
+    if (payload.typeId == 2) {
+      tableToEdit.tableConfig.radius = payload.size;
     }
 
-    if (payload.type == "square") {
-      state.groups[indexToEdit].table.tableConfig.height = payload.size;
-      state.groups[indexToEdit].table.tableConfig.width = payload.size;
+    if (payload.typeId == 3) {
+      tableToEdit.tableConfig.height = payload.size;
+      tableToEdit.tableConfig.width = payload.size;
     }
 
-    if (payload.type == "rectangle") {
-      state.groups[indexToEdit].table.tableConfig.height = payload.size;
-      state.groups[indexToEdit].table.tableConfig.width = payload.size * 2;
+    if (payload.typeId == 4) {
+      tableToEdit.tableConfig.height = payload.size;
+      tableToEdit.tableConfig.width = payload.size * 2;
     }
 
-    if (payload.type == "ellipse") {
-      state.groups[indexToEdit].table.tableConfig.radiusX = payload.size * 2;
-      state.groups[indexToEdit].table.tableConfig.radiusY = payload.size;
+    if (payload.typeId == 5) {
+      tableToEdit.tableConfig.radiusX = payload.size * 2;
+      tableToEdit.tableConfig.radiusY = payload.size;
     }
+
+    tableToEdit.tableConfig.stroke = payload.borderColor
+      ? `#${payload.borderColor}`
+      : "";
+
+    if (payload.borderColor) {
+      tableToEdit.tableConfig.strokeWidth = 2;
+    }
+
+    if (tableToEdit.textConfig) {
+      tableToEdit.textConfig.fill = payload.borderColor
+        ? `#${payload.borderColor}`
+        : "#ffffff";
+    }
+
+    if (groupToEdit.guestCounters) {
+      groupToEdit.guestCounters.fill = payload.borderColor
+        ? `#${payload.borderColor}`
+        : "#ffffff";
+    }
+
+    if (groupToEdit.guestCountersTotal) {
+      groupToEdit.guestCountersTotal.fill = payload.borderColor
+        ? `#${payload.borderColor}`
+        : "#ffffff";
+    }
+
+    tableToEdit.tableConfig.fill = `#${payload.backgroundColor}`;
+
+    console.log("groupToEdit", groupToEdit);
 
     let type;
     switch (payload.typeId) {
@@ -82,9 +111,6 @@ export const mutations = {
         break;
     }
 
-    console.log("tableToEdit", tableToEdit);
-    console.log("tableConfig", state.groups[indexToEdit].table.tableConfig);
-
     tableToEdit.tableConfig.scaleX = payload.scaleX;
     tableToEdit.tableConfig.scaleY = payload.scaleY;
     tableToEdit.type = type;
@@ -104,7 +130,11 @@ export const actions = {
       .then(response => {
         // handle success
         console.log("Tables Fetched:", response.data.dati);
-        commit("GET_TABLES", response.data.dati);
+        if (response.data.dati.length < 1) {
+          dispatch("endProgress", null, { root: true });
+        } else {
+          commit("GET_TABLES", response.data.dati);
+        }
         return layoutId;
       })
       .then(layoutId => {
@@ -146,8 +176,10 @@ export const actions = {
   },
   addTable({ commit, dispatch }, payload) {
     if (payload.isNew === true) {
+      console.log("payload", payload);
       TMService.addTable(payload.details)
         .then(function(response) {
+          console.log("response", response);
           payload.group.table.id = response.data.id;
 
           const notification = {
@@ -198,11 +230,13 @@ export const actions = {
       .then(() => {
         console.log("payload", payload);
         commit("UPDATE_TABLE", payload);
+
         const notification = {
           type: "success",
           message: "Tavolo aggiornato!"
         };
         dispatch("notification/add", notification, { root: true });
+        // dispatch("redrawCanvas", null, { root: true });
       })
       .catch(function(error) {
         const notification = {
@@ -212,6 +246,7 @@ export const actions = {
             "Si è verificato un problema durante l'aggiornamento del tavolo: " +
             error.message
         };
+        console.log("error", error);
         dispatch("notification/add", notification, { root: true });
       });
   }

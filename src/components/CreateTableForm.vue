@@ -25,7 +25,11 @@
               100,
               100,
               Number(createTableForm.angolare),
-              true
+              [],
+              true,
+              createTableForm.borderColor,
+              createTableForm.backgroundColor,
+              createTableForm.noBorder
             )
           "
           v-model="valid"
@@ -84,37 +88,22 @@
             </v-layout>
 
             <v-layout>
-              <v-flex xs12 sm3 md4 class="py-2">
-                <p>Scala X</p>
-                <v-slider
-                  v-model="createTableForm.scaleX"
-                  step="0.1"
-                  min="1"
-                  max="5"
-                ></v-slider>
+              <v-flex xs12 sm6 md6 class="py-2">
+                <p>
+                  Colore Bordo
+                </p>
+                <compact-picker
+                  v-if="createTableForm.noBorder === false"
+                  v-model="createTableForm.borderColor"
+                />
+                <v-checkbox
+                  v-model="createTableForm.noBorder"
+                  label="Nessun Bordo"
+                ></v-checkbox>
               </v-flex>
-              <v-flex xs12 sm3 md2 class="py-2">
-                <v-text-field
-                  suffix="°"
-                  type="number"
-                  v-model="createTableForm.scaleX"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm3 md4 class="py-2">
-                <p>Scala Y</p>
-                <v-slider
-                  v-model="createTableForm.scaleY"
-                  step="0.1"
-                  min="1"
-                  max="5"
-                ></v-slider>
-              </v-flex>
-              <v-flex xs12 sm3 md2 class="py-2">
-                <v-text-field
-                  suffix="°"
-                  type="number"
-                  v-model="createTableForm.scaleY"
-                ></v-text-field>
+              <v-flex xs12 sm6 md6 class="py-2">
+                <p>Colore Sfondo</p>
+                <compact-picker v-model="createTableForm.backgroundColor" />
               </v-flex>
             </v-layout>
 
@@ -158,9 +147,13 @@
 import { EventBus } from "../event-bus.js";
 import { mapState } from "vuex";
 import { mapGetters } from "vuex";
+import { Compact } from "vue-color";
 
 export default {
   name: "CreateTableForm",
+  components: {
+    "compact-picker": Compact
+  },
   data: () => ({
     dialog: false,
     valid: true,
@@ -173,7 +166,10 @@ export default {
       angolare: 0,
       text: "",
       number: 0,
-      nomeCliente: ""
+      nomeCliente: "",
+      borderColor: "#000000",
+      backgroundColor: "#ffffff",
+      noBorder: false
     },
     nameRules: [v => !!v || "Inserisci nome tavolo per procedere"]
   }),
@@ -253,8 +249,19 @@ export default {
       y = 100,
       angolare = 0,
       newTable = false,
-      tableGuests = []
+      tableGuests = [],
+      borderColor,
+      backgroundColor,
+      noBorder
     ) {
+      // console.log("b", borderColor, "ba", backgroundColor);
+      borderColor =
+        typeof borderColor != "object" ? borderColor : borderColor.hex;
+      backgroundColor =
+        typeof backgroundColor != "object"
+          ? backgroundColor
+          : backgroundColor.hex;
+      // console.log("border", borderColor, ", back", backgroundColor);
       let uID =
         "_" +
         Math.random()
@@ -265,46 +272,49 @@ export default {
       let tableName = "g" + uID + "-tbl";
       let textName = name ? name : "g" + uID + "-txt";
       let guestCounterName = "gc" + uID;
+      let guestCounterTotalName = "gct" + uID;
       let table = {};
+      console.log("nome", nomeCliente)
       let textConfig = {
         name: textName,
         number,
-        text: name + (number == 0 ? "" : number),
+        text: name + " " + (number == 0 ? "" : number),
         fontSize: 18,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: "black",
+        fill: noBorder ? "#ffffff" : borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
         offsetY: size / 2,
         offsetX: size / 2,
-        // padding: 5,
         nomeCliente
       };
 
       let ellipseTextConfig = {
         name: textName,
         number,
-        text: name + (number == 0 ? "" : number),
+        text: name + " " + (number == 0 ? "" : number),
         fontSize: 18,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: "black",
+        fill: noBorder ? "#ffffff" : borderColor,
+        align: "center",
         verticalAlign: "middle",
         rotation: angolare,
         offsetY: size / 2,
-        offsetX: (size * 2) / 2
+        offsetX: size / 2,
+        nomeCliente
       };
 
       let rettangoloTextConfig = {
         name: textName,
         number,
-        text: name + (number == 0 ? "" : number),
+        text: name + " " + (number == 0 ? "" : number),
         fontSize: 18,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: "black",
+        fill: noBorder ? "#ffffff" : borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -314,12 +324,12 @@ export default {
         nomeCliente
       };
 
-      let offsetX = (size * 2) / 2 - 5;
-      let offsetY = size / 2 - 30;
+      let offsetX = size / 3;
+      let offsetY = (size / 5) * -1;
 
       if (type == "ellipse") {
-        offsetY = (size / 4) * -1;
-        offsetX = (size / 4) * 3;
+        offsetY = (size / 10) * -1;
+        offsetX = size / 2;
       }
 
       let guestCounters = {
@@ -328,7 +338,7 @@ export default {
         fontSize: 12,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: "black",
+        fill: noBorder ? "#ffffff" : borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -342,37 +352,66 @@ export default {
         }
       };
 
+      let guestCountersTotal = {
+        name: guestCounterTotalName,
+        text: "Tot:0",
+        fontSize: 12,
+        fontFamily: "Poppins",
+        fontStyle: "bold",
+        fill: noBorder ? "#ffffff" : borderColor,
+        align: "center",
+        verticalAlign: "middle",
+        rotation: angolare,
+        offsetY: offsetY - size / 2,
+        offsetX,
+        total: 0
+      };
+
       if (tableGuests.length > 0) {
         tableGuests.forEach(guest => {
           if (Number(guest.peoples) > 0) {
             guestCounters.counters.people += Number(guest.peoples);
+            guestCountersTotal.total += Number(guest.peoples);
           }
           if (Number(guest.baby) > 0) {
             guestCounters.counters.babies += Number(guest.baby);
+            guestCountersTotal.total += Number(guest.baby);
           }
           if (Number(guest.chairs_only) > 0) {
             guestCounters.counters.chairs += Number(guest.chairs_only);
+            guestCountersTotal.total += Number(guest.chairs_only);
           }
           if (Number(guest.high_chair) > 0) {
             guestCounters.counters.highchairs += Number(guest.high_chair);
+            guestCountersTotal.total += Number(guest.high_chair);
           }
         });
       }
 
+      const showTablesTotal = this.$store.state.labels.show_tables_total;
+      const peoplesLetter = this.$store.state.labels.peoples_letter;
+      const babyLetter = this.$store.state.labels.baby_letter;
+      const chairsLetter = this.$store.state.labels.chairs_only_letter;
+      const highChairLetter = this.$store.state.labels.high_chair_letter;
+
+      if (guestCountersTotal.total > 0) {
+        guestCountersTotal.text = showTablesTotal ? `${showTablesTotal}: ` + guestCountersTotal.total : "T: " + guestCountersTotal.total;
+      }
+
       if (guestCounters.counters.people > 0) {
-        guestCounters.text += "P" + guestCounters.counters.people;
+        guestCounters.text += peoplesLetter ? `${peoplesLetter}:` + guestCounters.counters.people : "P" + guestCounters.counters.people;
       }
 
       if (guestCounters.counters.babies > 0) {
-        guestCounters.text += " B" + guestCounters.counters.babies;
+        guestCounters.text += babyLetter ? ` ${babyLetter}:` + guestCounters.counters.babies : " B" + guestCounters.counters.babies;
       }
 
       if (guestCounters.counters.chairs > 0) {
-        guestCounters.text += " S" + guestCounters.counters.chairs;
+        guestCounters.text += chairsLetter ? ` ${chairsLetter}:` + guestCounters.counters.chairs : " S" + guestCounters.counters.chairs;
       }
 
       if (guestCounters.counters.highchairs > 0) {
-        guestCounters.text += " XS" + guestCounters.counters.highchairs;
+        guestCounters.text += highChairLetter ? ` ${highChairLetter}:` + guestCounters.counters.highchairs : " H" + guestCounters.counters.highchairs;
       }
 
       switch (type) {
@@ -387,9 +426,9 @@ export default {
               scaleX,
               scaleY,
               rotation: angolare,
-              fill: "white",
-              stroke: "black",
-              strokeWidth: 2
+              fill: backgroundColor,
+              stroke: noBorder ? "" : borderColor,
+              strokeWidth: noBorder ? 0 : 2
             }
           };
           break;
@@ -407,9 +446,9 @@ export default {
               offsetX: size / 2,
               offsetY: size / 2,
               rotation: angolare,
-              fill: "white",
-              stroke: "black",
-              strokeWidth: 2
+              fill: backgroundColor,
+              stroke: noBorder ? "" : borderColor,
+              strokeWidth: noBorder ? 0 : 2
             }
           };
           break;
@@ -427,9 +466,9 @@ export default {
               offsetX: (size * 2) / 2,
               offsetY: size / 2,
               rotation: angolare,
-              fill: "white",
-              stroke: "black",
-              strokeWidth: 2
+              fill: backgroundColor,
+              stroke: noBorder ? "" : borderColor,
+              strokeWidth: noBorder ? 0 : 2
             }
           };
           break;
@@ -445,9 +484,9 @@ export default {
               scaleX,
               scaleY,
               rotation: angolare,
-              fill: "white",
-              stroke: "black",
-              strokeWidth: 2
+              fill: backgroundColor,
+              stroke: noBorder ? "" : borderColor,
+              strokeWidth: noBorder ? 0 : 2
             }
           };
           break;
@@ -467,6 +506,10 @@ export default {
         table
       };
 
+      if (guestCountersTotal.total > 0) {
+        group.guestCountersTotal = guestCountersTotal;
+      }
+
       const details = {
         layoutId: this.$store.state.layout.id,
         typeId: this.tableTypeDeparser(type),
@@ -477,7 +520,9 @@ export default {
         x,
         y,
         angolare,
-        nomeCliente
+        nomeCliente,
+        borderColor: noBorder ? "" : borderColor,
+        backgroundColor
       };
 
       let payload = {
@@ -495,8 +540,10 @@ export default {
     }
   },
   created() {
+    console.log("store", this.$store.state)
     EventBus.$on("fetch-done", () => {
       let tablesFetched = this.table.tablesFetched;
+      console.log("t:", tablesFetched)
       let tablesFetchedLength = tablesFetched.length;
       let guests = this.guest.guests;
       let tableGuests = [];
@@ -518,7 +565,10 @@ export default {
             Number(payload.y),
             Number(payload.angolare),
             false,
-            tableGuests
+            tableGuests,
+            payload.border_color ? `#${payload.border_color}` : "",
+            `#${payload.background_color}`,
+            payload.border_color ? false : true
           );
         });
       }
