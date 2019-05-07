@@ -85,19 +85,17 @@ export default {
       }
     }
   },
-  mounted() {
-    if (this.$store.state.layout.evento_id == "0") {
-      this.items = [{ title: "Anteprima", icon: "print" }];
-    } else {
-      this.items = [
-        { title: "Elenco degli Ospiti", icon: "people" },
-        { title: "Anteprima", icon: "print" }
-      ];
-    }
-  },
   created() {
     EventBus.$on("handle-drawer", () => {
       this.drawer = !this.drawer;
+    });
+
+    EventBus.$on("fetch-done", () => {
+      this.items = [{ title: "Anteprima", icon: "print" }];
+      console.log(this.$store.state.layout);
+      if (this.$store.state.layout.evento_id !== "0") {
+        this.items.unshift({ title: "Elenco degli Ospiti", icon: "people" });
+      }
     });
   }
 };

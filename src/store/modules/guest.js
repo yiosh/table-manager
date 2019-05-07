@@ -175,7 +175,7 @@ export const actions = {
 
     const showTablesTotal = rootState.labels.show_tables_total
       ? `${rootState.labels.show_tables_total}: `
-      : "T: ";
+      : "";
     const peoplesLetter = rootState.labels.peoples_letter
       ? `${rootState.labels.peoples_letter}: `
       : "P";

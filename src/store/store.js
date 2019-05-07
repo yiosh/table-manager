@@ -84,6 +84,7 @@ export default new Vuex.Store({
     endProgress({ state }) {
       NProgress.done();
       state.loading = false;
+      console.log("layoutend", state.layout);
     },
     setStage(state, payload) {
       state.commit("SET_STAGE", payload);

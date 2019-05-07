@@ -394,17 +394,16 @@ export default {
       const chairsLetter = this.$store.state.labels.chairs_only_letter;
       const highChairLetter = this.$store.state.labels.high_chair_letter;
 
-      if (showTablesTotal) {
-        if (guestCountersTotal.total > 0) {
-          guestCountersTotal.text = showTablesTotal
-            ? `${showTablesTotal}: ` + guestCountersTotal.total
-            : "T: " + guestCountersTotal.total;
-        } else {
-          guestCountersTotal.text = "";
-        }
-      } else {
-        guestCountersTotal.text = "";
-      }
+      // if (showTablesTotal) {
+      //   if (guestCountersTotal.total > 0) {
+      //     guestCountersTotal.text =
+      //       `${showTablesTotal}: ` + guestCountersTotal.total;
+      //   }
+      // } else {
+      //   guestCountersTotal.text = "";
+      // }
+
+      guestCountersTotal.text = "";
 
       if (guestCounters.counters.people > 0) {
         guestCounters.text += peoplesLetter

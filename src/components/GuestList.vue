@@ -321,6 +321,7 @@ export default {
   created() {
     // On table select grab the table's id and other data
     EventBus.$on("table-select", group => {
+      console.log("worked")
       let table = group.attrs.table;
       this.tableId = table.id;
       this.tableName = table.textConfig.name;
