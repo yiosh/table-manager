@@ -4,7 +4,8 @@
       <v-card>
         <v-toolbar flat dark color="#424242">
           <v-toolbar-title
-            >Elenco degli Ospiti - {{ tableName }} {{ tableNumber }}
+            >Elenco degli Ospiti - {{ tableName }}
+            {{ tableNumber == 0 ? "" : tableNumber }}
             {{ clientName }}</v-toolbar-title
           >
           <v-spacer></v-spacer>

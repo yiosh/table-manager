@@ -1,5 +1,6 @@
 import TMService from "@/services/TMService";
 import _find from "lodash/find";
+import _findIndex from "lodash/findIndex";
 
 export const namespaced = true;
 
@@ -23,77 +24,73 @@ export const mutations = {
   FETCH_TABLE_TYPES(state, payload) {
     state.tableTypes = payload;
   },
-  DELETE_TABLE(state, payload) {
-    let indexToRemove = _.findIndex(state.groups, group => {
-      return group.table.id == payload;
+  DELETE_TABLE(state, id) {
+    let indexToRemove = _findIndex(state.groups, group => {
+      return group.table.id == id;
     });
-    console.log("Index", indexToRemove);
     state.groups.splice(indexToRemove, 1);
   },
-  ADD_TABLE(state, payload) {
-    state.groups.push(payload);
+  ADD_TABLE(state, table) {
+    state.groups.push(table);
     state.counter++;
   },
-  UPDATE_TABLE(state, payload) {
-    // let indexToEdit = _.findIndex(state.groups, group => {
-    //   return group.table.id == payload.id;
-    // });
+  UPDATE_TABLE(state, table) {
     const groupToEdit = _find(state.groups, group => {
-      return group.table.id == payload.id;
+      return group.table.id == table.id;
     });
 
     const tableToEdit = groupToEdit.table;
-    if (payload.typeId == 2) {
-      tableToEdit.tableConfig.radius = payload.size;
+    if (table.typeId == 2) {
+      tableToEdit.tableConfig.radius = table.size;
     }
 
-    if (payload.typeId == 3) {
-      tableToEdit.tableConfig.height = payload.size;
-      tableToEdit.tableConfig.width = payload.size;
+    if (table.typeId == 3) {
+      tableToEdit.tableConfig.height = table.size;
+      tableToEdit.tableConfig.width = table.size;
     }
 
-    if (payload.typeId == 4) {
-      tableToEdit.tableConfig.height = payload.size;
-      tableToEdit.tableConfig.width = payload.size * 2;
+    if (table.typeId == 4) {
+      tableToEdit.tableConfig.height = table.size;
+      tableToEdit.tableConfig.width = table.size * 2;
     }
 
-    if (payload.typeId == 5) {
-      tableToEdit.tableConfig.radiusX = payload.size * 2;
-      tableToEdit.tableConfig.radiusY = payload.size;
+    if (table.typeId == 5) {
+      tableToEdit.tableConfig.radiusX = table.size * 2;
+      tableToEdit.tableConfig.radiusY = table.size;
     }
 
-    tableToEdit.tableConfig.stroke = payload.borderColor
-      ? `#${payload.borderColor}`
+    tableToEdit.tableConfig.stroke = table.borderColor
+      ? `#${table.borderColor}`
       : "";
 
-    if (payload.borderColor) {
+    if (table.borderColor) {
       tableToEdit.tableConfig.strokeWidth = 2;
     }
 
     if (tableToEdit.textConfig) {
-      tableToEdit.textConfig.fill = payload.borderColor
-        ? `#${payload.borderColor}`
+      tableToEdit.textConfig.fill = table.borderColor
+        ? `#${table.borderColor}`
         : "#ffffff";
     }
 
     if (groupToEdit.guestCounters) {
-      groupToEdit.guestCounters.fill = payload.borderColor
-        ? `#${payload.borderColor}`
+      groupToEdit.guestCounters.fill = table.borderColor
+        ? `#${table.borderColor}`
         : "#ffffff";
     }
 
     if (groupToEdit.guestCountersTotal) {
-      groupToEdit.guestCountersTotal.fill = payload.borderColor
-        ? `#${payload.borderColor}`
+      groupToEdit.guestCountersTotal.fill = table.borderColor
+        ? `#${table.borderColor}`
         : "#ffffff";
     }
 
-    tableToEdit.tableConfig.fill = `#${payload.backgroundColor}`;
+    tableToEdit.tableConfig.fill = `#${table.backgroundColor}`;
 
     console.log("groupToEdit", groupToEdit);
 
     let type;
-    switch (payload.typeId) {
+    switch (table.typeId) {
       case 2:
         type = "circle";
         break;
@@ -111,16 +108,16 @@ export const mutations = {
         break;
     }
 
-    tableToEdit.tableConfig.scaleX = payload.scaleX;
-    tableToEdit.tableConfig.scaleY = payload.scaleY;
+    tableToEdit.tableConfig.scaleX = table.scaleX;
+    tableToEdit.tableConfig.scaleY = table.scaleY;
     tableToEdit.type = type;
-    tableToEdit.tableConfig.rotation = Number(payload.angolare);
-    tableToEdit.textConfig.name = payload.tableName;
-    tableToEdit.textConfig.rotation = Number(payload.angolare);
-    tableToEdit.textConfig.number = payload.tableNumber;
+    tableToEdit.tableConfig.rotation = Number(table.angolare);
+    tableToEdit.textConfig.name = table.tableName;
+    tableToEdit.textConfig.rotation = Number(table.angolare);
+    tableToEdit.textConfig.number = table.tableNumber;
     tableToEdit.textConfig.text =
-      payload.tableName + (payload.tableNumber == 0 ? "" : payload.tableNumber);
-    tableToEdit.textConfig.nomeCliente = payload.nomeCliente;
+      table.tableName + (table.tableNumber == 0 ? "" : table.tableNumber);
+    tableToEdit.textConfig.nomeCliente = table.nomeCliente;
   }
 };
 

@@ -274,7 +274,7 @@ export default {
       let guestCounterName = "gc" + uID;
       let guestCounterTotalName = "gct" + uID;
       let table = {};
-      console.log("nome", nomeCliente)
+
       let textConfig = {
         name: textName,
         number,
@@ -395,23 +395,35 @@ export default {
       const highChairLetter = this.$store.state.labels.high_chair_letter;
 
       if (guestCountersTotal.total > 0) {
-        guestCountersTotal.text = showTablesTotal ? `${showTablesTotal}: ` + guestCountersTotal.total : "T: " + guestCountersTotal.total;
+        guestCountersTotal.text = showTablesTotal
+          ? `${showTablesTotal}: ` + guestCountersTotal.total
+          : "T: " + guestCountersTotal.total;
+      } else {
+        guestCountersTotal.text = "";
       }
 
       if (guestCounters.counters.people > 0) {
-        guestCounters.text += peoplesLetter ? `${peoplesLetter}:` + guestCounters.counters.people : "P" + guestCounters.counters.people;
+        guestCounters.text += peoplesLetter
+          ? `${peoplesLetter}:` + guestCounters.counters.people
+          : "P" + guestCounters.counters.people;
       }
 
       if (guestCounters.counters.babies > 0) {
-        guestCounters.text += babyLetter ? ` ${babyLetter}:` + guestCounters.counters.babies : " B" + guestCounters.counters.babies;
+        guestCounters.text += babyLetter
+          ? ` ${babyLetter}:` + guestCounters.counters.babies
+          : " B" + guestCounters.counters.babies;
       }
 
       if (guestCounters.counters.chairs > 0) {
-        guestCounters.text += chairsLetter ? ` ${chairsLetter}:` + guestCounters.counters.chairs : " S" + guestCounters.counters.chairs;
+        guestCounters.text += chairsLetter
+          ? ` ${chairsLetter}:` + guestCounters.counters.chairs
+          : " S" + guestCounters.counters.chairs;
       }
 
       if (guestCounters.counters.highchairs > 0) {
-        guestCounters.text += highChairLetter ? ` ${highChairLetter}:` + guestCounters.counters.highchairs : " H" + guestCounters.counters.highchairs;
+        guestCounters.text += highChairLetter
+          ? ` ${highChairLetter}:` + guestCounters.counters.highchairs
+          : " H" + guestCounters.counters.highchairs;
       }
 
       switch (type) {
@@ -506,9 +518,9 @@ export default {
         table
       };
 
-      if (guestCountersTotal.total > 0) {
-        group.guestCountersTotal = guestCountersTotal;
-      }
+      // if (guestCountersTotal.total > 0) {
+      group.guestCountersTotal = guestCountersTotal;
+      // }
 
       const details = {
         layoutId: this.$store.state.layout.id,
@@ -540,10 +552,8 @@ export default {
     }
   },
   created() {
-    console.log("store", this.$store.state)
     EventBus.$on("fetch-done", () => {
       let tablesFetched = this.table.tablesFetched;
-      console.log("t:", tablesFetched)
       let tablesFetchedLength = tablesFetched.length;
       let guests = this.guest.guests;
       let tableGuests = [];

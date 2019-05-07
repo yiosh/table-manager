@@ -73,6 +73,7 @@ export const actions = {
         dispatch("updateGuestCounters", guest);
       })
       .catch(error => {
+        console.log("error", error);
         const notification = {
           type: "error",
           multiLine: true,
@@ -147,40 +148,45 @@ export const actions = {
       highchairs: 0,
       text: ""
     };
+    console.log("state", rootState);
 
-    let guests = state.guests.filter(guest => {
-      return guest.table_id == updatedGuest.table_id;
-    });
+    let guests = state.guests
+      ? state.guests.filter(guest => {
+          return guest.table_id == updatedGuest.table_id;
+        })
+      : [];
 
-    guests.forEach(guest => {
-      if (Number(guest.peoples) > 0) {
-        counters.people += Number(guest.peoples);
-      }
-      if (Number(guest.baby) > 0) {
-        counters.babies += Number(guest.baby);
-      }
-      if (Number(guest.chairs_only) > 0) {
-        counters.chairs += Number(guest.chairs_only);
-      }
-      if (Number(guest.high_chair) > 0) {
-        counters.highchairs += Number(guest.high_chair);
-      }
-    });
+    if (guests.length > 0) {
+      guests.forEach(guest => {
+        if (Number(guest.peoples) > 0) {
+          counters.people += Number(guest.peoples);
+        }
+        if (Number(guest.baby) > 0) {
+          counters.babies += Number(guest.baby);
+        }
+        if (Number(guest.chairs_only) > 0) {
+          counters.chairs += Number(guest.chairs_only);
+        }
+        if (Number(guest.high_chair) > 0) {
+          counters.highchairs += Number(guest.high_chair);
+        }
+      });
+    }
 
-    const showTablesTotal = this.$store.state.labels.show_tables_total
-      ? `${this.$store.state.labels.show_tables_total}: `
+    const showTablesTotal = rootState.labels.show_tables_total
+      ? `${rootState.labels.show_tables_total}: `
       : "T: ";
-    const peoplesLetter = this.$store.state.labels.peoples_letter
-      ? `${this.$store.state.labels.peoples_letter}: `
+    const peoplesLetter = rootState.labels.peoples_letter
+      ? `${rootState.labels.peoples_letter}: `
       : "P";
-    const babyLetter = this.$store.state.labels.baby_letter
-      ? `${this.$store.state.labels.baby_letter}: `
+    const babyLetter = rootState.labels.baby_letter
+      ? `${rootState.labels.baby_letter}: `
       : "B";
-    const chairsLetter = this.$store.state.labels.chairs_only_letter
-      ? `${this.$store.state.labels.chairs_only_letter}: `
+    const chairsLetter = rootState.labels.chairs_only_letter
+      ? `${rootState.labels.chairs_only_letter}: `
       : "S";
-    const highChairLetter = this.$store.state.labels.high_chair_letter
-      ? `${this.$store.state.labels.high_chair_letter}: `
+    const highChairLetter = rootState.labels.high_chair_letter
+      ? `${rootState.labels.high_chair_letter}: `
       : "H";
 
     counters.text = `${

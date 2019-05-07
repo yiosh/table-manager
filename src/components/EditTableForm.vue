@@ -246,7 +246,7 @@ export default {
     },
     fetchSelectedTable(group) {
       let table = group.attrs.table;
-      console.log("table", table);
+      // console.log("table", table);
       let size;
 
       if (table.type == "circle") {

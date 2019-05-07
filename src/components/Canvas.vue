@@ -236,7 +236,7 @@ export default {
     },
     stageClick(e) {
       let stage = this.$store.state.stage;
-      console.log(e);
+      // console.log(e);
       // if click on empty area - remove all transformers
       if (e.target === stage) {
         if (this.$store.state.selectedGroup != null) {
@@ -252,11 +252,30 @@ export default {
       let stage = this.$store.state.stage;
       let group = stage.find("." + groupName)[0];
 
-      // let shape = _.find(group.children, child => {
-      //   return child.nodeType === "Shape";
+      // let name = "." + String(groupName) + "-tbl";
+      // stage.find("Transformer").destroy();
+      // // create new transformer
+      // var tr = new window.Konva.Transformer({
+      //   rotateEnabled: true,
+      //   // resizeEnabled: false,
+      //   rotationSnaps: [0, 90, 180, 270]
       // });
 
-      if (this.$store.state.selectedGroup != group.attrs) {
+      // let layer = this.$refs.layer.getStage(tr);
+      // tr.attachTo(stage.find(name)[0]);
+      // group.add(tr);
+      // layer.add(group);
+      // layer.draw();
+
+      // this.selectedTable = group;
+      // this.$store.dispatch("selectGroup", group.attrs);
+      // EventBus.$emit("table-select", group);
+
+      if (
+        !this.$store.state.selectedGroup ||
+        this.$store.state.selectedGroup.name != group.attrs.name
+      ) {
+        console.log("Group selected", group);
         let name = "." + String(groupName) + "-tbl";
         stage.find("Transformer").destroy();
         // create new transformer
