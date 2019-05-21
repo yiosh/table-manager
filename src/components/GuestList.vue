@@ -1,6 +1,6 @@
 <template>
-  <v-layout row justify-center>
-    <v-dialog :value="guestListDialog">
+  <v-layout row justify-center @click="log">
+    <v-dialog v-model="dialog">
       <v-card>
         <v-toolbar flat dark color="#424242">
           <v-toolbar-title
@@ -19,8 +19,8 @@
             <v-spacer></v-spacer>
             <v-dialog v-model="guestDialog" max-width="500px">
               <v-btn slot="activator" color="primary" dark class="mb-2"
-                >Crea Nuovo Ospite</v-btn
-              >
+                >Crea Nuovo Ospite
+                </v-btn>
               <v-card>
                 <v-form @submit.prevent="save">
                   <v-card-title>
@@ -32,6 +32,8 @@
                       <v-layout wrap>
                         <v-flex xs12 sm6 md6>
                           <v-text-field
+                            id="cognomefield"
+                            ref="cognomefield"
                             v-model="editedItem.cognome"
                             label="Cognome"
                           ></v-text-field>
@@ -111,8 +113,9 @@
           <v-data-table
             :headers="headers"
             :items="guests(this.tableId)"
-            rows-per-page-text="Righe per pagina"
-            :rows-per-page-items="[5, 10, 25, { text: 'Tutti', value: -1 }]"
+            disable-initial-sort
+            hide-actions
+            :pagination.sync="pagination"
             no-data-text="Non ci sono ospiti in questo tavolo"
           >
             <template slot="items" slot-scope="props">
@@ -132,12 +135,12 @@
             </template>
           </v-data-table>
         </v-card-text>
-        <v-divider></v-divider>
+        <!-- <v-divider></v-divider>
         <v-card-actions>
           <v-btn color="blue darken-1" flat @click="dialog = false"
             >Chiudi</v-btn
           >
-        </v-card-actions>
+        </v-card-actions> -->
       </v-card>
     </v-dialog>
   </v-layout>
@@ -151,7 +154,11 @@ export default {
   name: "GuestList",
   data() {
     return {
-      saveAndContinue: false,
+      pagination: {
+        sortBy: "id",
+        descending: true
+      },
+      saveAndContinue: true,
       editForm: false,
       tableId: null,
       tableName: "",
@@ -159,28 +166,6 @@ export default {
       clientName: "",
       dialog: false,
       guestDialog: false,
-      guestTypes: [
-        {
-          text: "Organizzatore",
-          value: 1
-        },
-        {
-          text: "Festeggiato",
-          value: 2
-        },
-        {
-          text: "Ospite",
-          value: 3
-        },
-        {
-          text: "Ospite VIP",
-          value: 4
-        },
-        {
-          text: "Operatore",
-          value: 5
-        }
-      ],
       headers: [
         { text: "Cognome", value: "cognome" },
         { text: "Nome", value: "nome" },
@@ -221,7 +206,7 @@ export default {
   },
   computed: {
     guestListDialog() {
-      return this.$store.state.guestListDialog;
+      return this.$$refs.dialog.isActive;
     },
     peopleLabel() {
       if (this.$store.state.labels.peoples_label) {
@@ -258,11 +243,14 @@ export default {
     //   return this.$store.getters.guests(this.tableId);
     // },
     ...mapState(["guest"]),
-    ...mapGetters({ guests: "guest/guests" })
+    ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" })
   },
   methods: {
+    log() {
+      console.log("this")
+    },
     closeDialog() {
-      this.$store.commit("GUEST_LIST_DIALOG", false);
+      this.dialog = false;
     },
     editItem(item) {
       this.editForm = true;
@@ -295,13 +283,19 @@ export default {
       }, 300);
     },
     save() {
+      let guest = this.editedItem;
+      if (guest.note_intolleranze != "") {
+        const payload = {
+          tableId: this.tableId,
+          state: true
+        };
+        this.$store.dispatch("table/handleAsterisc", payload);
+      }
       if (this.editedIndex > -1) {
         // Update existing guest
-        let guest = this.editedItem;
         this.$store.dispatch("guest/updateGuest", guest);
       } else {
         // Create a New Guest
-        let guest = this.editedItem;
         const tableId = this.tableId;
         this.$store.dispatch("guest/addGuest", { tableId, guest });
       }
@@ -312,6 +306,7 @@ export default {
         this.editForm = false;
       }
       this.editedItem = Object.assign({}, this.defaultItem);
+      document.getElementById("cognomefield").focus();
     }
   },
   mounted() {
@@ -324,7 +319,6 @@ export default {
     }
   },
   created() {
-    console.log("gg", document);
     // On table select grab the table's id and other data
     EventBus.$on("table-select", group => {
       let table = group.attrs.table;
@@ -337,7 +331,7 @@ export default {
     EventBus.$on("guest-list-select", () => {
       if (this.$store.state.selectedGroup != null) {
         this.dialog = true;
-        console.log("vm", this);
+        // console.log("vm", this);
       } else {
         const notification = {
           type: "warning",

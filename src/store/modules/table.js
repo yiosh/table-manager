@@ -34,6 +34,16 @@ export const mutations = {
     state.groups.push(table);
     state.counter++;
   },
+  HANDLE_ASTERISC(state, payload) {
+    console.log("payload", payload);
+
+    const groupToEdit = _find(state.groups, group => {
+      return group.table.id == payload.tableId;
+    });
+
+    groupToEdit.asteriscTextConfig.state = payload.state;
+    console.log("groupToEdit", groupToEdit);
+  },
   UPDATE_TABLE(state, table) {
     const groupToEdit = _find(state.groups, group => {
       return group.table.id == table.id;
@@ -87,7 +97,7 @@ export const mutations = {
 
     tableToEdit.tableConfig.fill = `#${table.backgroundColor}`;
 
-    console.log("groupToEdit", groupToEdit);
+    // console.log("groupToEdit", groupToEdit);
 
     let type;
     switch (table.typeId) {
@@ -122,6 +132,10 @@ export const mutations = {
 };
 
 export const actions = {
+  handleAsterisc({ commit, rootState }, payload) {
+    commit("HANDLE_ASTERISC", payload);
+    rootState.stage.draw();
+  },
   getTables({ commit, dispatch }, layoutId) {
     TMService.getTables(layoutId)
       .then(response => {
@@ -169,6 +183,29 @@ export const actions = {
             error.message
         };
         dispatch("notification/add", notification, { root: true });
+      });
+  },
+  moveTable({ commit, dispatch }, payload) {
+    TMService.moveTable(payload)
+      .then(response => {
+        console.log("response", response);
+        payload.group.table.id = response.data.id;
+
+        const notification = {
+          type: "success",
+          message: "Tavolo aggiunto!"
+        };
+        dispatch("notification/add", notification, { root: true });
+      })
+      .catch(function(error) {
+        const notification = {
+          type: "success",
+          message:
+            "Si è verificato un problema durante l'aggiunta del tavolo: " +
+            error.message
+        };
+        dispatch("notification/add", notification, { root: true });
+        console.log(error);
       });
   },
   addTable({ commit, dispatch }, payload) {

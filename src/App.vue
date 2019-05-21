@@ -23,6 +23,8 @@ import Sidebar from "@/components/Sidebar";
 import Canvas from "@/components/Canvas";
 import { mapState } from "vuex";
 import BaseNotification from "@/components/baseComponents/BaseNotification";
+import { EventBus } from "./event-bus.js";
+
 
 export default {
   name: "Home",
@@ -54,6 +56,9 @@ export default {
     // handleDrawer() {
     //   EventBus.$emit("handle-drawer");
     // },
+    log(e) {
+      console.log("e",e)
+    },
     getQueryVariable(variable) {
       let query = window.location.search.substring(1);
       let vars = query.split("&");
@@ -79,13 +84,14 @@ export default {
         this.$store.dispatch("table/fetchTableTypes", null, { root: true });
         this.$store.dispatch("table/getTables", layoutId, { root: true });
       }
+      this.$store.dispatch("guest/getGuestTypes");
     }
     document.addEventListener("dblclick", event => {
       if (
         event.target.tagName == "CANVAS" &&
         this.$store.state.selectedGroup !== null
       ) {
-        this.$store.commit("GUEST_LIST_DIALOG", true);
+        EventBus.$emit("guest-list-select")
       }
     });
   },

@@ -31,7 +31,7 @@
         <v-list-tile
           v-for="item in items"
           :key="item.title"
-          @click="handleDialog(item.icon)"
+          @click.stop="handleDialog(item.icon)"
         >
           <v-list-tile-action>
             <v-tooltip left slot="activator">
@@ -77,6 +77,7 @@ export default {
       switch (element) {
         case "people":
           if (this.$store.state.selectedGroup != null) {
+            EventBus.$emit("guest-list-select")
             this.$store.commit("GUEST_LIST_DIALOG", true);
           } else {
             const notification = {

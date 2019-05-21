@@ -33,6 +33,7 @@
             <v-layout>
               <v-flex xs12>
                 <v-text-field
+                  v-if="tableClientName"
                   v-model="editedItem.nomeCliente"
                   label="Nome Tavolo Cliente"
                 ></v-text-field>
@@ -83,27 +84,6 @@
                 <compact-picker v-model="editedItem.backgroundColor" />
               </v-flex>
             </v-layout>
-
-            <!-- <v-layout>
-              <v-flex xs12 sm6 md6 class="py-2">
-                <p>Angolare</p>
-                <v-btn-toggle v-model="editedItem.angolare" mandatory>
-                  <v-btn flat :value="Number(0)">0°</v-btn>
-                  <v-btn flat :value="Number(45)">45°</v-btn>
-                  <v-btn flat :value="Number(90)">90°</v-btn>
-                  <v-btn flat :value="Number(180)">180°</v-btn>
-                  <v-btn flat :value="customAngolareVal">Custom</v-btn>
-                </v-btn-toggle>
-              </v-flex>
-
-              <v-flex xs12 sm6 md2 class="py-2" mandatory>
-                <v-text-field
-                  suffix="°"
-                  type="number"
-                  v-model="editedItem.angolare"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>-->
           </v-container>
           <v-divider></v-divider>
           <v-container>
@@ -136,6 +116,8 @@ export default {
     valid: true,
     layer: null,
     dialog: false,
+    tableClientName: false,
+
     // Default values
     editedItem: {
       id: "",
@@ -310,7 +292,7 @@ export default {
         nomeCliente: this.editedItem.nomeCliente,
         borderColor:
           this.editedItem.noBorder || this.editedItem.borderColor == ""
-            ? ""
+            ? "none"
             : borderColor.replace("#", ""),
         backgroundColor: backgroundColor.replace("#", "")
       };

@@ -55,6 +55,7 @@
             <v-layout>
               <v-flex xs12>
                 <v-text-field
+                  v-if="tableClientName"
                   v-model="createTableForm.nomeCliente"
                   label="Nome Tavolo Cliente"
                 ></v-text-field>
@@ -106,26 +107,6 @@
                 <compact-picker v-model="createTableForm.backgroundColor" />
               </v-flex>
             </v-layout>
-
-            <!-- <v-layout>
-              <v-flex xs12 sm6 md6 class="py-2">
-                <p>Angolare</p>
-                <v-btn-toggle v-model="createTableForm.angolare" mandatory>
-                  <v-btn flat :value="Number(0)">0°</v-btn>
-                  <v-btn flat :value="Number(45)">45°</v-btn>
-                  <v-btn flat :value="Number(90)">90°</v-btn>
-                  <v-btn flat :value="Number(180)">180°</v-btn>
-                  <v-btn flat :value="customAngolareVal">Custom</v-btn>
-                </v-btn-toggle>
-              </v-flex>
-              <v-flex xs12 sm6 md2 class="py-2">
-                <v-text-field
-                  suffix="°"
-                  type="number"
-                  v-model="createTableForm.angolare"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>-->
           </v-container>
           <v-divider></v-divider>
           <v-container>
@@ -157,6 +138,7 @@ export default {
   data: () => ({
     dialog: false,
     valid: true,
+    tableClientName: false,
     // Default values
     createTableForm: {
       type: "circle",
@@ -257,11 +239,30 @@ export default {
       // console.log("b", borderColor, "ba", backgroundColor);
       borderColor =
         typeof borderColor != "object" ? borderColor : borderColor.hex;
+      if ((borderColor == "#" || borderColor == "") && noBorder === false) {
+        borderColor = "#000000";
+      }
+      // console.log("borderColor", borderColor);
       backgroundColor =
         typeof backgroundColor != "object"
           ? backgroundColor
           : backgroundColor.hex;
-      // console.log("border", borderColor, ", back", backgroundColor);
+      if (backgroundColor == "#" || backgroundColor == "") {
+        backgroundColor = "#ffffff";
+      }
+      
+      let guests = this.$store.getters['guest/guests'](id);
+      let guestCounter = 0;
+      let hasNote = false;
+
+      if (guests.length > 0) {
+        guests.forEach(guest => {
+          if (guest.note_intolleranze != "") {
+            hasNote = true;
+          }
+        });
+      }
+
       let uID =
         "_" +
         Math.random()
@@ -279,7 +280,7 @@ export default {
         name: textName,
         number,
         text: name + " " + (number == 0 ? "" : number),
-        fontSize: 18,
+        fontSize: 16,
         fontFamily: "Poppins",
         fontStyle: "bold",
         fill: noBorder ? "#ffffff" : borderColor,
@@ -295,7 +296,7 @@ export default {
         name: textName,
         number,
         text: name + " " + (number == 0 ? "" : number),
-        fontSize: 18,
+        fontSize: 16,
         fontFamily: "Poppins",
         fontStyle: "bold",
         fill: noBorder ? "#ffffff" : borderColor,
@@ -311,7 +312,7 @@ export default {
         name: textName,
         number,
         text: name + " " + (number == 0 ? "" : number),
-        fontSize: 18,
+        fontSize: 16,
         fontFamily: "Poppins",
         fontStyle: "bold",
         fill: noBorder ? "#ffffff" : borderColor,
@@ -321,6 +322,22 @@ export default {
         padding: 5,
         offsetY: size / 2,
         offsetX: (size * 2) / 2,
+        nomeCliente
+      };
+
+      let asteriscTextConfig = {
+        state: hasNote ? true : false,
+        name: textName,
+        text: "*",
+        fontSize: 18,
+        fontFamily: "Poppins",
+        fontStyle: "bold",
+        fill: "red",
+        align: "center",
+        verticalAlign: "middle",
+        rotation: angolare,
+        offsetY: size / 1.5,
+        // offsetX: size,
         nomeCliente
       };
 
@@ -523,6 +540,7 @@ export default {
 
       // Add guest counters total once all calculations are done
       group.guestCountersTotal = guestCountersTotal;
+      group.asteriscTextConfig = asteriscTextConfig;
 
       const details = {
         layoutId: this.$store.state.layout.id,
@@ -535,7 +553,7 @@ export default {
         y,
         angolare,
         nomeCliente,
-        borderColor: noBorder ? "" : borderColor,
+        borderColor: noBorder ? "none" : borderColor,
         backgroundColor
       };
 
@@ -580,7 +598,8 @@ export default {
             tableGuests,
             payload.border_color ? `#${payload.border_color}` : "",
             `#${payload.background_color}`,
-            payload.border_color ? false : true
+            payload.border_color == "none" ? true
+              : false
           );
         });
       }

@@ -19,7 +19,7 @@ export default new Vuex.Store({
     error: false,
     hostname:
       location.hostname === "localhost"
-        ? "demo.condivision.cloud"
+        ? "calderonimartini.condivision.cloud"
         : location.hostname,
     selectedGroup: null,
     loading: true,
@@ -135,6 +135,14 @@ export default new Vuex.Store({
           };
           dispatch("notification/add", notification, { root: true });
         });
+    }
+  },
+  getters: {
+    printTitle(state) {
+      return {
+        eventDate: state.layout.board_event_date,
+        eventName: state.layout.layout_name
+      }
     }
   }
 });

@@ -62,8 +62,15 @@
             :ref="group.guestCountersTotal.name"
             :config="group.guestCountersTotal"
           ></v-text>
+          <v-text
+            v-if="group.asteriscTextConfig.state"
+            :ref="group.asteriscTextConfig.name"
+            :config="group.asteriscTextConfig"
+          ></v-text>
         </v-group>
-        <v-text ref="totaleCounter" :config="guestTotals"></v-text>
+        <!-- <v-text ref="totaleCounter" :config="guestTotals"></v-text> -->
+        <v-text ref="totaleCounterV2" :config="guestTotalsV2"></v-text>
+        <v-text ref="title" :config="printTitle"></v-text>
       </v-layer>
     </v-stage>
     <v-divider></v-divider>
@@ -87,6 +94,24 @@ export default {
     otherBackground: null
   }),
   computed: {
+    printTitle() {
+      const payload = this.$store.getters.printTitle;
+      const eventDate = payload.eventDate;
+      const eventName = payload.eventName;
+      let textConfig = {
+        name: "printTItle",
+        text: `${eventDate} - ${eventName}`,
+        fontSize: 16,
+        fontFamily: "Poppins",
+        fontStyle: "bold",
+        fill: "#000000",
+        align: "left",
+        verticalAlign: "middle",
+        x: 10,
+        y: 10
+      };
+      return textConfig;
+    },
     imageSrc() {
       let src = this.$store.state.layout.mappa || "";
       return src;
@@ -133,11 +158,15 @@ export default {
       return this.$store.state.configKonva;
     },
     ...mapState(["table"]),
-    ...mapGetters({ guestTotals: "guest/guestTotals" })
+    ...mapGetters({
+      // guestTotals: "guest/guestTotals",
+      guestTotalsV2: "guest/guestTotalsV2"
+    })
   },
   methods: {
     log(e) {
       console.log(e);
+        EventBus.$emit("guest-list-select")
     },
     tableTypeDeparser(type) {
       let id;
@@ -169,7 +198,7 @@ export default {
         .get(
           `https://${
             this.hostname
-          }/fl_api/tables-v1/?move_table&token=1&table_id=${
+          }/fl_api/tables-v2/?move_table&token=1&table_id=${
             table.id
           }&layout_id=${layout_id}&x=${group.x}&y=${group.y}`
         )
@@ -193,7 +222,7 @@ export default {
           .get(
             `https://${
               this.hostname
-            }/fl_api/tables-v1/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
+            }/fl_api/tables-v2/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
           )
           .then(function(response) {
             console.log("Response", response);
@@ -207,7 +236,7 @@ export default {
         .get(
           `https://${
             this.hostname
-          }/fl_api/tables-v1/?rotate_table&token=1&table_id=${tableId}&layout_id=${layoutId}&angolare=${rotation}`
+          }/fl_api/tables-v2/?rotate_table&token=1&table_id=${tableId}&layout_id=${layoutId}&angolare=${rotation}`
         )
         .then(function(response) {
           console.log("Response", response);

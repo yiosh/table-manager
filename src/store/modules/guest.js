@@ -4,10 +4,21 @@ import { EventBus } from "@/event-bus.js";
 export const namespaced = true;
 
 export const state = {
-  guests: []
+  guests: [],
+  guestTypes: [],
+  adultCounter: 0,
+  babyCounter: 0
 };
 
 export const mutations = {
+  GET_GUEST_TYPES(state, payload) {
+    if (payload.length > 0) {
+      payload.forEach(guest => {
+        state.guestTypes.push(guest);
+      });
+    }
+    EventBus.$emit("fetch-done");
+  },
   GET_GUESTS(state, payload) {
     if (payload.length > 0) {
       payload.forEach(guest => {
@@ -41,6 +52,25 @@ export const actions = {
       .then(response => {
         // handle success
         return commit("GET_GUESTS", response.data.dati);
+      })
+      .catch(error => {
+        // handle error
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message:
+            "Si è verificato un problema durante il recupero degli ospiti: " +
+            error.message
+        };
+        dispatch("notification/add", notification, { root: true });
+      });
+  },
+  getGuestTypes({ commit, dispatch }) {
+    TMService.getGuestTypes()
+      .then(response => {
+        // handle success
+        console.log("GuestTypes", response.data);
+        return commit("GET_GUEST_TYPES", response.data.dati);
       })
       .catch(error => {
         // handle error
@@ -94,10 +124,12 @@ export const actions = {
           message: "Ospite aggiornato!"
         };
         dispatch("notification/add", notification, { root: true });
+        console.log("guestu", guest);
         return updatedGuest;
       })
       .then(updatedGuest => {
         dispatch("updateGuestCounters", updatedGuest);
+        dispatch("handleIfNote", { tableId: guest.table_id });
       })
       .catch(error => {
         const notification = {
@@ -123,6 +155,7 @@ export const actions = {
       })
       .then(guest => {
         dispatch("updateGuestCounters", guest);
+        dispatch("handleIfNote", { tableId: guest.table_id });
       })
       .catch(function(error) {
         const notification = {
@@ -134,6 +167,28 @@ export const actions = {
         };
         dispatch("notification/add", notification, { root: true });
       });
+  },
+  handleIfNote({ state, dispatch }, payload) {
+    console.log("payload", payload)
+    let tableGuests = state.guests.filter(
+      guest => guest.table_id == payload.tableId
+    );
+    let test = tableGuests.find(guest => guest.note_intolleranze != "");
+    console.log("test", test)
+
+    if (test == undefined) {
+      dispatch(
+        "table/handleAsterisc",
+        { tableId: payload.tableId, state: false },
+        { root: true }
+      );
+    } else {
+      dispatch(
+        "table/handleAsterisc",
+        { tableId: payload.tableId, state: true },
+        { root: true }
+      );
+    }
   },
   updateGuestCounters({ rootState }, updatedGuest) {
     console.log("updatedGuest", updatedGuest);
@@ -173,9 +228,9 @@ export const actions = {
       });
     }
 
-    const showTablesTotal = rootState.labels.show_tables_total
-      ? `${rootState.labels.show_tables_total}: `
-      : "";
+    // const showTablesTotal = rootState.labels.show_tables_total
+    //   ? `${rootState.labels.show_tables_total}: `
+    //   : "";
     const peoplesLetter = rootState.labels.peoples_letter
       ? `${rootState.labels.peoples_letter}: `
       : "P";
@@ -200,12 +255,26 @@ export const actions = {
       counters.people + counters.babies + counters.chairs + counters.highchairs;
 
     rootState.table.groups[groupIndex].guestCounters.text = counters.text;
-    rootState.table.groups[groupIndex].guestCountersTotal.text =
-      showTablesTotal + total;
+    rootState.table.groups[groupIndex].guestCountersTotal.text = "";
+    // rootState.table.groups[groupIndex].guestCountersTotal.text =
+    // showTablesTotal + total;
   }
 };
 
 export const getters = {
+  guestTypes: state => {
+    let guestTypesArray = state.guestTypes;
+    let newArray = [];
+    guestTypesArray.forEach(element => {
+      let number = parseInt(element.id);
+      let guestTypeObject = {
+        text: element.label,
+        value: number
+      };
+      newArray.push(guestTypeObject);
+    });
+    return newArray;
+  },
   guests: state => tableId => {
     return state.guests.filter(guest => guest.table_id === tableId);
   },
@@ -266,6 +335,58 @@ export const getters = {
       x: 14,
       y
     };
+    return total;
+  },
+  guestTotalsV2(state, getters, rootState) {
+    let counterText = "";
+
+    const guestTypesArray = state.guestTypes;
+    for (let index = 3; index <= guestTypesArray.length; index++) {
+      let adultCounter = 0;
+      let babyCounter = 0;
+      let guestType = guestTypesArray[index - 1];
+
+      state.guests.forEach(guest => {
+        if (guest.guest_type == guestType.id) {
+          if (guest.peoples) {
+            adultCounter += parseInt(guest.peoples);
+          }
+
+          if (guest.baby) {
+            babyCounter += parseInt(guest.baby);
+          }
+        }
+      });
+      if (adultCounter > 0 || babyCounter > 0) {
+        counterText += `${guestType.label}: `;
+        if (adultCounter > 0) {
+          counterText += `Adulti ${adultCounter}`;
+          if (babyCounter > 0) {
+            counterText += ",";
+          }
+        }
+
+        if (babyCounter > 0) {
+          counterText += `Bambini ${babyCounter}\n`;
+        }
+        counterText += `\n`;
+      }
+    }
+    let y = rootState.layout.orientation == 1 ? 1150 : 750;
+
+    let total = {
+      name: "totaleCounter",
+      text: counterText,
+      fontSize: 16,
+      fontFamily: "Poppins",
+      fontStyle: "bold",
+      fill: "black",
+      width: 600,
+      draggable: true,
+      x: 14,
+      y
+    };
+
     return total;
   }
 };

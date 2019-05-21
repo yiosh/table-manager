@@ -15,10 +15,13 @@
             >Chiudi</v-btn
           >
           <v-btn dark color="blue darken-1" @click="PrintImage(src)">
-            <i class="fas fa-print icon-margin"></i>Stampare
+            <i class="fas fa-print icon-margin"></i>Stampa
           </v-btn>
-          <v-btn color="success" @click="downloadCanvas">
-            <i class="fas fa-file-download icon-margin"></i>Scaricare
+          <v-btn color="success" @click="downloadCanvasPNG">
+            <i class="fas fa-file-download icon-margin"></i>Scarica PNG
+          </v-btn>
+          <v-btn color="success" @click="downloadCanvasJPG">
+            <i class="fas fa-file-download icon-margin"></i>Scarica JPG
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -68,8 +71,12 @@ export default {
       link.click();
       document.body.removeChild(link);
     },
-    downloadCanvas() {
+    downloadCanvasPNG() {
       this.downloadURI(this.src, "stage.png");
+      this.dialog = false;
+    },
+    downloadCanvasJPG() {
+      this.downloadURI(this.src, "stage.jpg");
       this.dialog = false;
     },
     ImagetoPrint(source) {
