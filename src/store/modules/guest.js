@@ -17,7 +17,6 @@ export const mutations = {
         state.guestTypes.push(guest);
       });
     }
-    EventBus.$emit("fetch-done");
   },
   GET_GUESTS(state, payload) {
     if (payload.length > 0) {
@@ -169,12 +168,12 @@ export const actions = {
       });
   },
   handleIfNote({ state, dispatch }, payload) {
-    console.log("payload", payload)
+    console.log("payload", payload);
     let tableGuests = state.guests.filter(
       guest => guest.table_id == payload.tableId
     );
     let test = tableGuests.find(guest => guest.note_intolleranze != "");
-    console.log("test", test)
+    console.log("test", test);
 
     if (test == undefined) {
       dispatch(
@@ -228,9 +227,9 @@ export const actions = {
       });
     }
 
-    // const showTablesTotal = rootState.labels.show_tables_total
-    //   ? `${rootState.labels.show_tables_total}: `
-    //   : "";
+    const showTablesTotal = rootState.labels.show_tables_total
+      ? `${rootState.labels.show_tables_total}: `
+      : "";
     const peoplesLetter = rootState.labels.peoples_letter
       ? `${rootState.labels.peoples_letter}: `
       : "P";
@@ -255,9 +254,9 @@ export const actions = {
       counters.people + counters.babies + counters.chairs + counters.highchairs;
 
     rootState.table.groups[groupIndex].guestCounters.text = counters.text;
-    rootState.table.groups[groupIndex].guestCountersTotal.text = "";
-    // rootState.table.groups[groupIndex].guestCountersTotal.text =
-    // showTablesTotal + total;
+    // rootState.table.groups[groupIndex].guestCountersTotal.text = "";
+    rootState.table.groups[groupIndex].guestCountersTotal.text =
+      showTablesTotal + total;
   }
 };
 
@@ -341,7 +340,7 @@ export const getters = {
     let counterText = "";
 
     const guestTypesArray = state.guestTypes;
-    for (let index = 3; index <= guestTypesArray.length; index++) {
+    for (let index = 1; index <= guestTypesArray.length; index++) {
       let adultCounter = 0;
       let babyCounter = 0;
       let guestType = guestTypesArray[index - 1];
@@ -372,7 +371,7 @@ export const getters = {
         counterText += `\n`;
       }
     }
-    let y = rootState.layout.orientation == 1 ? 1150 : 750;
+    let y = rootState.layout.orientation == 1 ? 1120 : 720;
 
     let total = {
       name: "totaleCounter",

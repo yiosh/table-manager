@@ -20,7 +20,7 @@
             <v-dialog v-model="guestDialog" max-width="500px">
               <v-btn slot="activator" color="primary" dark class="mb-2"
                 >Crea Nuovo Ospite
-                </v-btn>
+              </v-btn>
               <v-card>
                 <v-form @submit.prevent="save">
                   <v-card-title>
@@ -98,12 +98,10 @@
                   </v-card-text>
 
                   <v-card-actions>
+                    <v-btn color="success" dark type="submit">Salva</v-btn>
                     <v-spacer></v-spacer>
                     <v-btn color="blue darken-1" flat @click="close"
                       >Chiudi</v-btn
-                    >
-                    <v-btn color="blue darken-1" flat type="submit"
-                      >Salva</v-btn
                     >
                   </v-card-actions>
                 </v-form>
@@ -135,12 +133,6 @@
             </template>
           </v-data-table>
         </v-card-text>
-        <!-- <v-divider></v-divider>
-        <v-card-actions>
-          <v-btn color="blue darken-1" flat @click="dialog = false"
-            >Chiudi</v-btn
-          >
-        </v-card-actions> -->
       </v-card>
     </v-dialog>
   </v-layout>
@@ -156,7 +148,8 @@ export default {
     return {
       pagination: {
         sortBy: "id",
-        descending: true
+        descending: true,
+        rowsPerPage: -1
       },
       saveAndContinue: true,
       editForm: false,
@@ -247,7 +240,7 @@ export default {
   },
   methods: {
     log() {
-      console.log("this")
+      console.log("this");
     },
     closeDialog() {
       this.dialog = false;

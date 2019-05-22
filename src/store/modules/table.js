@@ -73,9 +73,10 @@ export const mutations = {
       ? `#${table.borderColor}`
       : "";
 
-    if (table.borderColor) {
-      tableToEdit.tableConfig.strokeWidth = 2;
-    }
+    tableToEdit.tableConfig.strokeWidth = 2;
+    tableToEdit.tableConfig.borderType = table.borderType;
+    tableToEdit.tableConfig.dashEnabled = table.borderType == "trattegiato" ? true : false;
+    tableToEdit.tableConfig.strokeEnabled = table.borderType == "nessuno" ? false : true;
 
     if (tableToEdit.textConfig) {
       tableToEdit.textConfig.fill = table.borderColor
@@ -259,7 +260,7 @@ export const actions = {
         dispatch("notification/add", notification, { root: true });
       });
   },
-  updateTable({ commit, dispatch }, payload) {
+  updateTable({ commit, dispatch, rootState }, payload) {
     TMService.updateTable(payload)
       .then(() => {
         console.log("payload", payload);
@@ -270,7 +271,11 @@ export const actions = {
           message: "Tavolo aggiornato!"
         };
         dispatch("notification/add", notification, { root: true });
+        return true;
         // dispatch("redrawCanvas", null, { root: true });
+      })
+      .then(() => {
+        rootState.stage.draw();
       })
       .catch(function(error) {
         const notification = {

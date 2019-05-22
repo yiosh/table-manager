@@ -29,7 +29,7 @@
               true,
               createTableForm.borderColor,
               createTableForm.backgroundColor,
-              createTableForm.noBorder
+              createTableForm.borderType
             )
           "
           v-model="valid"
@@ -55,7 +55,6 @@
             <v-layout>
               <v-flex xs12>
                 <v-text-field
-                  v-if="tableClientName"
                   v-model="createTableForm.nomeCliente"
                   label="Nome Tavolo Cliente"
                 ></v-text-field>
@@ -93,20 +92,28 @@
                 <p>
                   Colore Bordo
                 </p>
-                <compact-picker
-                  v-if="createTableForm.noBorder === false"
-                  v-model="createTableForm.borderColor"
-                />
-                <v-checkbox
-                  v-model="createTableForm.noBorder"
-                  label="Nessun Bordo"
-                ></v-checkbox>
+                <compact-picker v-model="createTableForm.borderColor" />                
               </v-flex>
               <v-flex xs12 sm6 md6 class="py-2">
+                <p>Bordo</p>
+                <v-radio-group v-model="createTableForm.borderType">
+                  <v-radio
+                    v-for="borderOption in borderOptions"
+                    :key="borderOption.id"
+                    :label="borderOption.label"
+                    :value="borderOption.value"
+                  ></v-radio>
+                </v-radio-group>
+              </v-flex>
+            </v-layout>
+
+            <v-layout>
+              <v-flex xs12 sm6 class="py-2">
                 <p>Colore Sfondo</p>
                 <compact-picker v-model="createTableForm.backgroundColor" />
               </v-flex>
             </v-layout>
+
           </v-container>
           <v-divider></v-divider>
           <v-container>
@@ -139,6 +146,23 @@ export default {
     dialog: false,
     valid: true,
     tableClientName: false,
+    borderOptions: [
+      {
+        id: 1,
+        label: "Intero",
+        value: "intero"
+      },
+      {
+        id: 2,
+        label: "Trattegiato",
+        value: "trattegiato"
+      },
+      {
+        id: 3,
+        label: "Nessuno",
+        value: "nessuno"
+      }
+    ],
     // Default values
     createTableForm: {
       type: "circle",
@@ -151,17 +175,11 @@ export default {
       nomeCliente: "",
       borderColor: "#000000",
       backgroundColor: "#ffffff",
-      noBorder: false
+      borderType: "intero"
     },
     nameRules: [v => !!v || "Inserisci nome tavolo per procedere"]
   }),
   computed: {
-    // groupsLength() {
-    //   return this.table.getters.groupsLength;
-    // },
-    // tableTypes() {
-    //   return this.$store.state.tableTypes;
-    // },
     customAngolareVal() {
       return this.createTableForm.angolare == 0 ||
         this.createTableForm.angolare == 45 ||
@@ -232,16 +250,25 @@ export default {
       angolare = 0,
       newTable = false,
       tableGuests = [],
-      borderColor,
+      borderColor = "#000000",
       backgroundColor,
-      noBorder
+      borderType
     ) {
-      // console.log("b", borderColor, "ba", backgroundColor);
-      borderColor =
-        typeof borderColor != "object" ? borderColor : borderColor.hex;
-      if ((borderColor == "#" || borderColor == "") && noBorder === false) {
-        borderColor = "#000000";
+      let strokeEnabled = true;
+      if (borderType == "nessuno") {
+        strokeEnabled = false;
       }
+
+      let dashEnabled = false;
+      if (borderType === "trattegiato") {
+        dashEnabled = true;
+      }
+      // console.log("b", borderColor, "ba", backgroundColor);
+      // borderColor =
+      //   typeof borderColor != "object" ? borderColor : borderColor.hex;
+      // if ((borderColor == "#" || borderColor == "") && noBorder === false) {
+      //   borderColor = "#000000";
+      // }
       // console.log("borderColor", borderColor);
       backgroundColor =
         typeof backgroundColor != "object"
@@ -250,8 +277,8 @@ export default {
       if (backgroundColor == "#" || backgroundColor == "") {
         backgroundColor = "#ffffff";
       }
-      
-      let guests = this.$store.getters['guest/guests'](id);
+
+      let guests = this.$store.getters["guest/guests"](id);
       let guestCounter = 0;
       let hasNote = false;
 
@@ -283,11 +310,27 @@ export default {
         fontSize: 16,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: noBorder ? "#ffffff" : borderColor,
+        fill: borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
         offsetY: size / 2,
+        offsetX: size / 2,
+        nomeCliente
+      };
+
+      let nomeClienteText = {
+        name: textName,
+        number,
+        text: nomeCliente,
+        fontSize: 14,
+        fontFamily: "Poppins",
+        fontStyle: "bold",
+        fill: borderColor,
+        align: "center",
+        verticalAlign: "middle",
+        rotation: angolare,
+        offsetY: size / 4,
         offsetX: size / 2,
         nomeCliente
       };
@@ -299,7 +342,7 @@ export default {
         fontSize: 16,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: noBorder ? "#ffffff" : borderColor,
+        fill: borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -315,7 +358,7 @@ export default {
         fontSize: 16,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: noBorder ? "#ffffff" : borderColor,
+        fill: borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -355,7 +398,7 @@ export default {
         fontSize: 12,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: noBorder ? "#ffffff" : borderColor,
+        fill: borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
@@ -371,15 +414,15 @@ export default {
 
       let guestCountersTotal = {
         name: guestCounterTotalName,
-        text: "Tot:0",
+        text: "",
         fontSize: 12,
         fontFamily: "Poppins",
         fontStyle: "bold",
-        fill: noBorder ? "#ffffff" : borderColor,
+        fill: borderColor,
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: offsetY - size / 2,
+        offsetY: offsetY - size / 4,
         offsetX,
         total: 0
       };
@@ -405,22 +448,22 @@ export default {
         });
       }
 
-      // const showTablesTotal = this.$store.state.labels.show_tables_total;
+      const showTablesTotal = this.$store.state.labels.show_tables_total;
       const peoplesLetter = this.$store.state.labels.peoples_letter;
       const babyLetter = this.$store.state.labels.baby_letter;
       const chairsLetter = this.$store.state.labels.chairs_only_letter;
       const highChairLetter = this.$store.state.labels.high_chair_letter;
 
-      // if (showTablesTotal) {
-      //   if (guestCountersTotal.total > 0) {
-      //     guestCountersTotal.text =
-      //       `${showTablesTotal}: ` + guestCountersTotal.total;
-      //   }
-      // } else {
-      //   guestCountersTotal.text = "";
-      // }
+      if (showTablesTotal) {
+        if (guestCountersTotal.total > 0) {
+          guestCountersTotal.text =
+            `T: ` + guestCountersTotal.total;
+        }
+      } else {
+        guestCountersTotal.text = "";
+      }
 
-      guestCountersTotal.text = "";
+      // guestCountersTotal.text = "";
 
       if (guestCounters.counters.people > 0) {
         guestCounters.text += peoplesLetter
@@ -459,8 +502,11 @@ export default {
               scaleY,
               rotation: angolare,
               fill: backgroundColor,
-              stroke: noBorder ? "" : borderColor,
-              strokeWidth: noBorder ? 0 : 2
+              stroke: borderColor,
+              strokeEnabled: strokeEnabled,
+              strokeWidth: 2,
+              dash: [10, 5],
+              dashEnabled: dashEnabled
             }
           };
           break;
@@ -479,8 +525,11 @@ export default {
               offsetY: size / 2,
               rotation: angolare,
               fill: backgroundColor,
-              stroke: noBorder ? "" : borderColor,
-              strokeWidth: noBorder ? 0 : 2
+              stroke: borderColor,
+              strokeEnabled: strokeEnabled,
+              strokeWidth: 2,
+              dash: [10, 5],
+              dashEnabled: dashEnabled
             }
           };
           break;
@@ -499,8 +548,11 @@ export default {
               offsetY: size / 2,
               rotation: angolare,
               fill: backgroundColor,
-              stroke: noBorder ? "" : borderColor,
-              strokeWidth: noBorder ? 0 : 2
+              stroke: borderColor,
+              strokeEnabled: strokeEnabled,
+              strokeWidth: 2,
+              dash: [10, 5],
+              dashEnabled: dashEnabled
             }
           };
           break;
@@ -517,12 +569,13 @@ export default {
               scaleY,
               rotation: angolare,
               fill: backgroundColor,
-              stroke: noBorder ? "" : borderColor,
-              strokeWidth: noBorder ? 0 : 2
+              stroke: borderColor,
+              strokeEnabled: strokeEnabled,
+              strokeWidth: 2,
+              dash: [10, 5],
+              dashEnabled: dashEnabled
             }
           };
-          break;
-        default:
           break;
       }
 
@@ -535,6 +588,7 @@ export default {
         height: 100,
         draggable: true,
         guestCounters,
+        nomeClienteText,
         table
       };
 
@@ -553,7 +607,8 @@ export default {
         y,
         angolare,
         nomeCliente,
-        borderColor: noBorder ? "none" : borderColor,
+        borderColor: borderColor,
+        borderType,
         backgroundColor
       };
 
@@ -573,7 +628,9 @@ export default {
   },
   created() {
     EventBus.$on("fetch-done", () => {
+      let tableGroups = this.table.groups;
       let tablesFetched = this.table.tablesFetched;
+      console.log("tablesFetched", this.$store.state.table.groups)
       let tablesFetchedLength = tablesFetched.length;
       let guests = this.guest.guests;
       let tableGuests = [];
@@ -582,6 +639,7 @@ export default {
           tableGuests = guests.filter(guest => {
             return guest.table_id == payload.id;
           });
+          console.log("newt", payload)
           this.createTable(
             payload.table_name,
             Number(payload.table_number),
@@ -596,10 +654,9 @@ export default {
             Number(payload.angolare),
             false,
             tableGuests,
-            payload.border_color ? `#${payload.border_color}` : "",
+            `#${payload.border_color}`,
             `#${payload.background_color}`,
-            payload.border_color == "none" ? true
-              : false
+            payload.border_type
           );
         });
       }

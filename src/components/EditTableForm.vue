@@ -33,7 +33,6 @@
             <v-layout>
               <v-flex xs12>
                 <v-text-field
-                  v-if="tableClientName"
                   v-model="editedItem.nomeCliente"
                   label="Nome Tavolo Cliente"
                 ></v-text-field>
@@ -68,18 +67,26 @@
 
             <v-layout>
               <v-flex xs12 sm6 md6 class="py-2">
-                <p>Colore Bordo</p>
-                <compact-picker
-                  v-if="editedItem.noBorder === false"
-                  v-model="editedItem.borderColor"
-                />
-                <v-checkbox
-                  v-model="editedItem.noBorder"
-                  @change="defaultColor"
-                  label="Nessun Bordo"
-                ></v-checkbox>
+                <p>
+                  Colore Bordo
+                </p>
+                <compact-picker v-model="editedItem.borderColor" />                
               </v-flex>
               <v-flex xs12 sm6 md6 class="py-2">
+                <p>Bordo</p>
+                <v-radio-group v-model="editedItem.borderType">
+                  <v-radio
+                    v-for="borderOption in borderOptions"
+                    :key="borderOption.id"
+                    :label="borderOption.label"
+                    :value="borderOption.value"
+                  ></v-radio>
+                </v-radio-group>
+              </v-flex>
+            </v-layout>
+
+            <v-layout>
+              <v-flex xs12 sm6 class="py-2">
                 <p>Colore Sfondo</p>
                 <compact-picker v-model="editedItem.backgroundColor" />
               </v-flex>
@@ -117,7 +124,23 @@ export default {
     layer: null,
     dialog: false,
     tableClientName: false,
-
+    borderOptions: [
+      {
+        id: 1,
+        label: "Intero",
+        value: "intero"
+      },
+      {
+        id: 2,
+        label: "Trattegiato",
+        value: "trattegiato"
+      },
+      {
+        id: 3,
+        label: "Nessuno",
+        value: "nessuno"
+      }
+    ],
     // Default values
     editedItem: {
       id: "",
@@ -131,7 +154,7 @@ export default {
       nomeCliente: "",
       borderColor: "#000000",
       backgroundColor: "#ffffff",
-      noBorder: false
+      borderType: "intero"
     },
     defaultItem: {
       id: "",
@@ -145,7 +168,7 @@ export default {
       nomeCliente: "",
       borderColor: "#000000",
       backgroundColor: "#ffffff",
-      noBorder: false
+      borderType: "intero"
     },
     // tableTypes: [],
     angolareRules: [
@@ -241,6 +264,15 @@ export default {
         size = table.tableConfig.radiusY;
       }
 
+      let borderType = "intero";
+
+      if (table.tableConfig.dashEnabled) {
+        borderType = "trattegiato";
+      }
+      if (!table.tableConfig.strokeEnabled) {
+        borderType = "nessuno";
+      }
+
       let item = {
         id: table.id,
         type: table.type,
@@ -253,7 +285,7 @@ export default {
         nomeCliente: table.textConfig.nomeCliente,
         borderColor: table.tableConfig.stroke,
         backgroundColor: table.tableConfig.fill,
-        noBorder: table.tableConfig.stroke ? false : true
+        borderType
       };
       this.editedItem = Object.assign({}, item);
       this.defaultItem = Object.assign({}, item);
@@ -279,7 +311,7 @@ export default {
           ? this.editedItem.backgroundColor
           : this.editedItem.backgroundColor.hex;
 
-      let newItem = {
+      let updatedItem = {
         layoutId: this.$store.state.layout.id,
         id: this.editedItem.id,
         typeId: this.tableTypeDeparser(this.editedItem.type),
@@ -290,42 +322,19 @@ export default {
         tableName: this.editedItem.text,
         tableNumber: this.editedItem.number,
         nomeCliente: this.editedItem.nomeCliente,
-        borderColor:
-          this.editedItem.noBorder || this.editedItem.borderColor == ""
-            ? "none"
-            : borderColor.replace("#", ""),
-        backgroundColor: backgroundColor.replace("#", "")
+        borderColor: this.editedItem.borderColor,
+        backgroundColor: backgroundColor.replace("#", ""),
+        borderType: this.editedItem.borderType
       };
 
-      console.log("newItem", newItem);
+      console.log("updatedItem", updatedItem);
 
       if (
         JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
       ) {
-        this.$store.dispatch("table/updateTable", newItem);
-        this.defaultItem = Object.assign({}, newItem);
+        this.$store.dispatch("table/updateTable", updatedItem);
+        this.defaultItem = Object.assign({}, updatedItem);
         this.$store.state.stage.draw();
-        // axios
-        //   .get(
-        //     `https://${
-        //       this.$store.state.hostname
-        //     }/fl_api/tables-v1/?update_table&token=1&layout_id=${
-        //       this.$store.state.layout.id
-        //     }&table_id=${this.editedItem.id}&type_id=${this.tableTypeDeparser(
-        //       this.editedItem.type
-        //     )}&table_name=${this.editedItem.text}&table_number=${
-        //       this.editedItem.number
-        //     }&size=${this.editedItem.size}&scale_x=${
-        //       this.editedItem.scaleX
-        //     }&scale_y=${this.editedItem.scaleY}&angolare=${newItem.angolare}`
-        //   )
-        //   .then(function(response) {
-        //     console.log("Response", response);
-        //   })
-        //   .catch(function(error) {
-        //     console.log(error);
-        //   });
-        // this.$store.state.layer.draw();
       }
       this.dialog = false;
     },

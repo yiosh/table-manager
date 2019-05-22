@@ -39,14 +39,15 @@ export default {
     angolare,
     nomeCliente,
     borderColor,
-    backgroundColor
+    backgroundColor,
+    borderType
   }) {
     console.log("back", backgroundColor, "border", borderColor);
     borderColor = borderColor.replace("#", "");
     backgroundColor = backgroundColor.replace("#", "");
 
     return apiClient.get(
-      `${endpoint}insert_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_color=${borderColor}&background_color=${backgroundColor}`
+      `${endpoint}insert_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}`
     );
   },
   updateTable({
@@ -61,10 +62,11 @@ export default {
     angolare,
     nomeCliente,
     borderColor,
-    backgroundColor
+    backgroundColor,
+    borderType
   }) {
     return apiClient.get(
-      `${endpoint}update_table&token=1&layout_id=${layoutId}&table_id=${id}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&size=${size}&scale_x=${scaleX}&scale_y=${scaleY}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_color=${borderColor}&background_color=${backgroundColor}`
+      `${endpoint}update_table&token=1&layout_id=${layoutId}&table_id=${id}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&size=${size}&scale_x=${scaleX}&scale_y=${scaleY}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}`
     );
   },
   deleteTable({ layoutId, tableId }) {

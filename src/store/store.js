@@ -17,6 +17,7 @@ export default new Vuex.Store({
   state: {
     guestListDialog: false,
     error: false,
+    info: {},
     hostname:
       location.hostname === "localhost"
         ? "calderonimartini.condivision.cloud"
@@ -108,7 +109,8 @@ export default new Vuex.Store({
           const info = response.data.info;
 
           if (info) {
-            commit("SET_LABELS", response.data.info);
+            console.log("info", info)
+            commit("SET_LABELS", info);
           }
           if (layout) {
             console.log("layout", layout);

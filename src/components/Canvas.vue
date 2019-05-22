@@ -58,9 +58,14 @@
             :config="group.guestCounters"
           ></v-text>
           <v-text
-            v-if="group.guestCountersTotal"
+            v-if="showTablesTotal"
             :ref="group.guestCountersTotal.name"
             :config="group.guestCountersTotal"
+          ></v-text>
+          <v-text
+            v-if="showClientTableName"
+            :ref="group.table.textConfig.nomeCliente + group.table.id"
+            :config="group.nomeClienteText"
           ></v-text>
           <v-text
             v-if="group.asteriscTextConfig.state"
@@ -94,6 +99,19 @@ export default {
     otherBackground: null
   }),
   computed: {
+    showTablesTotal() {
+      let status =
+        this.$store.state.labels.show_tables_total == 0 ? false : true;
+      return status;
+    },
+    showClientTableName() {
+      let status = this.$store.state.labels.show_tables_client_name;
+      if (status == 0) {
+        return false;
+      } else {
+        return true;
+      }
+    },
     printTitle() {
       const payload = this.$store.getters.printTitle;
       const eventDate = payload.eventDate;
@@ -102,6 +120,7 @@ export default {
         name: "printTItle",
         text: `${eventDate} - ${eventName}`,
         fontSize: 16,
+        draggable: true,
         fontFamily: "Poppins",
         fontStyle: "bold",
         fill: "#000000",
@@ -166,7 +185,7 @@ export default {
   methods: {
     log(e) {
       console.log(e);
-        EventBus.$emit("guest-list-select")
+      EventBus.$emit("guest-list-select");
     },
     tableTypeDeparser(type) {
       let id;
