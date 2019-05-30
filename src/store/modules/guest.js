@@ -371,6 +371,7 @@ export const getters = {
         counterText += `\n`;
       }
     }
+
     let y = rootState.layout.orientation == 1 ? 1120 : 720;
 
     let total = {
