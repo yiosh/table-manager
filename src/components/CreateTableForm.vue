@@ -32,6 +32,8 @@
               createTableForm.borderType
             )
           "
+          ref="createForm"
+          :rules="rules"
           v-model="valid"
         >
           <v-container>
@@ -46,8 +48,9 @@
 
               <v-flex xs12 md6>
                 <v-text-field
-                  v-model="createTableForm.number"
+                  v-model.number="createTableForm.number"
                   label="Numero Tavolo"
+                  type="number"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -92,7 +95,7 @@
                 <p>
                   Colore Bordo
                 </p>
-                <compact-picker v-model="createTableForm.borderColor" />                
+                <compact-picker v-model="createTableForm.borderColor" />
               </v-flex>
               <v-flex xs12 sm6 md6 class="py-2">
                 <p>Bordo</p>
@@ -113,7 +116,6 @@
                 <compact-picker v-model="createTableForm.backgroundColor" />
               </v-flex>
             </v-layout>
-
           </v-container>
           <v-divider></v-divider>
           <v-container>
@@ -180,6 +182,17 @@ export default {
     nameRules: [v => !!v || "Inserisci nome tavolo per procedere"]
   }),
   computed: {
+    rules() {
+      const rules = [];
+
+      if (this.createTableForm.number != "Number") {
+        const rule = `Si prega di inserire un numero`;
+
+        rules.push(rule);
+      }
+
+      return rules;
+    },
     customAngolareVal() {
       return this.createTableForm.angolare == 0 ||
         this.createTableForm.angolare == 45 ||
@@ -191,7 +204,15 @@ export default {
     ...mapState(["table", "guest"]),
     ...mapGetters({ groupsLength: "table/groupsLength" })
   },
+  watch: {
+    match: "validateField",
+    max: "validateField",
+    model: "validateField"
+  },
   methods: {
+    validateField() {
+      this.$refs.createForm.validate();
+    },
     // Parses from table id into Konva shape
     tableTypeParser(id) {
       let type;
@@ -456,8 +477,7 @@ export default {
 
       if (showTablesTotal) {
         if (guestCountersTotal.total > 0) {
-          guestCountersTotal.text =
-            `T: ` + guestCountersTotal.total;
+          guestCountersTotal.text = `T: ` + guestCountersTotal.total;
         }
       } else {
         guestCountersTotal.text = "";
@@ -630,7 +650,7 @@ export default {
     EventBus.$on("fetch-done", () => {
       let tableGroups = this.table.groups;
       let tablesFetched = this.table.tablesFetched;
-      console.log("tablesFetched", this.$store.state.table.groups)
+      console.log("tablesFetched", this.$store.state.table.groups);
       let tablesFetchedLength = tablesFetched.length;
       let guests = this.guest.guests;
       let tableGuests = [];
@@ -639,7 +659,7 @@ export default {
           tableGuests = guests.filter(guest => {
             return guest.table_id == payload.id;
           });
-          console.log("newt", payload)
+          console.log("newt", payload);
           this.createTable(
             payload.table_name,
             Number(payload.table_number),

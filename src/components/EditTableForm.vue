@@ -24,7 +24,8 @@
 
               <v-flex xs12 md6>
                 <v-text-field
-                  v-model="editedItem.number"
+                  v-model.number="editedItem.number"
+                  type="number"
                   label="Numero"
                 ></v-text-field>
               </v-flex>
@@ -70,7 +71,7 @@
                 <p>
                   Colore Bordo
                 </p>
-                <compact-picker v-model="editedItem.borderColor" />                
+                <compact-picker v-model="editedItem.borderColor" />
               </v-flex>
               <v-flex xs12 sm6 md6 class="py-2">
                 <p>Bordo</p>
