@@ -20,7 +20,7 @@ export default new Vuex.Store({
     info: {},
     hostname:
       location.hostname === "localhost"
-        ? "calderonimartini.condivision.cloud"
+        ? "dev.condivision.cloud"
         : location.hostname,
     selectedGroup: null,
     loading: true,
@@ -105,8 +105,12 @@ export default new Vuex.Store({
     setLayout({ commit, dispatch }, layoutId) {
       TMService.fetchLayout(layoutId)
         .then(response => {
-          const layout = response.data.dati[0];
-          const info = response.data.info;
+          let info;
+          let layout;
+          if (response.data.dati) {
+            layout = response.data.dati[0];
+            info = response.data.info;
+          }
 
           if (info) {
             console.log("info", info)

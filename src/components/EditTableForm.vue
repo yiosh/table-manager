@@ -326,7 +326,7 @@ export default {
         tableName: this.editedItem.text,
         tableNumber: this.editedItem.number,
         nomeCliente: this.editedItem.nomeCliente,
-        borderColor: this.editedItem.borderColor,
+        borderColor: this.editedItem.borderColor.replace("#", ""),
         backgroundColor: backgroundColor.replace("#", ""),
         borderType: this.editedItem.borderType
       };

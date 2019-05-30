@@ -144,6 +144,12 @@ export const actions = {
         console.log("Tables Fetched:", response.data.dati);
         if (response.data.dati.length < 1) {
           dispatch("endProgress", null, { root: true });
+          const notification = {
+            type: "error",
+            multiLine: true,
+            message: "Non siamo riusciti a trovare alcun tavolo"
+          };
+          dispatch("notification/add", notification, { root: true });
         } else {
           commit("GET_TABLES", response.data.dati);
         }
@@ -202,7 +208,7 @@ export const actions = {
         const notification = {
           type: "success",
           message:
-            "Si è verificato un problema durante l'aggiunta del tavolo: " +
+            "Si è verificato un problema durante lo spostamento della tabella: " +
             error.message
         };
         dispatch("notification/add", notification, { root: true });
@@ -213,15 +219,24 @@ export const actions = {
     if (payload.isNew === true) {
       console.log("payload", payload);
       TMService.addTable(payload.details)
-        .then(function(response) {
+        .then(response => {
           console.log("response", response);
-          payload.group.table.id = response.data.id;
-
-          const notification = {
-            type: "success",
-            message: "Tavolo aggiunto!"
-          };
-          dispatch("notification/add", notification, { root: true });
+          if (response.data.esito) {
+            payload.group.table.id = response.data.dati.id;
+  
+            const notification = {
+              type: "success",
+              message: response.data.info_txt
+            };
+            dispatch("notification/add", notification, { root: true });
+          } else {
+            const notification = {
+              type: "error",
+              message: response.data.info_txt
+            };
+            dispatch("notification/add", notification, { root: true });
+            return false;
+          }
         })
         .catch(function(error) {
           const notification = {
@@ -241,13 +256,23 @@ export const actions = {
   },
   deleteTable({ state, commit, dispatch }, table) {
     TMService.deleteTable({ layoutId: table.layoutId, tableId: table.id })
-      .then(() => {
-        commit("DELETE_TABLE", table.id);
-        const notification = {
-          type: "success",
-          message: "Tavolo rimosso!"
-        };
-        dispatch("notification/add", notification, { root: true });
+      .then(response => {
+        if (response.data.esito) {
+          commit("DELETE_TABLE", table.id);
+
+          const notification = {
+            type: "success",
+            message: response.data.info_txt
+          };
+          dispatch("notification/add", notification, { root: true });
+        } else {
+          const notification = {
+            type: "error",
+            message: response.data.info_txt
+          };
+          dispatch("notification/add", notification, { root: true });
+          return false;
+        }
       })
       .catch(function(error) {
         const notification = {
@@ -262,17 +287,24 @@ export const actions = {
   },
   updateTable({ commit, dispatch, rootState }, payload) {
     TMService.updateTable(payload)
-      .then(() => {
-        console.log("payload", payload);
+      .then(response => {
+        if (response.data.esito) {
         commit("UPDATE_TABLE", payload);
 
-        const notification = {
-          type: "success",
-          message: "Tavolo aggiornato!"
-        };
-        dispatch("notification/add", notification, { root: true });
-        return true;
-        // dispatch("redrawCanvas", null, { root: true });
+          const notification = {
+            type: "success",
+            message: response.data.info_txt
+          };
+          dispatch("notification/add", notification, { root: true });
+          return true;
+        } else {
+          const notification = {
+            type: "error",
+            message: response.data.info_txt
+          };
+          dispatch("notification/add", notification, { root: true });
+          return false;
+        }
       })
       .then(() => {
         rootState.stage.draw();

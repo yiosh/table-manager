@@ -87,16 +87,26 @@ export const actions = {
     const layoutId = rootState.layout.id;
     return TMService.addGuest(layoutId, tableId, guest)
       .then(response => {
-        guest.id = response.data.id;
-        guest.table_id = tableId;
-        const newGuest = guest;
-        commit("ADD_GUEST", newGuest);
-        const notification = {
-          type: "success",
-          message: "Ospite aggiunto!"
-        };
-        dispatch("notification/add", notification, { root: true });
-        return guest;
+        if (response.data.esito) {
+          guest.id = response.data.dati.id;
+          guest.table_id = tableId;
+          const newGuest = guest;
+          commit("ADD_GUEST", newGuest);
+
+          const notification = {
+            type: "success",
+            message: response.data.info_txt
+          };
+          dispatch("notification/add", notification, { root: true });
+          return guest;
+        } else {
+          const notification = {
+            type: "error",
+            message: response.data.info_txt
+          };
+          dispatch("notification/add", notification, { root: true });
+          return false;
+        }
       })
       .then(guest => {
         dispatch("updateGuestCounters", guest);
@@ -116,15 +126,24 @@ export const actions = {
   updateGuest({ commit, dispatch }, guest) {
     TMService.updateGuest(guest)
       .then(response => {
-        const updatedGuest = response.data.dati[0];
-        commit("UPDATE_GUEST", updatedGuest);
-        const notification = {
-          type: "success",
-          message: "Ospite aggiornato!"
-        };
-        dispatch("notification/add", notification, { root: true });
-        console.log("guestu", guest);
-        return updatedGuest;
+        if (response.data.esito) {
+          const updatedGuest = response.data.dati[0];
+          commit("UPDATE_GUEST", updatedGuest);
+
+          const notification = {
+            type: "success",
+            message: response.data.info_txt
+          };
+          dispatch("notification/add", notification, { root: true });
+          return updatedGuest;
+        } else {
+          const notification = {
+            type: "error",
+            message: response.data.info_txt
+          };
+          dispatch("notification/add", notification, { root: true });
+          return false;
+        }
       })
       .then(updatedGuest => {
         dispatch("updateGuestCounters", updatedGuest);
@@ -143,14 +162,24 @@ export const actions = {
   },
   deleteGuest({ commit, dispatch }, guest) {
     TMService.deleteGuest(guest.id)
-      .then(() => {
-        commit("DELETE_GUEST", guest);
-        const notification = {
-          type: "success",
-          message: "Ospite rimosso!"
-        };
-        dispatch("notification/add", notification, { root: true });
-        return guest;
+      .then(response => {
+        if (response.data.esito) {
+          commit("DELETE_GUEST", guest);
+
+          const notification = {
+            type: "success",
+            message: response.data.info_txt
+          };
+          dispatch("notification/add", notification, { root: true });
+          return guest;
+        } else {
+          const notification = {
+            type: "error",
+            message: response.data.info_txt
+          };
+          dispatch("notification/add", notification, { root: true });
+          return false;
+        }
       })
       .then(guest => {
         dispatch("updateGuestCounters", guest);
@@ -272,15 +301,11 @@ export const actions = {
       counters.chairs > 0 ? chairsLetter + counters.chairs : ""
     } ${counters.highchairs > 0 ? highChairLetter + counters.highchairs : ""}`;
 
-    seraleCounters.text = `${
-      seraleCounters.people > 0 ? peoplesLetter + seraleCounters.people : ""
-    } ${seraleCounters.babies > 0 ? babyLetter + seraleCounters.babies : ""} ${
-      seraleCounters.chairs > 0 ? chairsLetter + seraleCounters.chairs : ""
-    } ${
-      seraleCounters.highchairs > 0
-        ? highChairLetter + seraleCounters.highchairs
-        : ""
-    }`;
+    seraleCounters.text = 
+      seraleCounters.people > 0 ? peoplesLetter + seraleCounters.people : "" +
+      seraleCounters.babies > 0 ? babyLetter + seraleCounters.babies : "" +
+      seraleCounters.chairs > 0 ? chairsLetter + seraleCounters.chairs : "" +
+      seraleCounters.highchairs > 0 ? highChairLetter + seraleCounters.highchairs : "";
 
     let total = 0;
     total =
@@ -294,8 +319,7 @@ export const actions = {
       seraleCounters.highchairs;
 
     rootState.table.groups[groupIndex].guestCounters.text = counters.text;
-    rootState.table.groups[groupIndex].guestSeraleCounters.text =
-      seraleCounters.text;
+    rootState.table.groups[groupIndex].guestSeraleCounters.text = seraleCounters.text;
     rootState.table.groups[groupIndex].guestCountersTotal.text =
       showTablesTotal + total;
   }

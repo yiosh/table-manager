@@ -58,7 +58,7 @@
             :config="group.guestCounters"
           ></v-text>
           <v-text
-            v-if="group.guestSeraleCounters.text"
+            v-if="group.guestSeraleCounters.text.replace(' ', '')"
             :ref="group.seraLabel.name"
             :config="group.seraLabel"
           ></v-text>
@@ -109,6 +109,7 @@ export default {
     otherBackground: null
   }),
   computed: {
+    
     showTablesTotal() {
       let status =
         this.$store.state.labels.show_tables_total == 0 ? false : true;
@@ -194,6 +195,13 @@ export default {
     })
   },
   methods: {
+    guestSeraleCounters(counters) {
+      let count = 0;
+      counters.forEach(element => {
+        count += element;
+      });
+      return count;
+    },
     log(e) {
       console.log(e);
       EventBus.$emit("guest-list-select");

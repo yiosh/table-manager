@@ -2,7 +2,7 @@ import axios from "axios";
 
 let hostname =
   location.hostname == "localhost"
-    ? "calderonimartini.condivision.cloud"
+    ? "dev.condivision.cloud"
     : location.hostname;
 let endpoint = "/fl_api/tables-v2/?";
 

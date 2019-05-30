@@ -356,7 +356,7 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: size / 4,
+        offsetY: size / 4 - 7,
         offsetX: size / 2,
         nomeCliente
       };
@@ -428,7 +428,7 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY,
+        offsetY: nomeCliente ? offsetY - size / 4 - 5 : offsetY - size / 4 + 7,
         offsetX,
         counters: {
           people: 0,
@@ -448,7 +448,7 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: offsetY - size / 4,
+        offsetY: nomeCliente ? offsetY - size / 4 - 10 : offsetY - size / 4 - 5,
         offsetX,
         counters: {
           people: 0,
@@ -468,7 +468,7 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: offsetY - size / 4,
+        offsetY: offsetY - size / 2,
         offsetX: offsetX + (this.guestTypes[3].text.length * 7)
       };
 
@@ -490,7 +490,6 @@ export default {
       if (tableGuests.length > 0) {
         tableGuests.forEach(guest => {
           if (guest.guest_type == 4) {
-            console.log("guest", guest);
             if (Number(guest.peoples) > 0) {
               guestSeraleCounters.counters.people += Number(guest.peoples);
               guestCountersTotal.total += Number(guest.peoples);
@@ -734,9 +733,7 @@ export default {
   },
   created() {
     EventBus.$on("fetch-done", () => {
-      // let tableGroups = this.table.groups;
       let tablesFetched = this.table.tablesFetched;
-      console.log("tablesFetched", this.$store.state.table.groups);
       let tablesFetchedLength = tablesFetched.length;
       let guests = this.guest.guests;
       let tableGuests = [];
