@@ -25,7 +25,7 @@
               <v-flex xs12 md6>
                 <v-text-field
                   v-model.number="editedItem.number"
-                  type="number"
+                  :rules="numberRules"
                   label="Numero"
                 ></v-text-field>
               </v-flex>
@@ -122,6 +122,9 @@ export default {
   },
   data: () => ({
     valid: true,
+    numberRules: [
+      v => typeof v === "number" || "Per favore inserisci un numero"
+    ],
     layer: null,
     dialog: false,
     tableClientName: false,

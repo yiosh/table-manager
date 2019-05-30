@@ -58,10 +58,20 @@
             :config="group.guestCounters"
           ></v-text>
           <v-text
+            v-if="group.guestSeraleCounters.text"
+            :ref="group.seraLabel.name"
+            :config="group.seraLabel"
+          ></v-text>
+          <v-text
+            :ref="group.guestSeraleCounters.name"
+            :config="group.guestSeraleCounters"
+          ></v-text>
+          <v-text
             v-if="showTablesTotal"
             :ref="group.guestCountersTotal.name"
             :config="group.guestCountersTotal"
           ></v-text>
+
           <v-text
             v-if="showClientTableName"
             :ref="group.table.textConfig.nomeCliente + group.table.id"

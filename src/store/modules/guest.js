@@ -202,6 +202,14 @@ export const actions = {
       highchairs: 0,
       text: ""
     };
+
+    let seraleCounters = {
+      people: 0,
+      babies: 0,
+      chairs: 0,
+      highchairs: 0,
+      text: ""
+    };
     console.log("state", rootState);
 
     let guests = state.guests
@@ -212,17 +220,32 @@ export const actions = {
 
     if (guests.length > 0) {
       guests.forEach(guest => {
-        if (Number(guest.peoples) > 0) {
-          counters.people += Number(guest.peoples);
-        }
-        if (Number(guest.baby) > 0) {
-          counters.babies += Number(guest.baby);
-        }
-        if (Number(guest.chairs_only) > 0) {
-          counters.chairs += Number(guest.chairs_only);
-        }
-        if (Number(guest.high_chair) > 0) {
-          counters.highchairs += Number(guest.high_chair);
+        if (guest.guest_type == 4) {
+          if (Number(guest.peoples) > 0) {
+            seraleCounters.people += Number(guest.peoples);
+          }
+          if (Number(guest.baby) > 0) {
+            seraleCounters.babies += Number(guest.baby);
+          }
+          if (Number(guest.chairs_only) > 0) {
+            seraleCounters.chairs += Number(guest.chairs_only);
+          }
+          if (Number(guest.high_chair) > 0) {
+            seraleCounters.highchairs += Number(guest.high_chair);
+          }
+        } else {
+          if (Number(guest.peoples) > 0) {
+            counters.people += Number(guest.peoples);
+          }
+          if (Number(guest.baby) > 0) {
+            counters.babies += Number(guest.baby);
+          }
+          if (Number(guest.chairs_only) > 0) {
+            counters.chairs += Number(guest.chairs_only);
+          }
+          if (Number(guest.high_chair) > 0) {
+            counters.highchairs += Number(guest.high_chair);
+          }
         }
       });
     }
@@ -249,12 +272,30 @@ export const actions = {
       counters.chairs > 0 ? chairsLetter + counters.chairs : ""
     } ${counters.highchairs > 0 ? highChairLetter + counters.highchairs : ""}`;
 
+    seraleCounters.text = `${
+      seraleCounters.people > 0 ? peoplesLetter + seraleCounters.people : ""
+    } ${seraleCounters.babies > 0 ? babyLetter + seraleCounters.babies : ""} ${
+      seraleCounters.chairs > 0 ? chairsLetter + seraleCounters.chairs : ""
+    } ${
+      seraleCounters.highchairs > 0
+        ? highChairLetter + seraleCounters.highchairs
+        : ""
+    }`;
+
     let total = 0;
     total =
-      counters.people + counters.babies + counters.chairs + counters.highchairs;
+      counters.people +
+      counters.babies +
+      counters.chairs +
+      counters.highchairs +
+      seraleCounters.people +
+      seraleCounters.babies +
+      seraleCounters.chairs +
+      seraleCounters.highchairs;
 
     rootState.table.groups[groupIndex].guestCounters.text = counters.text;
-    // rootState.table.groups[groupIndex].guestCountersTotal.text = "";
+    rootState.table.groups[groupIndex].guestSeraleCounters.text =
+      seraleCounters.text;
     rootState.table.groups[groupIndex].guestCountersTotal.text =
       showTablesTotal + total;
   }
@@ -366,8 +407,9 @@ export const getters = {
         }
 
         if (babyCounter > 0) {
-          counterText += `Bambini ${babyCounter}\n`;
+          counterText += ` Bambini ${babyCounter}`;
         }
+
         counterText += `\n`;
       }
     }

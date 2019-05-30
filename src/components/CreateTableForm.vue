@@ -50,7 +50,7 @@
                 <v-text-field
                   v-model.number="createTableForm.number"
                   label="Numero Tavolo"
-                  type="number"
+                  :rules="numberRules"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -145,6 +145,10 @@ export default {
     "compact-picker": Compact
   },
   data: () => ({
+    numberRules: [
+      v => typeof v === "number" || "Per favore inserisci un numero"
+    ],
+    guestTypeLabel: "",
     dialog: false,
     valid: true,
     tableClientName: false,
@@ -202,7 +206,7 @@ export default {
         : this.createTableForm.angolare;
     },
     ...mapState(["table", "guest"]),
-    ...mapGetters({ groupsLength: "table/groupsLength" })
+    ...mapGetters({ groupsLength: "table/groupsLength", guestTypes: "guest/guestTypes" })
   },
   watch: {
     match: "validateField",
@@ -322,6 +326,7 @@ export default {
       let textName = name ? name : "g" + uID + "-txt";
       let guestCounterName = "gc" + uID;
       let guestCounterTotalName = "gct" + uID;
+      let guestSeraleCounterName = "gsc" + uID;
       let table = {};
 
       let textConfig = {
@@ -433,6 +438,40 @@ export default {
         }
       };
 
+      let guestSeraleCounters = {
+        name: guestSeraleCounterName,
+        text: "",
+        fontSize: 12,
+        fontFamily: "Poppins",
+        fontStyle: "bold",
+        fill: borderColor,
+        align: "center",
+        verticalAlign: "middle",
+        rotation: angolare,
+        offsetY: offsetY - size / 4,
+        offsetX,
+        counters: {
+          people: 0,
+          babies: 0,
+          chairs: 0,
+          highchairs: 0
+        }
+      };
+
+      let seraLabel = {
+        name: "sl" + uID,
+        text: this.guestTypes[3].text,
+        fontSize: 12,
+        fontFamily: "Poppins",
+        fontStyle: "bold",
+        fill: borderColor,
+        align: "center",
+        verticalAlign: "middle",
+        rotation: angolare,
+        offsetY: offsetY - size / 4,
+        offsetX: offsetX + (this.guestTypes[3].text.length * 7)
+      };
+
       let guestCountersTotal = {
         name: guestCounterTotalName,
         text: "",
@@ -450,21 +489,43 @@ export default {
 
       if (tableGuests.length > 0) {
         tableGuests.forEach(guest => {
-          if (Number(guest.peoples) > 0) {
-            guestCounters.counters.people += Number(guest.peoples);
-            guestCountersTotal.total += Number(guest.peoples);
-          }
-          if (Number(guest.baby) > 0) {
-            guestCounters.counters.babies += Number(guest.baby);
-            guestCountersTotal.total += Number(guest.baby);
-          }
-          if (Number(guest.chairs_only) > 0) {
-            guestCounters.counters.chairs += Number(guest.chairs_only);
-            guestCountersTotal.total += Number(guest.chairs_only);
-          }
-          if (Number(guest.high_chair) > 0) {
-            guestCounters.counters.highchairs += Number(guest.high_chair);
-            guestCountersTotal.total += Number(guest.high_chair);
+          if (guest.guest_type == 4) {
+            console.log("guest", guest);
+            if (Number(guest.peoples) > 0) {
+              guestSeraleCounters.counters.people += Number(guest.peoples);
+              guestCountersTotal.total += Number(guest.peoples);
+            }
+            if (Number(guest.baby) > 0) {
+              guestSeraleCounters.counters.babies += Number(guest.baby);
+              guestCountersTotal.total += Number(guest.baby);
+            }
+            if (Number(guest.chairs_only) > 0) {
+              guestSeraleCounters.counters.chairs += Number(guest.chairs_only);
+              guestCountersTotal.total += Number(guest.chairs_only);
+            }
+            if (Number(guest.high_chair) > 0) {
+              guestSeraleCounters.counters.highchairs += Number(
+                guest.high_chair
+              );
+              guestCountersTotal.total += Number(guest.high_chair);
+            }
+          } else {
+            if (Number(guest.peoples) > 0) {
+              guestCounters.counters.people += Number(guest.peoples);
+              guestCountersTotal.total += Number(guest.peoples);
+            }
+            if (Number(guest.baby) > 0) {
+              guestCounters.counters.babies += Number(guest.baby);
+              guestCountersTotal.total += Number(guest.baby);
+            }
+            if (Number(guest.chairs_only) > 0) {
+              guestCounters.counters.chairs += Number(guest.chairs_only);
+              guestCountersTotal.total += Number(guest.chairs_only);
+            }
+            if (Number(guest.high_chair) > 0) {
+              guestCounters.counters.highchairs += Number(guest.high_chair);
+              guestCountersTotal.total += Number(guest.high_chair);
+            }
           }
         });
       }
@@ -483,8 +544,6 @@ export default {
         guestCountersTotal.text = "";
       }
 
-      // guestCountersTotal.text = "";
-
       if (guestCounters.counters.people > 0) {
         guestCounters.text += peoplesLetter
           ? `${peoplesLetter}:` + guestCounters.counters.people
@@ -501,6 +560,31 @@ export default {
         guestCounters.text += chairsLetter
           ? ` ${chairsLetter}:` + guestCounters.counters.chairs
           : " S" + guestCounters.counters.chairs;
+      }
+
+      if (guestCounters.counters.highchairs > 0) {
+        guestCounters.text += highChairLetter
+          ? ` ${highChairLetter}:` + guestCounters.counters.highchairs
+          : " H" + guestCounters.counters.highchairs;
+      }
+
+      // Serale Counters
+      if (guestSeraleCounters.counters.people > 0) {
+        guestSeraleCounters.text += peoplesLetter
+          ? `${peoplesLetter}:` + guestSeraleCounters.counters.people
+          : "P" + guestSeraleCounters.counters.people;
+      }
+
+      if (guestSeraleCounters.counters.babies > 0) {
+        guestSeraleCounters.text += babyLetter
+          ? ` ${babyLetter}:` + guestSeraleCounters.counters.babies
+          : " B" + guestSeraleCounters.counters.babies;
+      }
+
+      if (guestSeraleCounters.counters.chairs > 0) {
+        guestSeraleCounters.text += chairsLetter
+          ? ` ${chairsLetter}:` + guestSeraleCounters.counters.chairs
+          : " S" + guestSeraleCounters.counters.chairs;
       }
 
       if (guestCounters.counters.highchairs > 0) {
@@ -614,6 +698,8 @@ export default {
 
       // Add guest counters total once all calculations are done
       group.guestCountersTotal = guestCountersTotal;
+      group.guestSeraleCounters = guestSeraleCounters;
+      group.seraLabel = seraLabel;
       group.asteriscTextConfig = asteriscTextConfig;
 
       const details = {
@@ -648,7 +734,7 @@ export default {
   },
   created() {
     EventBus.$on("fetch-done", () => {
-      let tableGroups = this.table.groups;
+      // let tableGroups = this.table.groups;
       let tablesFetched = this.table.tablesFetched;
       console.log("tablesFetched", this.$store.state.table.groups);
       let tablesFetchedLength = tablesFetched.length;
@@ -659,7 +745,6 @@ export default {
           tableGuests = guests.filter(guest => {
             return guest.table_id == payload.id;
           });
-          console.log("newt", payload);
           this.createTable(
             payload.table_name,
             Number(payload.table_number),
