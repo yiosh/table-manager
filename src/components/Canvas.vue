@@ -114,11 +114,12 @@ export default {
     },
     printTitle() {
       const payload = this.$store.getters.printTitle;
-      const eventDate = payload.eventDate;
+      const eventDate =
+        payload.eventDate != "0000-00-00" ? `- ${payload.eventDate}` : "";
       const eventName = payload.eventName;
       let textConfig = {
         name: "printTItle",
-        text: `${eventDate} - ${eventName}`,
+        text: `${eventName} ${eventDate}`,
         fontSize: 16,
         draggable: true,
         fontFamily: "Poppins",
