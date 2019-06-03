@@ -428,7 +428,7 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: nomeCliente ? offsetY - size / 4 - 5 : offsetY - size / 4 + 7,
+        offsetY: nomeCliente ? offsetY - size / 4 : offsetY - size / 4 + 7,
         offsetX,
         counters: {
           people: 0,
@@ -468,7 +468,7 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: offsetY - size / 2,
+        offsetY: nomeCliente ? offsetY - size / 4 - 10 : offsetY - size / 4 - 5,
         offsetX: offsetX + (this.guestTypes[3].text.length * 7)
       };
 
@@ -586,10 +586,10 @@ export default {
           : " S" + guestSeraleCounters.counters.chairs;
       }
 
-      if (guestCounters.counters.highchairs > 0) {
-        guestCounters.text += highChairLetter
-          ? ` ${highChairLetter}:` + guestCounters.counters.highchairs
-          : " H" + guestCounters.counters.highchairs;
+      if (guestSeraleCounters.counters.highchairs > 0) {
+        guestSeraleCounters.text += highChairLetter
+          ? ` ${highChairLetter}:` + guestSeraleCounters.counters.highchairs
+          : " H" + guestSeraleCounters.counters.highchairs;
       }
 
       switch (type) {

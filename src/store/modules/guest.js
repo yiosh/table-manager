@@ -50,7 +50,10 @@ export const actions = {
     TMService.getGuests(layoutId)
       .then(response => {
         // handle success
-        return commit("GET_GUESTS", response.data.dati);
+        commit("GET_GUESTS", response.data.dati);
+        if (response.data.dati.length < 0) {
+        } else {
+        }
       })
       .catch(error => {
         // handle error
@@ -301,11 +304,27 @@ export const actions = {
       counters.chairs > 0 ? chairsLetter + counters.chairs : ""
     } ${counters.highchairs > 0 ? highChairLetter + counters.highchairs : ""}`;
 
-    seraleCounters.text = 
-      seraleCounters.people > 0 ? peoplesLetter + seraleCounters.people : "" +
-      seraleCounters.babies > 0 ? babyLetter + seraleCounters.babies : "" +
-      seraleCounters.chairs > 0 ? chairsLetter + seraleCounters.chairs : "" +
-      seraleCounters.highchairs > 0 ? highChairLetter + seraleCounters.highchairs : "";
+    if (seraleCounters.people > 0) {
+      seraleCounters.text += peoplesLetter + seraleCounters.people;
+    }
+
+    if (seraleCounters.babies > 0) {
+      seraleCounters.text += " " + babyLetter + seraleCounters.babies + " ";
+    }
+
+    if (seraleCounters.chairs > 0) {
+      seraleCounters.text += chairsLetter + seraleCounters.chairs + " ";
+    }
+
+    if (seraleCounters.highchairs > 0) {
+      seraleCounters.text += highChairLetter + seraleCounters.highchairs;
+    }
+
+    // seraleCounters.text = 
+    //   seraleCounters.people > 0 ? peoplesLetter + seraleCounters.people : "" +
+    //   seraleCounters.babies > 0 ? babyLetter + seraleCounters.babies : "" +
+    //   seraleCounters.chairs > 0 ? chairsLetter + seraleCounters.chairs : "" +
+    //   seraleCounters.highchairs > 0 ? highChairLetter + seraleCounters.highchairs : "";
 
     let total = 0;
     total =

@@ -20,7 +20,7 @@ export default new Vuex.Store({
     info: {},
     hostname:
       location.hostname === "localhost"
-        ? "dev.condivision.cloud"
+        ? "calderonimartini.condivision.cloud"
         : location.hostname,
     selectedGroup: null,
     loading: true,
@@ -113,7 +113,7 @@ export default new Vuex.Store({
           }
 
           if (info) {
-            console.log("info", info)
+            console.log("info", info);
             commit("SET_LABELS", info);
           }
           if (layout) {
@@ -148,7 +148,7 @@ export default new Vuex.Store({
       return {
         eventDate: state.layout.board_event_date,
         eventName: state.layout.layout_name
-      }
+      };
     }
   }
 });

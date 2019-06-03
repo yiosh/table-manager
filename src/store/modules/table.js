@@ -142,14 +142,15 @@ export const actions = {
       .then(response => {
         // handle success
         console.log("Tables Fetched:", response.data.dati);
-        if (response.data.dati.length < 1) {
+        if (response.data.dati.length == 0) {
           dispatch("endProgress", null, { root: true });
-          const notification = {
-            type: "error",
-            multiLine: true,
-            message: "Non siamo riusciti a trovare alcun tavolo"
-          };
-          dispatch("notification/add", notification, { root: true });
+          // const notification = {
+          //   type: "error",
+          //   multiLine: true,
+          //   message: "Non siamo riusciti a trovare alcun tavolo"
+          // };
+          // dispatch("notification/add", notification, { root: true });
+          return false;
         } else {
           commit("GET_TABLES", response.data.dati);
         }

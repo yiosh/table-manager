@@ -144,7 +144,7 @@ export default {
       return textConfig;
     },
     imageSrc() {
-      let src = this.$store.state.layout.mappa || "";
+      let src = this.$store.state.layout.mappa != "0" ? this.$store.state.layout.mappa : "";
       return src;
     },
     backgroundConfig() {

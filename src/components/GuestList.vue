@@ -268,12 +268,15 @@ export default {
     close() {
       if (this.editForm) {
         this.editForm = false;
+        setTimeout(() => {
+          this.editedItem = Object.assign({}, this.defaultItem);
+          this.editedIndex = -1;
+        }, 300);
       }
-      this.guestDialog = false;
-      setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 300);
+
+      if (this.guestDialog) {
+        this.guestDialog = false;
+      }
     },
     save() {
       let guest = this.editedItem;
@@ -287,19 +290,18 @@ export default {
       if (this.editedIndex > -1) {
         // Update existing guest
         this.$store.dispatch("guest/updateGuest", guest);
+        this.close();
       } else {
         // Create a New Guest
         const tableId = this.tableId;
         this.$store.dispatch("guest/addGuest", { tableId, guest });
+        this.editedItem = Object.assign({}, this.defaultItem);
+        document.getElementById("cognomefield").focus();
       }
       if (!this.saveAndContinue) {
         this.close();
       }
-      if (this.editForm) {
-        this.editForm = false;
-      }
-      this.editedItem = Object.assign({}, this.defaultItem);
-      document.getElementById("cognomefield").focus();
+      //
     }
   },
   mounted() {
