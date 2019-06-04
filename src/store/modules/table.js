@@ -71,29 +71,31 @@ export const mutations = {
 
     tableToEdit.tableConfig.stroke = table.borderColor
       ? `#${table.borderColor}`
-      : "";
+      : "#000000";
 
     tableToEdit.tableConfig.strokeWidth = 2;
     tableToEdit.tableConfig.borderType = table.borderType;
-    tableToEdit.tableConfig.dashEnabled = table.borderType == "trattegiato" ? true : false;
-    tableToEdit.tableConfig.strokeEnabled = table.borderType == "nessuno" ? false : true;
+    tableToEdit.tableConfig.dashEnabled =
+      table.borderType == "trattegiato" ? true : false;
+    tableToEdit.tableConfig.strokeEnabled =
+      table.borderType == "nessuno" ? false : true;
 
     if (tableToEdit.textConfig) {
       tableToEdit.textConfig.fill = table.borderColor
         ? `#${table.borderColor}`
-        : "#ffffff";
+        : "#000000";
     }
 
     if (groupToEdit.guestCounters) {
       groupToEdit.guestCounters.fill = table.borderColor
         ? `#${table.borderColor}`
-        : "#ffffff";
+        : "#000000";
     }
 
     if (groupToEdit.guestCountersTotal) {
       groupToEdit.guestCountersTotal.fill = table.borderColor
         ? `#${table.borderColor}`
-        : "#ffffff";
+        : "#000000";
     }
 
     tableToEdit.tableConfig.fill = `#${table.backgroundColor}`;
@@ -224,7 +226,7 @@ export const actions = {
           console.log("response", response);
           if (response.data.esito) {
             payload.group.table.id = response.data.dati.id;
-  
+
             const notification = {
               type: "success",
               message: response.data.info_txt
@@ -290,7 +292,7 @@ export const actions = {
     TMService.updateTable(payload)
       .then(response => {
         if (response.data.esito) {
-        commit("UPDATE_TABLE", payload);
+          commit("UPDATE_TABLE", payload);
 
           const notification = {
             type: "success",
