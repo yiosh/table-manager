@@ -306,6 +306,8 @@ export default {
         angolare = 0;
       }
 
+      console.log("editedItem", this.editedItem);
+
       let borderColor =
         typeof this.editedItem.borderColor != "object"
           ? this.editedItem.borderColor
@@ -326,20 +328,20 @@ export default {
         tableName: this.editedItem.text,
         tableNumber: this.editedItem.number,
         nomeCliente: this.editedItem.nomeCliente,
-        borderColor: this.editedItem.borderColor.replace("#", ""),
+        borderColor: borderColor.replace("#", ""),
         backgroundColor: backgroundColor.replace("#", ""),
         borderType: this.editedItem.borderType
       };
 
       console.log("updatedItem", updatedItem);
 
-      if (
-        JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
-      ) {
-        this.$store.dispatch("table/updateTable", updatedItem);
-        this.defaultItem = Object.assign({}, updatedItem);
-        this.$store.state.stage.draw();
-      }
+      // if (
+      //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
+      // ) {
+      this.$store.dispatch("table/updateTable", updatedItem);
+      this.defaultItem = Object.assign({}, updatedItem);
+      this.$store.state.stage.draw();
+      // }
       this.dialog = false;
     },
     remove() {

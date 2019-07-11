@@ -25,7 +25,6 @@ import { mapState } from "vuex";
 import BaseNotification from "@/components/baseComponents/BaseNotification";
 import { EventBus } from "./event-bus.js";
 
-
 export default {
   name: "Home",
   components: {
@@ -57,7 +56,7 @@ export default {
     //   EventBus.$emit("handle-drawer");
     // },
     log(e) {
-      console.log("e",e)
+      console.log("e", e);
     },
     getQueryVariable(variable) {
       let query = window.location.search.substring(1);
@@ -87,11 +86,14 @@ export default {
       }
     }
     document.addEventListener("dblclick", event => {
+      console.log("trigger");
       if (
         event.target.tagName == "CANVAS" &&
         this.$store.state.selectedGroup !== null
       ) {
-        EventBus.$emit("guest-list-select")
+        console.log("trigger2");
+
+        EventBus.$emit("guest-list-select");
       }
     });
   },

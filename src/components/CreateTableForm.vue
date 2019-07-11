@@ -206,7 +206,10 @@ export default {
         : this.createTableForm.angolare;
     },
     ...mapState(["table", "guest"]),
-    ...mapGetters({ groupsLength: "table/groupsLength", guestTypes: "guest/guestTypes" })
+    ...mapGetters({
+      groupsLength: "table/groupsLength",
+      guestTypes: "guest/guestTypes"
+    })
   },
   watch: {
     match: "validateField",
@@ -289,11 +292,11 @@ export default {
         dashEnabled = true;
       }
       // console.log("b", borderColor, "ba", backgroundColor);
-      // borderColor =
-      //   typeof borderColor != "object" ? borderColor : borderColor.hex;
-      // if ((borderColor == "#" || borderColor == "") && noBorder === false) {
-      //   borderColor = "#000000";
-      // }
+      borderColor =
+        typeof borderColor != "object" ? borderColor : borderColor.hex;
+      if (borderColor == "#" || borderColor == "") {
+        borderColor = "#000000";
+      }
       // console.log("borderColor", borderColor);
       backgroundColor =
         typeof backgroundColor != "object"
@@ -469,7 +472,7 @@ export default {
         verticalAlign: "middle",
         rotation: angolare,
         offsetY: nomeCliente ? offsetY - size / 4 - 10 : offsetY - size / 4 - 5,
-        offsetX: offsetX + (this.guestTypes[3].text.length * 7)
+        offsetX: offsetX + this.guestTypes[3].text.length * 7
       };
 
       let guestCountersTotal = {
