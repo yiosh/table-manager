@@ -54,15 +54,20 @@
             :config="group.table.textConfig"
           ></v-text>
           <v-text
+            v-if="showTablesCounters"
             :ref="group.guestCounters.name"
             :config="group.guestCounters"
           ></v-text>
           <v-text
-            v-if="group.guestSeraleCounters.text.replace(' ', '')"
+            v-if="
+              group.guestSeraleCounters.text.replace(' ', '') &&
+                showTablesCounters
+            "
             :ref="group.seraLabel.name"
             :config="group.seraLabel"
           ></v-text>
           <v-text
+            v-if="showTablesCounters"
             :ref="group.guestSeraleCounters.name"
             :config="group.guestSeraleCounters"
           ></v-text>
@@ -109,7 +114,10 @@ export default {
     otherBackground: null
   }),
   computed: {
-    
+    showTablesCounters() {
+      let status = this.$store.state.labels.show_tables_counters;
+      return status;
+    },
     showTablesTotal() {
       let status =
         this.$store.state.labels.show_tables_total == 0 ? false : true;
@@ -144,7 +152,10 @@ export default {
       return textConfig;
     },
     imageSrc() {
-      let src = this.$store.state.layout.mappa != "0" ? this.$store.state.layout.mappa : "";
+      let src =
+        this.$store.state.layout.mappa != "0"
+          ? this.$store.state.layout.mappa
+          : "";
       return src;
     },
     backgroundConfig() {

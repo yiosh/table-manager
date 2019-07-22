@@ -431,7 +431,7 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: nomeCliente ? offsetY - size / 4 : offsetY - size / 4 + 7,
+        offsetY: nomeCliente ? offsetY - size / 12 : offsetY - size / 4 + 7,
         offsetX,
         counters: {
           people: 0,
@@ -451,7 +451,7 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: nomeCliente ? offsetY - size / 4 - 10 : offsetY - size / 4 - 5,
+        offsetY: nomeCliente ? offsetY - size / 3 : offsetY - size / 4 - 5,
         offsetX,
         counters: {
           people: 0,
@@ -471,7 +471,7 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: nomeCliente ? offsetY - size / 4 - 10 : offsetY - size / 4 - 5,
+        offsetY: nomeCliente ? offsetY - size / 3 : offsetY - size / 4 - 5,
         offsetX: offsetX + this.guestTypes[3].text.length * 7
       };
 
@@ -533,6 +533,7 @@ export default {
       }
 
       const showTablesTotal = this.$store.state.labels.show_tables_total;
+      const showTablesCounters = this.$store.state.labels.show_tables_counters;
       const peoplesLetter = this.$store.state.labels.peoples_letter;
       const babyLetter = this.$store.state.labels.baby_letter;
       const chairsLetter = this.$store.state.labels.chairs_only_letter;
@@ -546,6 +547,8 @@ export default {
         guestCountersTotal.text = "";
       }
 
+      // If showTablesCounters is 1 show the counters, if 0 do not show
+      // if (showTablesCounters) {
       if (guestCounters.counters.people > 0) {
         guestCounters.text += peoplesLetter
           ? `${peoplesLetter}:` + guestCounters.counters.people
@@ -594,6 +597,7 @@ export default {
           ? ` ${highChairLetter}:` + guestSeraleCounters.counters.highchairs
           : " H" + guestSeraleCounters.counters.highchairs;
       }
+      // }
 
       switch (type) {
         case "circle":
