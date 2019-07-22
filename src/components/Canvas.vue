@@ -93,7 +93,6 @@
         <v-text ref="title" :config="printTitle"></v-text>
       </v-layer>
     </v-stage>
-    <v-divider></v-divider>
   </v-card>
 </template>
 
