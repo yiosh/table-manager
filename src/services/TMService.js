@@ -15,7 +15,19 @@ const apiClient = axios.create({
   }
 });
 
+const CDNClient = axios.create({
+  baseURL: "https:" + "//" + "mysql.condivision.cloud",
+  withCredentials: false,
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json"
+  }
+});
+
 export default {
+  fetchLabels(language) {
+    return CDNClient.get(`/labels/?${language}`);
+  },
   fetchLayout(layoutId) {
     return apiClient.get(
       `${endpoint}get_tables_board&token=1&board_id=${layoutId}`

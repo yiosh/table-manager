@@ -79,6 +79,7 @@ export default {
       alert('Please add a "layout_id paramenter!"');
     } else {
       this.$store.dispatch("setLayout", layoutId);
+      this.$store.dispatch("setLanguageLabels", "en");
       this.$store.dispatch("guest/getGuestTypes");
       if (!this.$store.state.error) {
         this.$store.dispatch("table/fetchTableTypes", null, { root: true });

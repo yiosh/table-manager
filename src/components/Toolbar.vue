@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <v-btn flat @click="handleClick('create-table')">
         <i class="fas fa-plus icon-margin"></i>
-        Aggiungi Tavolo
+        {{ addTable }}
       </v-btn>
       <v-divider v-if="selectedGroup != null" vertical></v-divider>
 
@@ -41,6 +41,16 @@ export default {
   computed: {
     layoutName() {
       return this.$store.state.layout.layout_name;
+    },
+    addTable() {
+      if (this.$store.state.translatedLabels.length > 0) {
+        let label = this.$store.state.translatedLabels.filter(
+          label => "add_table" == label.placeholder
+        );
+        return label[0].content;
+      } else {
+        return "Add Tablex";
+      }
     }
   },
   methods: {
