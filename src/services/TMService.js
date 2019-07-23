@@ -1,9 +1,15 @@
 import axios from "axios";
 
-let hostname =
-  location.hostname == "localhost"
-    ? "calderonimartini.condivision.cloud"
-    : location.hostname;
+let hostname = "demo.condivision.cloud";
+if (
+  location.hostname != "localhost" &&
+  location.hostname != "dev.condivision.cloud"
+) {
+  hostname = location.hostname;
+}
+// location.hostname == "localhost"
+//   ? "calderonimartini.condivision.cloud"
+//   : location.hostname;
 let endpoint = "/fl_api/tables-v2/?";
 
 const apiClient = axios.create({
