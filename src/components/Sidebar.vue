@@ -70,7 +70,11 @@ export default {
     templateLayout: false,
     items: [],
     mini: true,
-    right: null
+    right: null,
+    labels: {
+      you_must_select_a_table_to_open_its_guest_list:
+        "You must select a table to open its guest list"
+    }
   }),
   methods: {
     handleDialog(element) {
@@ -82,7 +86,8 @@ export default {
           } else {
             const notification = {
               type: "warning",
-              message: "You must select a table to open its guest list"
+              message: this.labels
+                .you_must_select_a_table_to_open_its_guest_list
             };
             this.$store.dispatch("notification/add", notification, {
               root: true
@@ -97,6 +102,17 @@ export default {
   },
   created() {
     EventBus.$on("fetch-done", () => {
+      const translatedLabels = this.$store.state.translatedLabels;
+      const labels = this.labels;
+
+      for (const translatedLabel of translatedLabels) {
+        for (const label in labels) {
+          if (translatedLabel.placeholder === label) {
+            labels[label] = translatedLabel.content;
+          }
+        }
+      }
+
       this.items = [{ title: "Preview", icon: "print", ref: "print" }];
       if (this.$store.state.layout.evento_id !== "0") {
         this.items.unshift({
