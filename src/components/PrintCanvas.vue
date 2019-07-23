@@ -11,17 +11,19 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="blue darken-1" flat @click="dialog = false"
-            >Chiudi</v-btn
-          >
+          <v-btn color="blue darken-1" flat @click="dialog = false">
+            {{ labels.close }}
+          </v-btn>
           <v-btn dark color="blue darken-1" @click="PrintImage(src)">
-            <i class="fas fa-print icon-margin"></i>Stampa
+            <i class="fas fa-print icon-margin"></i>{{ labels.print }}
           </v-btn>
           <v-btn color="success" @click="downloadCanvasPNG">
-            <i class="fas fa-file-download icon-margin"></i>Scarica PNG
+            <i class="fas fa-file-download icon-margin"></i
+            >{{ labels.download_png }}
           </v-btn>
           <v-btn color="success" @click="downloadCanvasJPG">
-            <i class="fas fa-file-download icon-margin"></i>Scarica JPG
+            <i class="fas fa-file-download icon-margin"></i
+            >{{ labels.download_jpg }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -30,27 +32,31 @@
 </template>
 
 <script>
-import _ from "lodash";
 import { EventBus } from "../event-bus.js";
 
 export default {
-  name: "GuestList",
+  name: "PrintCanvas",
   data() {
     return {
       src: null,
-      dialog: false
+      dialog: false,
+      labels: {
+        close: "Close",
+        print: "Print",
+        download_png: "Download PNG",
+        download_jpg: "Download JPG"
+      }
     };
   },
   computed: {
     backgroundImageUrl() {
       let url;
+      const hostname = this.$store.state.hostname;
       if (this.$store.state.layout.orientation == 0) {
-        url = `https://${this.hostname}/fl_app/tableManager/assets/grid.png`;
+        url = `https://${hostname}/fl_app/tableManager/assets/grid.png`;
       }
       if (this.$store.state.layout.orientation == 1) {
-        url = `https://${
-          this.hostname
-        }/fl_app/tableManager/assets/vertical-grid.png`;
+        url = `https://${hostname}/fl_app/tableManager/assets/vertical-grid.png`;
       }
       if (this.$store.state.layout.mappa) {
         url = this.$store.state.layout.mappa;
@@ -114,6 +120,19 @@ export default {
     }
   },
   created() {
+    EventBus.$on("fetch-done", () => {
+      const translatedLabels = this.$store.state.translatedLabels;
+      const labels = this.labels;
+
+      for (const translatedLabel of translatedLabels) {
+        for (const label in labels) {
+          if (translatedLabel.placeholder === label) {
+            labels[label] = translatedLabel.content;
+          }
+        }
+      }
+    });
+
     EventBus.$on("preview-select", () => {
       console.log("recieved");
       let stage = this.$store.state.stage;
