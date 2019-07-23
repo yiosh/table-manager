@@ -5,7 +5,7 @@
       <v-spacer></v-spacer>
       <v-btn flat @click="handleClick('create-table')">
         <i class="fas fa-plus icon-margin"></i>
-        {{ addTable }}
+        {{ labels.add_table }}
       </v-btn>
       <v-divider v-if="selectedGroup != null" vertical></v-divider>
 
@@ -16,7 +16,7 @@
         @click="handleClick('edit-table')"
       >
         <i class="far fa-edit icon-margin"></i>
-        Modifica Tavolo
+        {{ labels.edit }} {{ labels.table }}
       </v-btn>
     </v-toolbar>
     <CreateTableForm></CreateTableForm>
@@ -36,21 +36,16 @@ export default {
     EditTableForm
   },
   data: () => ({
+    labels: {
+      add_table: "Add Table",
+      edit: "Edit",
+      table: "Table"
+    },
     selectedGroup: null
   }),
   computed: {
     layoutName() {
       return this.$store.state.layout.layout_name;
-    },
-    addTable() {
-      if (this.$store.state.translatedLabels.length > 0) {
-        let label = this.$store.state.translatedLabels.filter(
-          label => "add_table" == label.placeholder
-        );
-        return label[0].content;
-      } else {
-        return "Add Tablex";
-      }
     }
   },
   methods: {
@@ -76,6 +71,19 @@ export default {
     }
   },
   created() {
+    EventBus.$on("fetch-done", () => {
+      const translatedLabels = this.$store.state.translatedLabels;
+      const labels = this.labels;
+
+      for (const translatedLabel of translatedLabels) {
+        for (const label in labels) {
+          if (translatedLabel.placeholder === label) {
+            labels[label] = translatedLabel.content;
+          }
+        }
+      }
+    });
+
     EventBus.$on("table-select", group => {
       this.selectedGroup = group;
     });

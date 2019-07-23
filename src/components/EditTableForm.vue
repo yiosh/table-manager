@@ -3,7 +3,9 @@
     <v-dialog v-model="dialog" max-width="600px">
       <v-card>
         <v-toolbar flat color="#424242" dark>
-          <v-toolbar-title>Modifica Tavolo</v-toolbar-title>
+          <v-toolbar-title>
+            {{ labels.edit }} {{ labels.table }}
+          </v-toolbar-title>
           <v-spacer></v-spacer>
 
           <v-btn icon @click="dialog = false">
@@ -17,7 +19,7 @@
               <v-flex xs12 md6>
                 <v-text-field
                   v-model="editedItem.text"
-                  label="Nome"
+                  :label="labels.table_name"
                   required
                 ></v-text-field>
               </v-flex>
@@ -26,7 +28,7 @@
                 <v-text-field
                   v-model.number="editedItem.number"
                   :rules="numberRules"
-                  label="Numero"
+                  :label="labels.table_number"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -35,14 +37,14 @@
               <v-flex xs12>
                 <v-text-field
                   v-model="editedItem.nomeCliente"
-                  label="Nome Tavolo Cliente"
+                  :label="labels.customers_table_name"
                 ></v-text-field>
               </v-flex>
             </v-layout>
 
             <v-layout>
               <v-flex xs12 sm6 class="py-2">
-                <p>Tipo</p>
+                <p>{{ labels.type }}</p>
                 <v-btn-toggle v-model="editedItem.type" mandatory>
                   <v-btn
                     v-for="tableType in table.tableTypes"
@@ -57,11 +59,11 @@
 
             <v-layout>
               <v-flex xs12 sm6 md5 class="py-2">
-                <p>Dimensione</p>
+                <p>{{ labels.dimension }}</p>
                 <v-btn-toggle v-model.number="editedItem.size" mandatory>
-                  <v-btn flat :value="Number(30)">Piccolo</v-btn>
-                  <v-btn flat :value="Number(60)">Medio</v-btn>
-                  <v-btn flat :value="Number(90)">Grande</v-btn>
+                  <v-btn flat :value="Number(30)">{{ labels.small }}</v-btn>
+                  <v-btn flat :value="Number(60)">{{ labels.medium }}</v-btn>
+                  <v-btn flat :value="Number(90)">{{ labels.large }}</v-btn>
                 </v-btn-toggle>
               </v-flex>
             </v-layout>
@@ -69,15 +71,15 @@
             <v-layout>
               <v-flex xs12 sm6 md6 class="py-2">
                 <p>
-                  Colore Bordo
+                  {{ labels.border_color }}
                 </p>
                 <compact-picker v-model="editedItem.borderColor" />
               </v-flex>
               <v-flex xs12 sm6 md6 class="py-2">
-                <p>Bordo</p>
+                <p>{{ labels.border }}</p>
                 <v-radio-group v-model="editedItem.borderType">
                   <v-radio
-                    v-for="borderOption in borderOptions"
+                    v-for="borderOption in labels.borderOptions"
                     :key="borderOption.id"
                     :label="borderOption.label"
                     :value="borderOption.value"
@@ -88,7 +90,7 @@
 
             <v-layout>
               <v-flex xs12 sm6 class="py-2">
-                <p>Colore Sfondo</p>
+                <p>{{ labels.background_color }}</p>
                 <compact-picker v-model="editedItem.backgroundColor" />
               </v-flex>
             </v-layout>
@@ -97,10 +99,12 @@
           <v-container>
             <v-layout justify-end>
               <v-flex xs12>
-                <v-btn :disabled="!valid" type="submit" dark color="green"
-                  >Salva</v-btn
-                >
-                <v-btn @click="remove" flat color="error">Elimina</v-btn>
+                <v-btn :disabled="!valid" type="submit" dark color="green">
+                  {{ labels.save }}
+                </v-btn>
+                <v-btn @click="remove" flat color="error">
+                  {{ labels.delete }}
+                </v-btn>
               </v-flex>
             </v-layout>
           </v-container>
@@ -121,6 +125,44 @@ export default {
     "compact-picker": Compact
   },
   data: () => ({
+    labels: {
+      table: "Table",
+      edit: "Edit",
+      table_name: "Table Name",
+      table_number: "Table Number",
+      customers_table_name: "Customer Table Name",
+      type: "Type",
+      size: "Size",
+      dimension: "Dimension",
+      small: "Small",
+      medium: "Medium",
+      large: "Large",
+      border_color: "Border Color",
+      background_color: "Background Color",
+      border: "Border",
+      borderOptions: [
+        {
+          id: 1,
+          placeholder: "solid",
+          label: "Solid",
+          value: "intero"
+        },
+        {
+          id: 2,
+          placeholder: "dashed",
+          label: "Dashed",
+          value: "trattegiato"
+        },
+        {
+          id: 3,
+          placeholder: "none",
+          label: "None",
+          value: "nessuno"
+        }
+      ],
+      save: "Save",
+      delete: "Delete"
+    },
     valid: true,
     numberRules: [
       v => typeof v === "number" || "Per favore inserisci un numero"
@@ -128,23 +170,6 @@ export default {
     layer: null,
     dialog: false,
     tableClientName: false,
-    borderOptions: [
-      {
-        id: 1,
-        label: "Intero",
-        value: "intero"
-      },
-      {
-        id: 2,
-        label: "Trattegiato",
-        value: "trattegiato"
-      },
-      {
-        id: 3,
-        label: "Nessuno",
-        value: "nessuno"
-      }
-    ],
     // Default values
     editedItem: {
       id: "",
@@ -361,6 +386,31 @@ export default {
     this.layer = this.$store.state.layer;
   },
   created() {
+    EventBus.$on("fetch-done", () => {
+      const translatedLabels = this.$store.state.translatedLabels;
+      const labels = this.labels;
+
+      for (const translatedLabel of translatedLabels) {
+        if (
+          translatedLabel.placeholder === "solid" ||
+          translatedLabel.placeholder === "dashed" ||
+          translatedLabel.placeholder === "none"
+        ) {
+          for (const borderOption of labels.borderOptions) {
+            if (translatedLabel.placeholder === borderOption.placeholder) {
+              borderOption.label = translatedLabel.content;
+            }
+          }
+        }
+
+        for (const label in labels) {
+          if (translatedLabel.placeholder === label) {
+            labels[label] = translatedLabel.content;
+          }
+        }
+      }
+    });
+
     EventBus.$on("table-select", group => {
       this.fetchSelectedTable(group);
     });

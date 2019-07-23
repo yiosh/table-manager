@@ -232,9 +232,6 @@ export default {
     formTitle() {
       return this.editedIndex === -1 ? "Crea Nuovo Ospite" : "Modifica Ospite";
     },
-    // guests() {
-    //   return this.$store.getters.guests(this.tableId);
-    // },
     ...mapState(["guest"]),
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" })
   },
