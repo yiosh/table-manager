@@ -9,12 +9,14 @@
     absolute
   >
     {{ notification.message }}
-    <v-btn flat @click="remove(notification)">Chiudi</v-btn>
+    <v-btn flat @click="remove(notification)">{{ labels.close }}</v-btn>
   </v-snackbar>
 </template>
 
 <script>
 import { mapActions } from "vuex";
+import { EventBus } from "../../event-bus.js";
+
 export default {
   name: "BaseNotification",
   props: {
@@ -25,10 +27,27 @@ export default {
   },
   data: () => ({
     notificationStatus: true,
-    timeout: null
+    timeout: null,
+    labels: {
+      close: "Close"
+    }
   }),
   mounted() {
     this.timeout = setTimeout(() => this.remove(this.notification), 5000);
+  },
+  created() {
+    EventBus.$on("fetch-done", () => {
+      const translatedLabels = this.$store.state.translatedLabels;
+      const labels = this.labels;
+
+      for (const translatedLabel of translatedLabels) {
+        for (const label in labels) {
+          if (translatedLabel.placeholder === label) {
+            labels[label] = translatedLabel.content;
+          }
+        }
+      }
+    });
   },
   beforeDestroy() {
     clearTimeout(this.timeout);
