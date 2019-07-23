@@ -320,7 +320,7 @@ export const actions = {
       seraleCounters.text += highChairLetter + seraleCounters.highchairs;
     }
 
-    // seraleCounters.text = 
+    // seraleCounters.text =
     //   seraleCounters.people > 0 ? peoplesLetter + seraleCounters.people : "" +
     //   seraleCounters.babies > 0 ? babyLetter + seraleCounters.babies : "" +
     //   seraleCounters.chairs > 0 ? chairsLetter + seraleCounters.chairs : "" +
@@ -338,7 +338,8 @@ export const actions = {
       seraleCounters.highchairs;
 
     rootState.table.groups[groupIndex].guestCounters.text = counters.text;
-    rootState.table.groups[groupIndex].guestSeraleCounters.text = seraleCounters.text;
+    rootState.table.groups[groupIndex].guestSeraleCounters.text =
+      seraleCounters.text;
     rootState.table.groups[groupIndex].guestCountersTotal.text =
       showTablesTotal + total;
   }

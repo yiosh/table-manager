@@ -177,6 +177,7 @@ export default {
         close: "Close",
         there_are_no_guests_at_this_table: "There are no guests at this table",
         edit_guest: "Edit Guest",
+        delete_guest_confirm: "Are you sure you wish to delete guest ",
         headers: [
           { placeholder: "surname", text: "Surname", value: "cognome" },
           { placeholder: "name", text: "Name", value: "nome" },
@@ -287,7 +288,7 @@ export default {
     },
     deleteGuest(guest) {
       confirm(
-        `Sei sicuro di voler eliminare a ${guest.nome} ${guest.cognome}?`
+        `${this.labels.delete_guest_confirm} ${guest.nome} ${guest.cognome}?`
       ) &&
         // Delete Guest
         this.$store.dispatch("guest/deleteGuest", guest);
