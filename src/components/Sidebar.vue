@@ -77,13 +77,12 @@ export default {
       switch (element) {
         case "people":
           if (this.$store.state.selectedGroup != null) {
-            EventBus.$emit("guest-list-select")
+            EventBus.$emit("guest-list-select");
             this.$store.commit("GUEST_LIST_DIALOG", true);
           } else {
             const notification = {
               type: "warning",
-              message:
-                "Devi selezionare un tavolo per aprire la sua lista degli ospiti"
+              message: "You must select a table to open its guest list"
             };
             this.$store.dispatch("notification/add", notification, {
               root: true
@@ -98,10 +97,10 @@ export default {
   },
   created() {
     EventBus.$on("fetch-done", () => {
-      this.items = [{ title: "Anteprima", icon: "print", ref: "print" }];
+      this.items = [{ title: "Preview", icon: "print", ref: "print" }];
       if (this.$store.state.layout.evento_id !== "0") {
         this.items.unshift({
-          title: "Elenco degli Ospiti",
+          title: "Guest List",
           icon: "people",
           ref: "guestlist"
         });
