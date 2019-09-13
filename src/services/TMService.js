@@ -41,7 +41,7 @@ export default {
     nomeCliente
   }) {
     return apiClient.get(
-      `/fl_api/tables-v1/?insert_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}`
+      `/fl_api/tables-v1/?insert_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_color=000&background_color=fff`
     );
   },
   updateTable({

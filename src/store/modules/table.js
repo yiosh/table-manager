@@ -141,10 +141,11 @@ export const actions = {
         dispatch("notification/add", notification, { root: true });
       });
   },
-  addTable({ commit, dispatch }, payload) {
+  addTable({ state, commit, dispatch }, payload) {
     if (payload.isNew === true) {
       TMService.addTable(payload.details)
-        .then(function(response) {
+        .then(response => {
+          console.log("responsetable", response)
           payload.group.table.id = response.data.id;
 
           const notification = {
