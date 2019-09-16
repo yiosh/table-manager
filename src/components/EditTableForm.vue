@@ -71,6 +71,7 @@
                 <v-slider
                   v-model="editedItem.scaleX"
                   step="0.1"
+                  min="1"
                   max="5"
                 ></v-slider>
               </v-flex>
@@ -85,6 +86,7 @@
                 <v-slider
                   v-model="editedItem.scaleY"
                   step="0.1"
+                  min="1"
                   max="5"
                 ></v-slider>
               </v-flex>
