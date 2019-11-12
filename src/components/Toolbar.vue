@@ -3,14 +3,14 @@
     <v-toolbar flat dark color="#424242" class="cnv-toolbar">
       <v-toolbar-title>{{ layoutName }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn flat @click="handleClick('create-table')">
+      <v-btn v-if="blockBoard == '0'" flat @click="handleClick('create-table')">
         <i class="fas fa-plus icon-margin"></i>
         {{ labels.add_table }}
       </v-btn>
       <v-divider v-if="selectedGroup != null" vertical></v-divider>
 
       <v-btn
-        v-if="selectedGroup != null"
+        v-if="selectedGroup != null && blockBoard == '0'"
         flat
         ref="edit-table"
         @click="handleClick('edit-table')"
@@ -46,6 +46,9 @@ export default {
   computed: {
     layoutName() {
       return this.$store.state.layout.layout_name;
+    },
+    blockBoard() {
+      return this.$store.getters.getInfo.block_board;
     }
   },
   methods: {

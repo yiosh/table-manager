@@ -1,19 +1,18 @@
 import axios from "axios";
 
 let hostname = "demo.condivision.cloud";
-if (
-  location.hostname != "localhost" &&
-  location.hostname != "dev.condivision.cloud"
-) {
+let protocol = "https";
+if (location.hostname !== "localhost") {
   hostname = location.hostname;
 }
 // location.hostname == "localhost"
 //   ? "calderonimartini.condivision.cloud"
 //   : location.hostname;
+const baseURL = protocol + "://" + hostname;
 let endpoint = "/fl_api/tables-v2/?";
 
 const apiClient = axios.create({
-  baseURL: location.protocol + "//" + hostname,
+  baseURL,
   withCredentials: false,
   headers: {
     Accept: "application/json",
@@ -22,7 +21,7 @@ const apiClient = axios.create({
 });
 
 const CDNClient = axios.create({
-  baseURL: "https:" + "//" + "mysql.condivision.cloud",
+  baseURL: "https://mysql.condivision.cloud",
   withCredentials: false,
   headers: {
     Accept: "application/json",

@@ -206,6 +206,9 @@ export default {
     nameRules: [v => !!v || "Inserisci nome tavolo per procedere"]
   }),
   computed: {
+    blockBoard() {
+      return this.$store.getters.getInfo.block_board;
+    },
     rules() {
       const rules = [];
 
@@ -716,7 +719,7 @@ export default {
         rotation: 0,
         width: 100,
         height: 100,
-        draggable: true,
+        draggable: this.blockBoard == "0" ? true : false,
         guestCounters,
         nomeClienteText,
         table
