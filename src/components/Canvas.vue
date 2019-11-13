@@ -161,25 +161,6 @@ export default {
         return true;
       }
     },
-    // printTitle() {
-    //   let { eventName, eventDate } = this.printTitle;
-    //   eventDate = eventDate !== "0000-00-00" ? `- ${eventDate}` : "";
-
-    //   let textConfig = {
-    //     name: "printTItle",
-    //     text: `${eventName} ${eventDate}`,
-    //     fontSize: 16,
-    //     draggable: true,
-    //     fontFamily: "Poppins",
-    //     fontStyle: "bold",
-    //     fill: "#000000",
-    //     align: "left",
-    //     verticalAlign: "middle",
-    //     x: 10,
-    //     y: 10
-    //   };
-    //   return textConfig;
-    // },
     stageBackground() {
       let url;
       if (this.orientation == 0) {
@@ -192,15 +173,6 @@ export default {
 
       return url;
     },
-    // hostname() {
-    //   return this.$store.state.hostname;
-    // },
-    // orientation() {
-    //   return this.$store.state.layout.orientation;
-    // },
-    // stageConfig() {
-    //   return this.$store.state.configKonva;
-    // },
     ...mapGetters({
       guestTotalsV2: "guest/guestTotalsV2",
       tableGroups: "table/getGroups",
@@ -213,7 +185,7 @@ export default {
   },
   methods: {
     handlePrintTitle() {
-      console.log('title', this.printTitle)
+      console.log("title", this.printTitle);
       let { eventName, eventDate } = this.printTitle;
       eventDate = eventDate != "0000-00-00" ? `- ${eventDate}` : "";
 
@@ -229,27 +201,6 @@ export default {
     log(e) {
       console.log(e);
       EventBus.$emit("guest-list-select");
-    },
-    tableTypeDeparser(type) {
-      let id;
-      switch (type) {
-        case "circle":
-          id = "2";
-          break;
-
-        case "square":
-          id = "3";
-          break;
-
-        case "rectangle":
-          id = "4";
-          break;
-
-        case "ellipse":
-          id = "5";
-          break;
-      }
-      return id;
     },
     async moveTable(e) {
       let { table, x, y } = e.target.attrs;
@@ -359,7 +310,7 @@ export default {
     },
     loading() {
       if (this.loading === false) {
-        this.handlePrintTitle()
+        this.handlePrintTitle();
       }
     }
   },

@@ -71,7 +71,7 @@
                   <v-btn
                     v-for="tableType in table.tableTypes"
                     flat
-                    :value="tableTypeParser(tableType.id)"
+                    :value="typeParsed(tableType.id)"
                     :key="tableType.id"
                     >{{ tableType.label }}</v-btn
                   >
@@ -138,6 +138,7 @@ import { EventBus } from "../event-bus.js";
 import { mapState } from "vuex";
 import { mapGetters } from "vuex";
 import { Compact } from "vue-color";
+import { tableTypeDeparser, tableTypeParser } from "@/utils";
 
 export default {
   name: "CreateTableForm",
@@ -244,49 +245,9 @@ export default {
       this.$refs.createForm.validate();
     },
     // Parses from table id into Konva shape
-    tableTypeParser(id) {
-      let type;
-      switch (id) {
-        case "2":
-          type = "circle";
-          break;
-
-        case "3":
-          type = "square";
-          break;
-
-        case "4":
-          type = "rectangle";
-          break;
-
-        case "5":
-          type = "ellipse";
-          break;
-      }
-      return type;
+    typeParsed(id) {
+      return tableTypeParser(id)
     },
-    tableTypeDeparser(type) {
-      let id;
-      switch (type) {
-        case "circle":
-          id = "2";
-          break;
-
-        case "square":
-          id = "3";
-          break;
-
-        case "rectangle":
-          id = "4";
-          break;
-
-        case "ellipse":
-          id = "5";
-          break;
-      }
-      return id;
-    },
-    // Create table using tableTypes array and user input
     createTable(
       name,
       number = "",
@@ -733,7 +694,7 @@ export default {
 
       const details = {
         layoutId: this.$store.state.layout.id,
-        typeId: this.tableTypeDeparser(type),
+        typeId: tableTypeDeparser(type),
         tableName: name,
         tableNumber: number,
         tableGroup: tableGroup ? tableGroup : 0,
@@ -780,7 +741,7 @@ export default {
             Number(payload.size),
             Number(payload.scale_x),
             Number(payload.scale_y),
-            this.tableTypeParser(payload.type_id),
+            tableTypeParser(payload.type_id),
             payload.id,
             Number(payload.x),
             Number(payload.y),

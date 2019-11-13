@@ -49,7 +49,7 @@
                   <v-btn
                     v-for="tableType in table.tableTypes"
                     flat
-                    :value="tableTypeParser(tableType.id)"
+                    :value="typeParsed(tableType.id)"
                     :key="tableType.id"
                     >{{ tableType.label }}</v-btn
                   >
@@ -118,6 +118,7 @@
 import { EventBus } from "../event-bus.js";
 import { mapState } from "vuex";
 import { Compact } from "vue-color";
+import { tableTypeDeparser, tableTypeParser } from "@/utils";
 
 export default {
   name: "EditTableForm",
@@ -236,47 +237,8 @@ export default {
       this.angolareCustom = false;
     },
     // Parses from table id into Konva shape
-    tableTypeParser(id) {
-      let type;
-      switch (id) {
-        case "2":
-          type = "circle";
-          break;
-
-        case "3":
-          type = "square";
-          break;
-
-        case "4":
-          type = "rectangle";
-          break;
-
-        case "5":
-          type = "ellipse";
-          break;
-      }
-      return type;
-    },
-    tableTypeDeparser(type) {
-      let id;
-      switch (type) {
-        case "circle":
-          id = 2;
-          break;
-
-        case "square":
-          id = 3;
-          break;
-
-        case "rectangle":
-          id = 4;
-          break;
-
-        case "ellipse":
-          id = 5;
-          break;
-      }
-      return id;
+    typeParsed(id) {
+      return tableTypeParser(id);
     },
     fetchSelectedTable(group) {
       let table = group.attrs.table;
@@ -345,7 +307,7 @@ export default {
       let updatedItem = {
         layoutId: this.$store.state.layout.id,
         id: this.editedItem.id,
-        typeId: this.tableTypeDeparser(this.editedItem.type),
+        typeId: Number(tableTypeDeparser(this.editedItem.type)),
         size: this.editedItem.size,
         scaleX: this.editedItem.scaleX,
         scaleY: this.editedItem.scaleY,
