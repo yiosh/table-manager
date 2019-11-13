@@ -35,7 +35,8 @@ export default new Vuex.Store({
       layout_name: "",
       orientation: "",
       sede_id: "",
-      updated_at: ""
+      updated_at: "",
+      mappa: ""
     },
     stage: null,
     layer: null,
@@ -171,6 +172,7 @@ export default new Vuex.Store({
     },
     getInfo: state => {
       return state.info;
-    }
+    },
+    getBackgroundImg: state => state.layout.mappa
   }
 });

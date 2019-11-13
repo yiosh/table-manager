@@ -80,9 +80,9 @@ export default {
     } else {
       this.$store.dispatch("setLayout", layoutId);
       this.$store.dispatch("setLanguageLabels", "en");
-      this.$store.dispatch("guest/getGuestTypes");
       if (!this.$store.state.error) {
         this.$store.dispatch("table/fetchTableTypes", null, { root: true });
+        this.$store.dispatch("guest/getGuestTypes");
         this.$store.dispatch("table/getTables", layoutId, { root: true });
       }
     }

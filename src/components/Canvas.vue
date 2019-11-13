@@ -110,9 +110,20 @@ export default {
   data: () => ({
     dialog: false,
     selectedTable: null,
-    otherBackground: null
+    otherBackground: null,
+    backgroundConfig: {
+      x: 0,
+      y: 0,
+      width: 1200,
+      height: 792,
+      fillPatternImage: null
+    },
+    imageSrc: null
   }),
   computed: {
+    backgroundImg() {
+      return this.$store.getters.getBackgroundImg;
+    },
     blockBoard() {
       return this.$store.getters.getInfo.block_board;
     },
@@ -153,32 +164,30 @@ export default {
       };
       return textConfig;
     },
-    imageSrc() {
-      let src =
-        this.$store.state.layout.mappa != "0"
-          ? this.$store.state.layout.mappa
-          : "";
-      return src;
-    },
-    backgroundConfig() {
-      let image = new Image();
-      image.src = this.imageSrc;
+    // imageSrc() {
+    //   if (this.$store.state.layout.mappa) {
+    //     return this.$store.state.layout.mappa
+    //   } else {
+    //     return ''
+    //   }
+    // },
+    // backgroundConfig() {
+    //   let image = new Image();
+    //   console.log('src', this.imageSrc)
+    //   image.src = this.imageSrc;
+    //   image.onload = () => {
 
-      let config = {
-        x: 0,
-        y: 0,
-        width: 1200,
-        height: 792,
-        fillPatternImage: image
-      };
+    //     let config = {
+    //       x: 0,
+    //       y: 0,
+    //       width: 1200,
+    //       height: 792,
+    //       fillPatternImage: image
+    //     };
 
-      if (this.$store.state.layout.orientation == 1) {
-        config.width = 792;
-        config.height = 1200;
-      }
-
-      return config;
-    },
+    //     return config;
+    //   }
+    // },
     stageBackground() {
       let url;
       if (this.$store.state.layout.orientation == 0) {
@@ -350,9 +359,25 @@ export default {
       }
     }
   },
-  mounted() {
+  watch: {
+    backgroundImg() {
+      const image = new window.Image();
+      image.src = this.backgroundImg;
+      image.onload = () => {
+        // set image only when it is loaded
+        this.imageSrc = image;
+        this.backgroundConfig.fillPatternImage = image;
+      };
+    }
+  },
+  async mounted() {
     this.$store.dispatch("setStage", this.$refs.stage.getStage());
     this.$store.dispatch("setLayer", this.$refs.layer);
+
+    if (this.$store.state.layout.orientation == 1) {
+      this.backgroundConfig.width = 792;
+      this.backgroundConfig.height = 1200;
+    }
   }
 };
 </script>
