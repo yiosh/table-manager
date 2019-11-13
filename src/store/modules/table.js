@@ -329,5 +329,8 @@ export const actions = {
 export const getters = {
   groupsLength(state) {
     return state.groups.length;
+  },
+  getGroups() {
+    return state.groups;
   }
 };

@@ -25,7 +25,7 @@
           :ref="group.name"
           @click="tableSelect(group.name)"
           @dragend="moveTable"
-          v-for="group in table.groups"
+          v-for="group in tableGroups"
           :config="group"
           :key="group.name"
         >
@@ -164,30 +164,6 @@ export default {
       };
       return textConfig;
     },
-    // imageSrc() {
-    //   if (this.$store.state.layout.mappa) {
-    //     return this.$store.state.layout.mappa
-    //   } else {
-    //     return ''
-    //   }
-    // },
-    // backgroundConfig() {
-    //   let image = new Image();
-    //   console.log('src', this.imageSrc)
-    //   image.src = this.imageSrc;
-    //   image.onload = () => {
-
-    //     let config = {
-    //       x: 0,
-    //       y: 0,
-    //       width: 1200,
-    //       height: 792,
-    //       fillPatternImage: image
-    //     };
-
-    //     return config;
-    //   }
-    // },
     stageBackground() {
       let url;
       if (this.$store.state.layout.orientation == 0) {
@@ -210,10 +186,9 @@ export default {
     stageConfig() {
       return this.$store.state.configKonva;
     },
-    ...mapState(["table"]),
     ...mapGetters({
-      // guestTotals: "guest/guestTotals",
-      guestTotalsV2: "guest/guestTotalsV2"
+      guestTotalsV2: "guest/guestTotalsV2",
+      tableGroups: "table/getGroups"
     })
   },
   methods: {
@@ -249,66 +224,53 @@ export default {
       }
       return id;
     },
-    moveTable(e) {
-      let group = e.target.attrs;
-      let table = group.table;
-      let layout_id = this.$store.state.layout.id;
+    async moveTable(e) {
+      let { table, x, y } = e.target.attrs;
+      let tableId = table.id;
+      let layoutId = this.$store.state.layout.id;
 
-      axios
-        .get(
+      try {
+        const response = await axios.get(
           `https://${
             this.hostname
-          }/fl_api/tables-v2/?move_table&token=1&table_id=${
-            table.id
-          }&layout_id=${layout_id}&x=${group.x}&y=${group.y}`
-        )
-        .then(function(response) {
-          console.log("Response", response);
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-      // console.log(table);
+          }/fl_api/tables-v2/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
+        );
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
     },
-    handleTableTransform(event) {
-      let shape = event.target.attrs;
+    async handleTableTransform(event) {
+      let { scaleX, scaleY, rotation } = event.target.attrs;
       let tableId = this.selectedTable.attrs.table.id;
       let layoutId = this.$store.state.layout.id;
-      let rotation = shape.rotation.toFixed(2);
-      let { scaleX, scaleY } = shape;
-      console.log("shape", shape);
-      if (shape.scaleX != 1 || shape.scaleY != 1) {
-        axios
-          .get(
+      rotation = rotation.toFixed(2);
+
+      if (scaleX != 1 || scaleY != 1) {
+        try {
+          const response = await axios.get(
             `https://${
               this.hostname
             }/fl_api/tables-v2/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
-          )
-          .then(function(response) {
-            console.log("Response", response);
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
-        console.log("Shape scaled", rotation);
+          );
+          console.log(response);
+        } catch (error) {
+          console.log(error);
+        }
       }
-      axios
-        .get(
+      try {
+        const response = await axios.get(
           `https://${
             this.hostname
           }/fl_api/tables-v2/?rotate_table&token=1&table_id=${tableId}&layout_id=${layoutId}&angolare=${rotation}`
-        )
-        .then(function(response) {
-          console.log("Response", response);
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-      console.log("Shape transformed", rotation);
+        );
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
     },
     stageClick(e) {
-      let stage = this.$store.state.stage;
-      // console.log(e);
+      const { stage } = this.$store.state;
       // if click on empty area - remove all transformers
       if (e.target === stage) {
         if (this.$store.state.selectedGroup != null) {
@@ -321,22 +283,21 @@ export default {
       }
     },
     tableSelect(groupName) {
-      let stage = this.$store.state.stage;
-      let group = stage.find("." + groupName)[0];
+      const { stage } = this.$store.state;
+      const group = stage.find(`.${groupName}`)[0];
 
       if (
         !this.$store.state.selectedGroup ||
-        this.$store.state.selectedGroup.name != group.attrs.name
+        this.$store.state.selectedGroup.name !== group.attrs.name
       ) {
         console.log("Group selected", group);
-        let name = "." + String(groupName) + "-tbl";
+        let name = `.${String(groupName)}-tbl`;
         stage.find("Transformer").destroy();
         // create new transformer
-        var tr;
+        let tr;
         if (this.blockBoard == "0") {
           tr = new window.Konva.Transformer({
             rotateEnabled: true,
-            // resizeEnabled: false,
             rotationSnaps: [0, 90, 180, 270]
           });
         } else {
@@ -371,8 +332,10 @@ export default {
     }
   },
   async mounted() {
-    this.$store.dispatch("setStage", this.$refs.stage.getStage());
-    this.$store.dispatch("setLayer", this.$refs.layer);
+    const stage = await this.$refs.stage.getStage();
+    this.$store.dispatch("setStage", stage);
+    const layer = await this.$refs.layer;
+    this.$store.dispatch("setLayer", layer);
 
     if (this.$store.state.layout.orientation == 1) {
       this.backgroundConfig.width = 792;
