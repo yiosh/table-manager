@@ -164,7 +164,7 @@ export default new Vuex.Store({
     }
   },
   getters: {
-    printTitle(state) {
+    getPrintTitle(state) {
       return {
         eventDate: state.layout.board_event_date,
         eventName: state.layout.layout_name
@@ -173,6 +173,10 @@ export default new Vuex.Store({
     getInfo: state => {
       return state.info;
     },
-    getBackgroundImg: state => state.layout.mappa
+    getBackgroundImg: state => state.layout.mappa,
+    getStageConfig: state => state.configKonva,
+    getOrientation: state => state.layout.orientation,
+    getHostname: state => state.hostname,
+    getLoading: state => state.loading
   }
 });

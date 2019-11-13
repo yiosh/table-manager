@@ -90,7 +90,11 @@
         </v-group>
         <!-- <v-text ref="totaleCounter" :config="guestTotals"></v-text> -->
         <v-text ref="totaleCounterV2" :config="guestTotalsV2"></v-text>
-        <v-text ref="title" :config="printTitle"></v-text>
+        <v-text
+          v-if="printTitleConfig.text"
+          ref="title"
+          :config="printTitleConfig"
+        ></v-text>
       </v-layer>
     </v-stage>
   </v-card>
@@ -100,7 +104,7 @@
 import axios from "axios";
 import Toolbar from "./Toolbar";
 import { EventBus } from "../event-bus.js";
-import { mapState, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Canvas",
@@ -118,7 +122,20 @@ export default {
       height: 792,
       fillPatternImage: null
     },
-    imageSrc: null
+    imageSrc: null,
+    printTitleConfig: {
+      name: "printTItle",
+      text: null,
+      fontSize: 16,
+      draggable: true,
+      fontFamily: "Poppins",
+      fontStyle: "bold",
+      fill: "#000000",
+      align: "left",
+      verticalAlign: "middle",
+      x: 10,
+      y: 10
+    }
   }),
   computed: {
     backgroundImg() {
@@ -144,32 +161,30 @@ export default {
         return true;
       }
     },
-    printTitle() {
-      const payload = this.$store.getters.printTitle;
-      const eventDate =
-        payload.eventDate != "0000-00-00" ? `- ${payload.eventDate}` : "";
-      const eventName = payload.eventName;
-      let textConfig = {
-        name: "printTItle",
-        text: `${eventName} ${eventDate}`,
-        fontSize: 16,
-        draggable: true,
-        fontFamily: "Poppins",
-        fontStyle: "bold",
-        fill: "#000000",
-        align: "left",
-        verticalAlign: "middle",
-        x: 10,
-        y: 10
-      };
-      return textConfig;
-    },
+    // printTitle() {
+    //   let { eventName, eventDate } = this.printTitle;
+    //   eventDate = eventDate !== "0000-00-00" ? `- ${eventDate}` : "";
+
+    //   let textConfig = {
+    //     name: "printTItle",
+    //     text: `${eventName} ${eventDate}`,
+    //     fontSize: 16,
+    //     draggable: true,
+    //     fontFamily: "Poppins",
+    //     fontStyle: "bold",
+    //     fill: "#000000",
+    //     align: "left",
+    //     verticalAlign: "middle",
+    //     x: 10,
+    //     y: 10
+    //   };
+    //   return textConfig;
+    // },
     stageBackground() {
       let url;
-      if (this.$store.state.layout.orientation == 0) {
+      if (this.orientation == 0) {
         url = `https://${this.hostname}/fl_app/tableManager/assets/grid.png`;
-      }
-      if (this.$store.state.layout.orientation == 1) {
+      } else {
         url = `https://${
           this.hostname
         }/fl_app/tableManager/assets/vertical-grid.png`;
@@ -177,21 +192,33 @@ export default {
 
       return url;
     },
-    hostname() {
-      return this.$store.state.hostname;
-    },
-    orientation() {
-      return this.$store.state.layout.orientation;
-    },
-    stageConfig() {
-      return this.$store.state.configKonva;
-    },
+    // hostname() {
+    //   return this.$store.state.hostname;
+    // },
+    // orientation() {
+    //   return this.$store.state.layout.orientation;
+    // },
+    // stageConfig() {
+    //   return this.$store.state.configKonva;
+    // },
     ...mapGetters({
       guestTotalsV2: "guest/guestTotalsV2",
-      tableGroups: "table/getGroups"
+      tableGroups: "table/getGroups",
+      stageConfig: "getStageConfig",
+      orientation: "getOrientation",
+      hostname: "getHostname",
+      printTitle: "getPrintTitle",
+      loading: "getLoading"
     })
   },
   methods: {
+    handlePrintTitle() {
+      console.log('title', this.printTitle)
+      let { eventName, eventDate } = this.printTitle;
+      eventDate = eventDate != "0000-00-00" ? `- ${eventDate}` : "";
+
+      this.printTitleConfig.text = `${eventName} ${eventDate}`;
+    },
     guestSeraleCounters(counters) {
       let count = 0;
       counters.forEach(element => {
@@ -329,6 +356,11 @@ export default {
         this.imageSrc = image;
         this.backgroundConfig.fillPatternImage = image;
       };
+    },
+    loading() {
+      if (this.loading === false) {
+        this.handlePrintTitle()
+      }
     }
   },
   async mounted() {
@@ -336,7 +368,6 @@ export default {
     this.$store.dispatch("setStage", stage);
     const layer = await this.$refs.layer;
     this.$store.dispatch("setLayer", layer);
-
     if (this.$store.state.layout.orientation == 1) {
       this.backgroundConfig.width = 792;
       this.backgroundConfig.height = 1200;
