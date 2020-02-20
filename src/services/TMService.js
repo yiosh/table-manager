@@ -1,6 +1,7 @@
 import axios from "axios";
+import { host } from "@/localHost";
 
-let hostname = "demo.condivision.cloud";
+let hostname = host;
 let protocol = "https";
 if (location.hostname !== "localhost") {
   hostname = location.hostname;

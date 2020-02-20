@@ -5,6 +5,7 @@ import NProgress from "nprogress";
 import * as table from "@/store/modules/table.js";
 import * as guest from "@/store/modules/guest.js";
 import * as notification from "@/store/modules/notification.js";
+import { host } from "@/localHost";
 
 Vue.use(Vuex);
 
@@ -21,7 +22,7 @@ export default new Vuex.Store({
     hostname:
       location.hostname == "localhost" ||
       location.hostname == "dev.condivision.cloud"
-        ? "demo.condivision.cloud"
+        ? host
         : location.hostname,
     selectedGroup: null,
     loading: true,
