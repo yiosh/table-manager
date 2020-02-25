@@ -34,10 +34,16 @@
             </v-layout>
 
             <v-layout>
-              <v-flex xs12>
+              <v-flex xs12 md6>
                 <v-text-field
                   v-model="editedItem.nomeCliente"
                   :label="labels.customers_table_name"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 md6>
+                <v-text-field
+                  v-model="editedItem.maxSeats"
+                  :label="labels.max_seats"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -184,7 +190,8 @@ export default {
       nomeCliente: "",
       borderColor: "#000000",
       backgroundColor: "#ffffff",
-      borderType: "intero"
+      borderType: "intero",
+      maxSeats: null
     },
     defaultItem: {
       id: "",
@@ -276,7 +283,8 @@ export default {
         nomeCliente: table.textConfig.nomeCliente,
         borderColor: table.tableConfig.stroke,
         backgroundColor: table.tableConfig.fill,
-        borderType
+        borderType,
+        maxSeats: table.textConfig.maxSeats
       };
       this.editedItem = Object.assign({}, item);
       this.defaultItem = Object.assign({}, item);
@@ -317,7 +325,8 @@ export default {
         nomeCliente: this.editedItem.nomeCliente,
         borderColor: borderColor.replace("#", ""),
         backgroundColor: backgroundColor.replace("#", ""),
-        borderType: this.editedItem.borderType
+        borderType: this.editedItem.borderType,
+        maxSeats: this.editedItem.maxSeats
       };
 
       console.log("updatedItem", updatedItem);
@@ -374,6 +383,7 @@ export default {
     });
 
     EventBus.$on("table-select", group => {
+      console.log("groupselected", group);
       this.fetchSelectedTable(group);
     });
 

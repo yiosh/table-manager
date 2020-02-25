@@ -131,6 +131,7 @@ export const mutations = {
     tableToEdit.textConfig.text =
       table.tableName + (table.tableNumber == 0 ? "" : table.tableNumber);
     tableToEdit.textConfig.nomeCliente = table.nomeCliente;
+    tableToEdit.textConfig.maxSeats = table.maxSeats;
   }
 };
 

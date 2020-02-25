@@ -166,9 +166,7 @@ export default {
       if (this.orientation == 0) {
         url = `https://${this.hostname}/fl_app/tableManager/assets/grid.png`;
       } else {
-        url = `https://${
-          this.hostname
-        }/fl_app/tableManager/assets/vertical-grid.png`;
+        url = `https://${this.hostname}/fl_app/tableManager/assets/vertical-grid.png`;
       }
 
       return url;
@@ -209,9 +207,7 @@ export default {
 
       try {
         const response = await axios.get(
-          `https://${
-            this.hostname
-          }/fl_api/tables-v2/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
+          `https://${this.hostname}/fl_api/tables-v3/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
         );
         console.log(response);
       } catch (error) {
@@ -227,9 +223,7 @@ export default {
       if (scaleX != 1 || scaleY != 1) {
         try {
           const response = await axios.get(
-            `https://${
-              this.hostname
-            }/fl_api/tables-v2/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
+            `https://${this.hostname}/fl_api/tables-v2/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
           );
           console.log(response);
         } catch (error) {
@@ -238,9 +232,7 @@ export default {
       }
       try {
         const response = await axios.get(
-          `https://${
-            this.hostname
-          }/fl_api/tables-v2/?rotate_table&token=1&table_id=${tableId}&layout_id=${layoutId}&angolare=${rotation}`
+          `https://${this.hostname}/fl_api/tables-v2/?rotate_table&token=1&table_id=${tableId}&layout_id=${layoutId}&angolare=${rotation}`
         );
         console.log(response);
       } catch (error) {

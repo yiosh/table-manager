@@ -29,7 +29,8 @@
               true,
               createTableForm.borderColor,
               createTableForm.backgroundColor,
-              createTableForm.borderType
+              createTableForm.borderType,
+              createTableForm.maxSeats
             )
           "
           ref="createForm"
@@ -56,10 +57,16 @@
             </v-layout>
 
             <v-layout>
-              <v-flex xs12>
+              <v-flex xs12 md6>
                 <v-text-field
                   v-model="createTableForm.nomeCliente"
                   :label="labels.customers_table_name"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 md6>
+                <v-text-field
+                  v-model.number="createTableForm.maxSeats"
+                  label="Max Persone"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -202,7 +209,8 @@ export default {
       nomeCliente: "",
       borderColor: "#000000",
       backgroundColor: "#ffffff",
-      borderType: "intero"
+      borderType: "intero",
+      maxSeats: null
     },
     nameRules: [v => !!v || "Inserisci nome tavolo per procedere"]
   }),
@@ -246,7 +254,7 @@ export default {
     },
     // Parses from table id into Konva shape
     typeParsed(id) {
-      return tableTypeParser(id)
+      return tableTypeParser(id);
     },
     createTable(
       name,
@@ -264,7 +272,8 @@ export default {
       tableGuests = [],
       borderColor = "#000000",
       backgroundColor,
-      borderType
+      borderType,
+      maxSeats
     ) {
       let strokeEnabled = true;
       if (borderType == "nessuno") {
@@ -329,7 +338,8 @@ export default {
         rotation: angolare,
         offsetY: size / 2,
         offsetX: size / 2,
-        nomeCliente
+        nomeCliente,
+        maxSeats
       };
 
       let nomeClienteText = {
@@ -705,7 +715,8 @@ export default {
         nomeCliente,
         borderColor: borderColor,
         borderType,
-        backgroundColor
+        backgroundColor,
+        maxSeats
       };
 
       let payload = {
@@ -750,7 +761,8 @@ export default {
             tableGuests,
             `#${payload.border_color}`,
             `#${payload.background_color}`,
-            payload.border_type
+            payload.border_type,
+            payload.max_seats
           );
         });
       }
