@@ -66,7 +66,7 @@
               <v-flex xs12 md6>
                 <v-text-field
                   v-model.number="createTableForm.maxSeats"
-                  label="Max Persone"
+                  label="Max Ospiti"
                 ></v-text-field>
               </v-flex>
             </v-layout>
