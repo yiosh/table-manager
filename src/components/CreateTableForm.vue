@@ -153,7 +153,7 @@ export default {
     "compact-picker": Compact
   },
   data: () => ({
-    labels: {
+    labelsEn: {
       add_table: "Add Table",
       table_name: "Table Name",
       table_number: "Table Number",
@@ -189,6 +189,43 @@ export default {
       ],
       create: "Create",
       table_inserted: "Table Inserted"
+    },
+    labels: {
+      add_table: "Aggiungi tavolo",
+      table_name: "Nome tavolo",
+      table_number: "Numero tavolo",
+      customers_table_name: "Nome tabella cliente",
+      type: "Tipo",
+      size: "Formato",
+      dimension: "Dimensione",
+      small: "Piccola",
+      medium: "Media",
+      large: "Grande",
+      border_color: "Colore del bordo",
+      background_color: "Colore di sfondo",
+      border: "Bordo",
+      borderOptions: [
+        {
+          id: 1,
+          placeholder: "solid",
+          label: "Solido",
+          value: "intero"
+        },
+        {
+          id: 2,
+          placeholder: "dashed",
+          label: "Trattegiato",
+          value: "trattegiato"
+        },
+        {
+          id: 3,
+          placeholder: "none",
+          label: "Nessuno",
+          value: "nessuno"
+        }
+      ],
+      create: "Crea",
+      table_inserted: "Tabella inserita"
     },
     numberRules: [
       v => typeof v === "number" || "Per favore inserisci un numero"
@@ -767,28 +804,28 @@ export default {
         });
       }
 
-      const translatedLabels = this.$store.state.translatedLabels;
-      const labels = this.labels;
+      // const translatedLabels = this.$store.state.translatedLabels;
+      // const labels = this.labels;
 
-      for (const translatedLabel of translatedLabels) {
-        if (
-          translatedLabel.placeholder === "solid" ||
-          translatedLabel.placeholder === "dashed" ||
-          translatedLabel.placeholder === "none"
-        ) {
-          for (const borderOption of labels.borderOptions) {
-            if (translatedLabel.placeholder === borderOption.placeholder) {
-              borderOption.label = translatedLabel.content;
-            }
-          }
-        }
+      // for (const translatedLabel of translatedLabels) {
+      //   if (
+      //     translatedLabel.placeholder === "solid" ||
+      //     translatedLabel.placeholder === "dashed" ||
+      //     translatedLabel.placeholder === "none"
+      //   ) {
+      //     for (const borderOption of labels.borderOptions) {
+      //       if (translatedLabel.placeholder === borderOption.placeholder) {
+      //         borderOption.label = translatedLabel.content;
+      //       }
+      //     }
+      //   }
 
-        for (const label in labels) {
-          if (translatedLabel.placeholder === label) {
-            labels[label] = translatedLabel.content;
-          }
-        }
-      }
+      //   for (const label in labels) {
+      //     if (translatedLabel.placeholder === label) {
+      //       labels[label] = translatedLabel.content;
+      //     }
+      //   }
+      // }
     });
 
     EventBus.$on("create-table-select", () => {

@@ -36,10 +36,15 @@ export default {
     EditTableForm
   },
   data: () => ({
-    labels: {
+    labelsEn: {
       add_table: "Add Table",
       edit: "Edit",
       table: "Table"
+    },
+    labels: {
+      add_table: "Aggiungi tavolo",
+      edit: "Modifica",
+      table: "Tavolo"
     },
     selectedGroup: null
   }),
@@ -74,18 +79,18 @@ export default {
     }
   },
   created() {
-    EventBus.$on("fetch-done", () => {
-      const translatedLabels = this.$store.state.translatedLabels;
-      const labels = this.labels;
+    // EventBus.$on("fetch-done", () => {
+    //   const translatedLabels = this.$store.state.translatedLabels;
+    //   const labels = this.labels;
 
-      for (const translatedLabel of translatedLabels) {
-        for (const label in labels) {
-          if (translatedLabel.placeholder === label) {
-            labels[label] = translatedLabel.content;
-          }
-        }
-      }
-    });
+    //   for (const translatedLabel of translatedLabels) {
+    //     for (const label in labels) {
+    //       if (translatedLabel.placeholder === label) {
+    //         labels[label] = translatedLabel.content;
+    //       }
+    //     }
+    //   }
+    // });
 
     EventBus.$on("table-select", group => {
       this.selectedGroup = group;

@@ -43,7 +43,7 @@
               <v-flex xs12 md6>
                 <v-text-field
                   v-model="editedItem.maxSeats"
-                  :label="labels.max_seats"
+                  label="Max Ospiti"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -132,7 +132,7 @@ export default {
     "compact-picker": Compact
   },
   data: () => ({
-    labels: {
+    labelsEn: {
       table: "Table",
       edit: "Edit",
       table_name: "Table Name",
@@ -169,6 +169,44 @@ export default {
       ],
       save: "Save",
       delete: "Delete"
+    },
+    labels: {
+      table: "Tavolo",
+      edit: "Modifica",
+      table_name: "Nome tavolo",
+      table_number: "Numero tavolo",
+      customers_table_name: "Nome tabella cliente",
+      type: "Tipo",
+      size: "Formato",
+      dimension: "Dimensione",
+      small: "Piccola",
+      medium: "Media",
+      large: "Grande",
+      border_color: "Colore del bordo",
+      background_color: "Colore di sfondo",
+      border: "Bordo",
+      borderOptions: [
+        {
+          id: 1,
+          placeholder: "solid",
+          label: "Solido",
+          value: "intero"
+        },
+        {
+          id: 2,
+          placeholder: "dashed",
+          label: "Trattegiato",
+          value: "trattegiato"
+        },
+        {
+          id: 3,
+          placeholder: "none",
+          label: "Nessuno",
+          value: "nessuno"
+        }
+      ],
+      save: "Salva",
+      delete: "Elimina"
     },
     valid: true,
     numberRules: [
@@ -357,30 +395,30 @@ export default {
     this.layer = this.$store.state.layer;
   },
   created() {
-    EventBus.$on("fetch-done", () => {
-      const translatedLabels = this.$store.state.translatedLabels;
-      const labels = this.labels;
+    // EventBus.$on("fetch-done", () => {
+    //   const translatedLabels = this.$store.state.translatedLabels;
+    //   const labels = this.labels;
 
-      for (const translatedLabel of translatedLabels) {
-        if (
-          translatedLabel.placeholder === "solid" ||
-          translatedLabel.placeholder === "dashed" ||
-          translatedLabel.placeholder === "none"
-        ) {
-          for (const borderOption of labels.borderOptions) {
-            if (translatedLabel.placeholder === borderOption.placeholder) {
-              borderOption.label = translatedLabel.content;
-            }
-          }
-        }
+    //   for (const translatedLabel of translatedLabels) {
+    //     if (
+    //       translatedLabel.placeholder === "solid" ||
+    //       translatedLabel.placeholder === "dashed" ||
+    //       translatedLabel.placeholder === "none"
+    //     ) {
+    //       for (const borderOption of labels.borderOptions) {
+    //         if (translatedLabel.placeholder === borderOption.placeholder) {
+    //           borderOption.label = translatedLabel.content;
+    //         }
+    //       }
+    //     }
 
-        for (const label in labels) {
-          if (translatedLabel.placeholder === label) {
-            labels[label] = translatedLabel.content;
-          }
-        }
-      }
-    });
+    //     for (const label in labels) {
+    //       if (translatedLabel.placeholder === label) {
+    //         labels[label] = translatedLabel.content;
+    //       }
+    //     }
+    //   }
+    // });
 
     EventBus.$on("table-select", group => {
       console.log("groupselected", group);

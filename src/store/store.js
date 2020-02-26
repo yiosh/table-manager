@@ -58,6 +58,7 @@ export default new Vuex.Store({
     },
     SET_LABELS(state, payload) {
       state.info = Object.assign({}, payload);
+      console.log("labels", payload);
       state.labels = Object.assign({}, payload);
     },
     SET_LAYOUT(state, payload) {

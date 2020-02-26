@@ -6,7 +6,7 @@
           <v-toolbar-title
             >{{ labels.list_of_guests }} - {{ tableName }}
             {{ tableNumber == 0 ? "" : tableNumber }}
-            {{ clientName }}</v-toolbar-title
+            {{ clientName }} {{ maxSeats ? `(Max ${maxSeats})` : "" }}</v-toolbar-title
           >
           <v-spacer></v-spacer>
 
@@ -158,41 +158,79 @@ export default {
       tableId: null,
       tableName: "",
       tableNumber: "",
+      maxSeats: "",
       clientName: "",
       dialog: false,
       guestDialog: false,
+      // labelsEn: {
+      //   list_of_guests: "List of Guests",
+      //   create_new_guest: "Create New Guest",
+      //   surname: "Surname",
+      //   name: "Name",
+      //   adults: "Adults",
+      //   child: "Child",
+      //   chairs: "Chairs",
+      //   high_chairs: "High Chairs",
+      //   note: "Note",
+      //   guest_type: "Guest Type",
+      //   save_and_continue: "Save and Continue",
+      //   save: "Save",
+      //   close: "Close",
+      //   there_are_no_guests_at_this_table: "There are no guests at this table",
+      //   edit_guest: "Edit Guest",
+      //   delete_guest_confirm: "Are you sure you wish to delete guest ",
+      //   headers: [
+      //     { placeholder: "surname", text: "Surname", value: "cognome" },
+      //     { placeholder: "name", text: "Name", value: "nome" },
+      //     { placeholder: "adults", text: "Adults", value: "peoples" },
+      //     { placeholder: "child", text: "Child", value: "baby" },
+      //     { placeholder: "chairs", text: "Chairs", value: "chairs_only" },
+      //     {
+      //       placeholder: "highchairs",
+      //       text: "Highchairs",
+      //       value: "high_chair"
+      //     },
+      //     { placeholder: "note", text: "Note", value: "note_intolleranze" },
+      //     {
+      //       placeholder: "actions",
+      //       text: "Actions",
+      //       value: "nome",
+      //       sortable: false
+      //     }
+      //   ]
+      // },
       labels: {
-        list_of_guests: "List of Guests",
-        create_new_guest: "Create New Guest",
-        surname: "Surname",
-        name: "Name",
-        adults: "Adults",
-        child: "Child",
-        chairs: "Chairs",
-        high_chairs: "High Chairs",
-        note: "Note",
-        guest_type: "Guest Type",
-        save_and_continue: "Save and Continue",
-        save: "Save",
-        close: "Close",
-        there_are_no_guests_at_this_table: "There are no guests at this table",
-        edit_guest: "Edit Guest",
-        delete_guest_confirm: "Are you sure you wish to delete guest ",
+        list_of_guests: "Elenco degli ospiti",
+        create_new_guest: "Crea nuovo ospite",
+        surname: "Cognome",
+        name: "Nome",
+        adults: "Adulti",
+        child: "Bambino",
+        chairs: "Sedie",
+        high_chairs: "Seggioloni",
+        note: "Nota",
+        guest_type: "Tipo di ospite",
+        save_and_continue: "Salva e continua",
+        save: "Salva",
+        close: "Chiudi",
+        there_are_no_guests_at_this_table: "Non ci sono ospiti a questo tavolo",
+        edit_guest: "Modifica ospite",
+        delete_guest_confirm: "Sei sicuro di voler cancellare l'ospite ",
         headers: [
-          { placeholder: "surname", text: "Surname", value: "cognome" },
-          { placeholder: "name", text: "Name", value: "nome" },
-          { placeholder: "adults", text: "Adults", value: "peoples" },
-          { placeholder: "child", text: "Child", value: "baby" },
-          { placeholder: "chairs", text: "Chairs", value: "chairs_only" },
+          { placeholder: "surname", text: "Cognome", value: "cognome" },
+          { placeholder: "name", text: "Nome", value: "nome" },
+          { placeholder: "adults", text: "Adulti", value: "peoples" },
+          { placeholder: "child", text: "Baby", value: "baby" },
+          { placeholder: "chairs", text: "Sedie", value: "chairs_only" },
           {
             placeholder: "highchairs",
-            text: "Highchairs",
+            text: "Seggioloni",
             value: "high_chair"
           },
-          { placeholder: "note", text: "Note", value: "note_intolleranze" },
+          { placeholder: "note", text: "Nota", value: "note_intolleranze" },
           {
             placeholder: "actions",
-            text: "Actions",
+            text: "Azioni",
             value: "nome",
             sortable: false
           }
@@ -343,32 +381,30 @@ export default {
   },
   created() {
     EventBus.$on("fetch-done", () => {
-      const translatedLabels = this.$store.state.translatedLabels;
-      const labels = this.labels;
-
-      for (const translatedLabel of translatedLabels) {
-        if (
-          translatedLabel.placeholder === "surname" ||
-          translatedLabel.placeholder === "name" ||
-          translatedLabel.placeholder === "adults" ||
-          translatedLabel.placeholder === "child" ||
-          translatedLabel.placeholder === "chairs" ||
-          translatedLabel.placeholder === "high_chairs" ||
-          translatedLabel.placeholder === "actions"
-        ) {
-          for (const header of labels.headers) {
-            if (translatedLabel.placeholder === header.placeholder) {
-              header.text = translatedLabel.content;
-            }
-          }
-        }
-
-        for (const label in labels) {
-          if (translatedLabel.placeholder === label) {
-            labels[label] = translatedLabel.content;
-          }
-        }
-      }
+      // const translatedLabels = this.$store.state.translatedLabels;
+      // const labels = this.labels;
+      // for (const translatedLabel of translatedLabels) {
+      //   if (
+      //     translatedLabel.placeholder === "surname" ||
+      //     translatedLabel.placeholder === "name" ||
+      //     translatedLabel.placeholder === "adults" ||
+      //     translatedLabel.placeholder === "child" ||
+      //     translatedLabel.placeholder === "chairs" ||
+      //     translatedLabel.placeholder === "high_chairs" ||
+      //     translatedLabel.placeholder === "actions"
+      //   ) {
+      //     for (const header of labels.headers) {
+      //       if (translatedLabel.placeholder === header.placeholder) {
+      //         header.text = translatedLabel.content;
+      //       }
+      //     }
+      //   }
+      //   for (const label in labels) {
+      //     if (translatedLabel.placeholder === label) {
+      //       labels[label] = translatedLabel.content;
+      //     }
+      //   }
+      // }
     });
 
     // On table select grab the table's id and other data
@@ -376,6 +412,9 @@ export default {
       let table = group.attrs.table;
       this.tableId = table.id;
       this.tableName = table.textConfig.name;
+      if (table.textConfig.maxSeats) {
+        this.maxSeats = table.textConfig.maxSeats;
+      }
       this.tableNumber = table.textConfig.number;
       this.clientName = table.textConfig.nomeCliente;
     });
