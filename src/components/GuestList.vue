@@ -308,6 +308,28 @@ export default {
     log() {
       console.log("this");
     },
+    maxSeatsCheck(newGuest) {
+      const maxSeats = Number(this.maxSeats);
+      let guests = JSON.parse(JSON.stringify(this.guests(this.tableId)));
+      const index = guests.findIndex(guest => guest.id === newGuest.id);
+      if (index !== -1) {
+        guests[index] = Object.assign({}, newGuest);
+      } else {
+        guests.push(newGuest);
+      }
+      let totalPeople = 0;
+      for (const guest of guests) {
+        totalPeople += Number(guest.baby);
+        totalPeople += Number(guest.chairs_only);
+        totalPeople += Number(guest.high_chair);
+        totalPeople += Number(guest.peoples);
+      }
+      if (totalPeople > maxSeats) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     closeDialog() {
       this.dialog = false;
     },
@@ -346,6 +368,17 @@ export default {
     },
     save() {
       let guest = this.editedItem;
+      if (this.maxSeatsCheck(guest)) {
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message:
+            "Hai inserito più ospiti di quelli consentiti da questo tavolo"
+        };
+        this.$store.dispatch("notification/add", notification, { root: true });
+        return;
+      }
+      console.log("isItMax", this.maxSeatsCheck(guest));
       if (guest.note_intolleranze != "") {
         const payload = {
           tableId: this.tableId,

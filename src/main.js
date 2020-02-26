@@ -11,7 +11,7 @@ Vue.config.productionTip = false;
 
 new Vue({
   store,
-  title: "Table Manager V2",
+  title: "Table Manager V5",
   render: h => h(App),
   created() {}
 }).$mount("#app");

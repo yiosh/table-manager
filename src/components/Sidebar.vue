@@ -71,9 +71,13 @@ export default {
     items: [],
     mini: true,
     right: null,
-    labels: {
+    labelsEn: {
       you_must_select_a_table_to_open_its_guest_list:
         "You must select a table to open its guest list"
+    },
+    labels: {
+      you_must_select_a_table_to_open_its_guest_list:
+        "È necessario selezionare un tavolo per aprire il suo elenco di ospiti"
     }
   }),
   methods: {
@@ -86,8 +90,9 @@ export default {
           } else {
             const notification = {
               type: "warning",
-              message: this.labels
-                .you_must_select_a_table_to_open_its_guest_list
+              multiLine: true,
+              message:
+                "È necessario selezionare un tavolo per aprire il suo elenco di ospiti"
             };
             this.$store.dispatch("notification/add", notification, {
               root: true
@@ -113,10 +118,11 @@ export default {
         }
       }
 
-      this.items = [{ title: "Preview", icon: "print", ref: "print" }];
+      this.items = [{ title: "Stampa", icon: "print", ref: "print" }];
       if (this.$store.state.layout.evento_id !== "0") {
         this.items.unshift({
-          title: "Guest List",
+          // title: "Guest List",
+          title: "Elenco degli ospiti",
           icon: "people",
           ref: "guestlist"
         });

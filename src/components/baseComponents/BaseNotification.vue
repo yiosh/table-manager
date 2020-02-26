@@ -28,8 +28,11 @@ export default {
   data: () => ({
     notificationStatus: true,
     timeout: null,
-    labels: {
+    labelsEn: {
       close: "Close"
+    },
+    labels: {
+      close: "Chiudi"
     }
   }),
   mounted() {

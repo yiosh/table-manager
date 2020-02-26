@@ -9,6 +9,7 @@
         </v-layout>
       </div>
     </v-content>
+    
     <Sidebar v-show="loading == false && error === false"></Sidebar>
     <BaseNotification
       v-for="notification in notifications"
@@ -72,8 +73,8 @@ export default {
   },
   mounted() {
     document.title = this.$store.state.layout.layout_name
-      ? this.$store.state.layout.layout_name + " - Table Manager V2"
-      : "Table Manager V2";
+      ? this.$store.state.layout.layout_name + " - Table Manager V5"
+      : "Table Manager V5";
     const layoutId = this.getQueryVariable("layout_id");
     if (!layoutId) {
       alert('Please add a "layout_id paramenter!"');
