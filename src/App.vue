@@ -9,7 +9,7 @@
         </v-layout>
       </div>
     </v-content>
-    
+
     <Sidebar v-show="loading == false && error === false"></Sidebar>
     <BaseNotification
       v-for="notification in notifications"
@@ -37,6 +37,11 @@ export default {
     title: null,
     orientation: 0
   }),
+  watch: {
+    layoutName() {
+      document.title = `${this.layoutName} - Table Planner v5`;
+    }
+  },
   computed: {
     layout() {
       return this.$store.state.layout;
@@ -73,8 +78,8 @@ export default {
   },
   mounted() {
     document.title = this.$store.state.layout.layout_name
-      ? this.$store.state.layout.layout_name + " - Table Manager V5"
-      : "Table Manager V5";
+      ? this.$store.state.layout.layout_name + " - Table Planner v5"
+      : "Table Planner v5";
     const layoutId = this.getQueryVariable("layout_id");
     if (!layoutId) {
       alert('Please add a "layout_id paramenter!"');

@@ -105,6 +105,7 @@ import axios from "axios";
 import Toolbar from "./Toolbar";
 import { EventBus } from "../event-bus.js";
 import { mapGetters } from "vuex";
+import store from "@/store/store";
 
 export default {
   name: "Canvas",
@@ -112,14 +113,15 @@ export default {
     Toolbar
   },
   data: () => ({
+    this: this,
     dialog: false,
     selectedTable: null,
     otherBackground: null,
     backgroundConfig: {
       x: 0,
       y: 0,
-      width: 1200,
-      height: 792,
+      width: null,
+      height: null,
       fillPatternImage: null
     },
     imageSrc: null,
@@ -291,6 +293,15 @@ export default {
     }
   },
   watch: {
+    orientation() {
+      if (this.orientation == 1) {
+        this.backgroundConfig.height = 1200;
+        this.backgroundConfig.width = 792;
+      } else {
+        this.backgroundConfig.height = 792;
+        this.backgroundConfig.width = 1200;
+      }
+    },
     backgroundImg() {
       const image = new window.Image();
       image.src = this.backgroundImg;
@@ -306,14 +317,21 @@ export default {
       }
     }
   },
-  async mounted() {
-    const stage = await this.$refs.stage.getStage();
+  mounted() {
+    const stage = this.$refs.stage.getStage();
     this.$store.dispatch("setStage", stage);
-    const layer = await this.$refs.layer;
+    const layer = this.$refs.layer;
     this.$store.dispatch("setLayer", layer);
-    if (this.$store.state.layout.orientation == 1) {
-      this.backgroundConfig.width = 792;
+    if (this.orientation === "1") {
+      console.log("1");
       this.backgroundConfig.height = 1200;
+      this.backgroundConfig.width = 792;
+    }
+    if (this.orientation === "0") {
+      console.log("0");
+
+      this.backgroundConfig.height = 792;
+      this.backgroundConfig.width = 1200;
     }
   }
 };

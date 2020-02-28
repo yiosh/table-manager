@@ -15,7 +15,7 @@
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title>Condivision Cloud Beta</v-list-tile-title>
+              <v-list-tile-title>Condivision Cloud</v-list-tile-title>
             </v-list-tile-content>
 
             <v-list-tile-action>
