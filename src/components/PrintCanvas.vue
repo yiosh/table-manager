@@ -40,11 +40,17 @@ export default {
     return {
       src: null,
       dialog: false,
-      labels: {
+      labelsEn: {
         close: "Close",
         print: "Print",
         download_png: "Download PNG",
         download_jpg: "Download JPG"
+      },
+      labels: {
+        close: "Chiudi",
+        print: "Stampa",
+        download_png: "Scarica PNG",
+        download_jpg: "Scarica JPG"
       }
     };
   },
@@ -92,9 +98,7 @@ export default {
           "setTimeout('step2()', 10);}\n" +
           "function step2(){window.print();window.close()}\n" +
           "</scri" +
-          `pt></head><body style="background-image: url(${
-            this.backgroundImageUrl
-          });" onload='step1()'>\n` +
+          `pt></head><body style="background-image: url(${this.backgroundImageUrl});" onload='step1()'>\n` +
           "<img src='" +
           source +
           "' /></body></html>"
@@ -120,18 +124,18 @@ export default {
     }
   },
   created() {
-    EventBus.$on("fetch-done", () => {
-      const translatedLabels = this.$store.state.translatedLabels;
-      const labels = this.labels;
+    // EventBus.$on("fetch-done", () => {
+    //   const translatedLabels = this.$store.state.translatedLabels;
+    //   const labels = this.labels;
 
-      for (const translatedLabel of translatedLabels) {
-        for (const label in labels) {
-          if (translatedLabel.placeholder === label) {
-            labels[label] = translatedLabel.content;
-          }
-        }
-      }
-    });
+    //   for (const translatedLabel of translatedLabels) {
+    //     for (const label in labels) {
+    //       if (translatedLabel.placeholder === label) {
+    //         labels[label] = translatedLabel.content;
+    //       }
+    //     }
+    //   }
+    // });
 
     EventBus.$on("preview-select", () => {
       console.log("recieved");

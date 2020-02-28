@@ -1,19 +1,19 @@
 import axios from "axios";
+import { host } from "@/localHost";
 
-let hostname = "demo.condivision.cloud";
-if (
-  location.hostname != "localhost" &&
-  location.hostname != "dev.condivision.cloud"
-) {
+let hostname = host;
+let protocol = "https";
+if (location.hostname !== "localhost") {
   hostname = location.hostname;
 }
 // location.hostname == "localhost"
 //   ? "calderonimartini.condivision.cloud"
 //   : location.hostname;
-let endpoint = "/fl_api/tables-v2/?";
+const baseURL = protocol + "://" + hostname;
+let endpoint = "/fl_api/tables-v3/?";
 
 const apiClient = axios.create({
-  baseURL: location.protocol + "//" + hostname,
+  baseURL,
   withCredentials: false,
   headers: {
     Accept: "application/json",
@@ -22,7 +22,7 @@ const apiClient = axios.create({
 });
 
 const CDNClient = axios.create({
-  baseURL: "https:" + "//" + "mysql.condivision.cloud",
+  baseURL: "https://mysql.condivision.cloud",
   withCredentials: false,
   headers: {
     Accept: "application/json",
@@ -58,14 +58,15 @@ export default {
     nomeCliente,
     borderColor,
     backgroundColor,
-    borderType
+    borderType,
+    maxSeats
   }) {
     console.log("back", backgroundColor, "border", borderColor);
     borderColor = borderColor.replace("#", "");
     backgroundColor = backgroundColor.replace("#", "");
 
     return apiClient.get(
-      `${endpoint}insert_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}`
+      `${endpoint}insert_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}&max_seats=${maxSeats}`
     );
   },
   updateTable({
@@ -81,10 +82,11 @@ export default {
     nomeCliente,
     borderColor,
     backgroundColor,
-    borderType
+    borderType,
+    maxSeats
   }) {
     return apiClient.get(
-      `${endpoint}update_table&token=1&layout_id=${layoutId}&table_id=${id}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&size=${size}&scale_x=${scaleX}&scale_y=${scaleY}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}`
+      `${endpoint}update_table&token=1&layout_id=${layoutId}&table_id=${id}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&size=${size}&scale_x=${scaleX}&scale_y=${scaleY}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}&max_seats=${maxSeats}`
     );
   },
   deleteTable({ layoutId, tableId }) {
@@ -100,27 +102,13 @@ export default {
   },
   addGuest(layoutId, tableId, guest) {
     return apiClient.get(
-      `${endpoint}insert_guest&token=1&layout_id=${layoutId}&guest_type=${
-        guest.guest_type
-      }&table_id=${tableId}&cognome=${guest.cognome}&peoples=${
-        guest.peoples
-      }&nome=${guest.nome}&baby=${guest.baby}&chairs_only=${
-        guest.chairs_only
-      }&highchair=${guest.high_chair}&note_intolleranze=${
-        guest.note_intolleranze
-      }`
+      `${endpoint}insert_guest&token=1&layout_id=${layoutId}&guest_type=${guest.guest_type}&table_id=${tableId}&cognome=${guest.cognome}&peoples=${guest.peoples}&nome=${guest.nome}&baby=${guest.baby}&chairs_only=${guest.chairs_only}&highchair=${guest.high_chair}&note_intolleranze=${guest.note_intolleranze}`
     );
   },
   updateGuest(guest) {
     console.log("guest", guest);
     return apiClient.get(
-      `${endpoint}update_guest&token=1&guest_id=${guest.id}&guest_type=${
-        guest.guest_type
-      }&cognome=${guest.cognome}&peoples=${guest.peoples}&nome=${
-        guest.nome
-      }&baby=${guest.baby}&chairs_only=${guest.chairs_only}&highchair=${
-        guest.high_chair
-      }&note_intolleranze=${guest.note_intolleranze}`
+      `${endpoint}update_guest&token=1&guest_id=${guest.id}&guest_type=${guest.guest_type}&cognome=${guest.cognome}&peoples=${guest.peoples}&nome=${guest.nome}&baby=${guest.baby}&chairs_only=${guest.chairs_only}&highchair=${guest.high_chair}&note_intolleranze=${guest.note_intolleranze}`
     );
   },
   deleteGuest(guestId) {

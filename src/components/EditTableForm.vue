@@ -34,10 +34,16 @@
             </v-layout>
 
             <v-layout>
-              <v-flex xs12>
+              <v-flex xs12 md6>
                 <v-text-field
                   v-model="editedItem.nomeCliente"
                   :label="labels.customers_table_name"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 md6>
+                <v-text-field
+                  v-model="editedItem.maxSeats"
+                  label="Max Ospiti"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -49,7 +55,7 @@
                   <v-btn
                     v-for="tableType in table.tableTypes"
                     flat
-                    :value="tableTypeParser(tableType.id)"
+                    :value="typeParsed(tableType.id)"
                     :key="tableType.id"
                     >{{ tableType.label }}</v-btn
                   >
@@ -118,6 +124,7 @@
 import { EventBus } from "../event-bus.js";
 import { mapState } from "vuex";
 import { Compact } from "vue-color";
+import { tableTypeDeparser, tableTypeParser } from "@/utils";
 
 export default {
   name: "EditTableForm",
@@ -125,7 +132,7 @@ export default {
     "compact-picker": Compact
   },
   data: () => ({
-    labels: {
+    labelsEn: {
       table: "Table",
       edit: "Edit",
       table_name: "Table Name",
@@ -163,6 +170,44 @@ export default {
       save: "Save",
       delete: "Delete"
     },
+    labels: {
+      table: "Tavolo",
+      edit: "Modifica",
+      table_name: "Nome tavolo",
+      table_number: "Numero tavolo",
+      customers_table_name: "Nome tabella cliente",
+      type: "Tipo",
+      size: "Formato",
+      dimension: "Dimensione",
+      small: "Piccola",
+      medium: "Media",
+      large: "Grande",
+      border_color: "Colore del bordo",
+      background_color: "Colore di sfondo",
+      border: "Bordo",
+      borderOptions: [
+        {
+          id: 1,
+          placeholder: "solid",
+          label: "Solido",
+          value: "intero"
+        },
+        {
+          id: 2,
+          placeholder: "dashed",
+          label: "Trattegiato",
+          value: "trattegiato"
+        },
+        {
+          id: 3,
+          placeholder: "none",
+          label: "Nessuno",
+          value: "nessuno"
+        }
+      ],
+      save: "Salva",
+      delete: "Elimina"
+    },
     valid: true,
     numberRules: [
       v => typeof v === "number" || "Per favore inserisci un numero"
@@ -183,7 +228,8 @@ export default {
       nomeCliente: "",
       borderColor: "#000000",
       backgroundColor: "#ffffff",
-      borderType: "intero"
+      borderType: "intero",
+      maxSeats: null
     },
     defaultItem: {
       id: "",
@@ -236,47 +282,8 @@ export default {
       this.angolareCustom = false;
     },
     // Parses from table id into Konva shape
-    tableTypeParser(id) {
-      let type;
-      switch (id) {
-        case "2":
-          type = "circle";
-          break;
-
-        case "3":
-          type = "square";
-          break;
-
-        case "4":
-          type = "rectangle";
-          break;
-
-        case "5":
-          type = "ellipse";
-          break;
-      }
-      return type;
-    },
-    tableTypeDeparser(type) {
-      let id;
-      switch (type) {
-        case "circle":
-          id = 2;
-          break;
-
-        case "square":
-          id = 3;
-          break;
-
-        case "rectangle":
-          id = 4;
-          break;
-
-        case "ellipse":
-          id = 5;
-          break;
-      }
-      return id;
+    typeParsed(id) {
+      return tableTypeParser(id);
     },
     fetchSelectedTable(group) {
       let table = group.attrs.table;
@@ -314,7 +321,8 @@ export default {
         nomeCliente: table.textConfig.nomeCliente,
         borderColor: table.tableConfig.stroke,
         backgroundColor: table.tableConfig.fill,
-        borderType
+        borderType,
+        maxSeats: table.textConfig.maxSeats
       };
       this.editedItem = Object.assign({}, item);
       this.defaultItem = Object.assign({}, item);
@@ -345,7 +353,7 @@ export default {
       let updatedItem = {
         layoutId: this.$store.state.layout.id,
         id: this.editedItem.id,
-        typeId: this.tableTypeDeparser(this.editedItem.type),
+        typeId: Number(tableTypeDeparser(this.editedItem.type)),
         size: this.editedItem.size,
         scaleX: this.editedItem.scaleX,
         scaleY: this.editedItem.scaleY,
@@ -355,7 +363,8 @@ export default {
         nomeCliente: this.editedItem.nomeCliente,
         borderColor: borderColor.replace("#", ""),
         backgroundColor: backgroundColor.replace("#", ""),
-        borderType: this.editedItem.borderType
+        borderType: this.editedItem.borderType,
+        maxSeats: this.editedItem.maxSeats
       };
 
       console.log("updatedItem", updatedItem);
@@ -386,32 +395,33 @@ export default {
     this.layer = this.$store.state.layer;
   },
   created() {
-    EventBus.$on("fetch-done", () => {
-      const translatedLabels = this.$store.state.translatedLabels;
-      const labels = this.labels;
+    // EventBus.$on("fetch-done", () => {
+    //   const translatedLabels = this.$store.state.translatedLabels;
+    //   const labels = this.labels;
 
-      for (const translatedLabel of translatedLabels) {
-        if (
-          translatedLabel.placeholder === "solid" ||
-          translatedLabel.placeholder === "dashed" ||
-          translatedLabel.placeholder === "none"
-        ) {
-          for (const borderOption of labels.borderOptions) {
-            if (translatedLabel.placeholder === borderOption.placeholder) {
-              borderOption.label = translatedLabel.content;
-            }
-          }
-        }
+    //   for (const translatedLabel of translatedLabels) {
+    //     if (
+    //       translatedLabel.placeholder === "solid" ||
+    //       translatedLabel.placeholder === "dashed" ||
+    //       translatedLabel.placeholder === "none"
+    //     ) {
+    //       for (const borderOption of labels.borderOptions) {
+    //         if (translatedLabel.placeholder === borderOption.placeholder) {
+    //           borderOption.label = translatedLabel.content;
+    //         }
+    //       }
+    //     }
 
-        for (const label in labels) {
-          if (translatedLabel.placeholder === label) {
-            labels[label] = translatedLabel.content;
-          }
-        }
-      }
-    });
+    //     for (const label in labels) {
+    //       if (translatedLabel.placeholder === label) {
+    //         labels[label] = translatedLabel.content;
+    //       }
+    //     }
+    //   }
+    // });
 
     EventBus.$on("table-select", group => {
+      console.log("groupselected", group);
       this.fetchSelectedTable(group);
     });
 

@@ -9,6 +9,7 @@
         </v-layout>
       </div>
     </v-content>
+
     <Sidebar v-show="loading == false && error === false"></Sidebar>
     <BaseNotification
       v-for="notification in notifications"
@@ -36,6 +37,11 @@ export default {
     title: null,
     orientation: 0
   }),
+  watch: {
+    layoutName() {
+      document.title = `${this.layoutName} - Table Planner v5`;
+    }
+  },
   computed: {
     layout() {
       return this.$store.state.layout;
@@ -72,17 +78,17 @@ export default {
   },
   mounted() {
     document.title = this.$store.state.layout.layout_name
-      ? this.$store.state.layout.layout_name + " - Table Manager V2"
-      : "Table Manager V2";
+      ? this.$store.state.layout.layout_name + " - Table Planner v5"
+      : "Table Planner v5";
     const layoutId = this.getQueryVariable("layout_id");
     if (!layoutId) {
       alert('Please add a "layout_id paramenter!"');
     } else {
       this.$store.dispatch("setLayout", layoutId);
       this.$store.dispatch("setLanguageLabels", "en");
-      this.$store.dispatch("guest/getGuestTypes");
       if (!this.$store.state.error) {
         this.$store.dispatch("table/fetchTableTypes", null, { root: true });
+        this.$store.dispatch("guest/getGuestTypes");
         this.$store.dispatch("table/getTables", layoutId, { root: true });
       }
     }

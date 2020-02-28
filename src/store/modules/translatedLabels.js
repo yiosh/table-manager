@@ -133,7 +133,8 @@ export const state = {
       id: "52",
       module: "53",
       placeholder: "you_must_select_a_table_to_open_its_guest_list",
-      content: "You must select a table to open its guest list"
+      content:
+        "È necessario selezionare una tabella per aprire il suo elenco di ospiti"
     },
     { id: "53", module: "53", placeholder: "delete", content: "Delete" }
   ]

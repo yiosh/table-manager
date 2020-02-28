@@ -29,7 +29,8 @@
               true,
               createTableForm.borderColor,
               createTableForm.backgroundColor,
-              createTableForm.borderType
+              createTableForm.borderType,
+              createTableForm.maxSeats
             )
           "
           ref="createForm"
@@ -56,10 +57,16 @@
             </v-layout>
 
             <v-layout>
-              <v-flex xs12>
+              <v-flex xs12 md6>
                 <v-text-field
                   v-model="createTableForm.nomeCliente"
                   :label="labels.customers_table_name"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 md6>
+                <v-text-field
+                  v-model.number="createTableForm.maxSeats"
+                  label="Max Ospiti"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -71,7 +78,7 @@
                   <v-btn
                     v-for="tableType in table.tableTypes"
                     flat
-                    :value="tableTypeParser(tableType.id)"
+                    :value="typeParsed(tableType.id)"
                     :key="tableType.id"
                     >{{ tableType.label }}</v-btn
                   >
@@ -138,6 +145,7 @@ import { EventBus } from "../event-bus.js";
 import { mapState } from "vuex";
 import { mapGetters } from "vuex";
 import { Compact } from "vue-color";
+import { tableTypeDeparser, tableTypeParser } from "@/utils";
 
 export default {
   name: "CreateTableForm",
@@ -145,7 +153,7 @@ export default {
     "compact-picker": Compact
   },
   data: () => ({
-    labels: {
+    labelsEn: {
       add_table: "Add Table",
       table_name: "Table Name",
       table_number: "Table Number",
@@ -182,6 +190,43 @@ export default {
       create: "Create",
       table_inserted: "Table Inserted"
     },
+    labels: {
+      add_table: "Aggiungi tavolo",
+      table_name: "Nome tavolo",
+      table_number: "Numero tavolo",
+      customers_table_name: "Nome tabella cliente",
+      type: "Tipo",
+      size: "Formato",
+      dimension: "Dimensione",
+      small: "Piccola",
+      medium: "Media",
+      large: "Grande",
+      border_color: "Colore del bordo",
+      background_color: "Colore di sfondo",
+      border: "Bordo",
+      borderOptions: [
+        {
+          id: 1,
+          placeholder: "solid",
+          label: "Solido",
+          value: "intero"
+        },
+        {
+          id: 2,
+          placeholder: "dashed",
+          label: "Trattegiato",
+          value: "trattegiato"
+        },
+        {
+          id: 3,
+          placeholder: "none",
+          label: "Nessuno",
+          value: "nessuno"
+        }
+      ],
+      create: "Crea",
+      table_inserted: "Tabella inserita"
+    },
     numberRules: [
       v => typeof v === "number" || "Per favore inserisci un numero"
     ],
@@ -201,11 +246,15 @@ export default {
       nomeCliente: "",
       borderColor: "#000000",
       backgroundColor: "#ffffff",
-      borderType: "intero"
+      borderType: "intero",
+      maxSeats: null
     },
     nameRules: [v => !!v || "Inserisci nome tavolo per procedere"]
   }),
   computed: {
+    blockBoard() {
+      return this.$store.getters.getInfo.block_board;
+    },
     rules() {
       const rules = [];
 
@@ -241,49 +290,9 @@ export default {
       this.$refs.createForm.validate();
     },
     // Parses from table id into Konva shape
-    tableTypeParser(id) {
-      let type;
-      switch (id) {
-        case "2":
-          type = "circle";
-          break;
-
-        case "3":
-          type = "square";
-          break;
-
-        case "4":
-          type = "rectangle";
-          break;
-
-        case "5":
-          type = "ellipse";
-          break;
-      }
-      return type;
+    typeParsed(id) {
+      return tableTypeParser(id);
     },
-    tableTypeDeparser(type) {
-      let id;
-      switch (type) {
-        case "circle":
-          id = "2";
-          break;
-
-        case "square":
-          id = "3";
-          break;
-
-        case "rectangle":
-          id = "4";
-          break;
-
-        case "ellipse":
-          id = "5";
-          break;
-      }
-      return id;
-    },
-    // Create table using tableTypes array and user input
     createTable(
       name,
       number = "",
@@ -300,7 +309,8 @@ export default {
       tableGuests = [],
       borderColor = "#000000",
       backgroundColor,
-      borderType
+      borderType,
+      maxSeats
     ) {
       let strokeEnabled = true;
       if (borderType == "nessuno") {
@@ -365,7 +375,8 @@ export default {
         rotation: angolare,
         offsetY: size / 2,
         offsetX: size / 2,
-        nomeCliente
+        nomeCliente,
+        maxSeats
       };
 
       let nomeClienteText = {
@@ -716,7 +727,7 @@ export default {
         rotation: 0,
         width: 100,
         height: 100,
-        draggable: true,
+        draggable: this.blockBoard == "0" ? true : false,
         guestCounters,
         nomeClienteText,
         table
@@ -730,7 +741,7 @@ export default {
 
       const details = {
         layoutId: this.$store.state.layout.id,
-        typeId: this.tableTypeDeparser(type),
+        typeId: tableTypeDeparser(type),
         tableName: name,
         tableNumber: number,
         tableGroup: tableGroup ? tableGroup : 0,
@@ -741,7 +752,8 @@ export default {
         nomeCliente,
         borderColor: borderColor,
         borderType,
-        backgroundColor
+        backgroundColor,
+        maxSeats
       };
 
       let payload = {
@@ -777,7 +789,7 @@ export default {
             Number(payload.size),
             Number(payload.scale_x),
             Number(payload.scale_y),
-            this.tableTypeParser(payload.type_id),
+            tableTypeParser(payload.type_id),
             payload.id,
             Number(payload.x),
             Number(payload.y),
@@ -786,33 +798,34 @@ export default {
             tableGuests,
             `#${payload.border_color}`,
             `#${payload.background_color}`,
-            payload.border_type
+            payload.border_type,
+            payload.max_seats
           );
         });
       }
 
-      const translatedLabels = this.$store.state.translatedLabels;
-      const labels = this.labels;
+      // const translatedLabels = this.$store.state.translatedLabels;
+      // const labels = this.labels;
 
-      for (const translatedLabel of translatedLabels) {
-        if (
-          translatedLabel.placeholder === "solid" ||
-          translatedLabel.placeholder === "dashed" ||
-          translatedLabel.placeholder === "none"
-        ) {
-          for (const borderOption of labels.borderOptions) {
-            if (translatedLabel.placeholder === borderOption.placeholder) {
-              borderOption.label = translatedLabel.content;
-            }
-          }
-        }
+      // for (const translatedLabel of translatedLabels) {
+      //   if (
+      //     translatedLabel.placeholder === "solid" ||
+      //     translatedLabel.placeholder === "dashed" ||
+      //     translatedLabel.placeholder === "none"
+      //   ) {
+      //     for (const borderOption of labels.borderOptions) {
+      //       if (translatedLabel.placeholder === borderOption.placeholder) {
+      //         borderOption.label = translatedLabel.content;
+      //       }
+      //     }
+      //   }
 
-        for (const label in labels) {
-          if (translatedLabel.placeholder === label) {
-            labels[label] = translatedLabel.content;
-          }
-        }
-      }
+      //   for (const label in labels) {
+      //     if (translatedLabel.placeholder === label) {
+      //       labels[label] = translatedLabel.content;
+      //     }
+      //   }
+      // }
     });
 
     EventBus.$on("create-table-select", () => {

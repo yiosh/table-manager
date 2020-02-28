@@ -360,7 +360,9 @@ export const getters = {
     return newArray;
   },
   guests: state => tableId => {
-    return state.guests.filter(guest => guest.table_id === tableId);
+    return state.guests.filter(
+      guest => String(guest.table_id) === String(tableId)
+    );
   },
   guestTotals(state, getters, rootState) {
     const guests = state.guests;

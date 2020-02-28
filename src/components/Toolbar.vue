@@ -1,16 +1,16 @@
 <template>
   <v-layout>
     <v-toolbar flat dark color="#424242" class="cnv-toolbar">
-      <v-toolbar-title>{{ layoutName }}</v-toolbar-title>
+      <v-toolbar-title>Table Planner</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn flat @click="handleClick('create-table')">
+      <v-btn v-if="blockBoard == '0'" flat @click="handleClick('create-table')">
         <i class="fas fa-plus icon-margin"></i>
         {{ labels.add_table }}
       </v-btn>
       <v-divider v-if="selectedGroup != null" vertical></v-divider>
 
       <v-btn
-        v-if="selectedGroup != null"
+        v-if="selectedGroup != null && blockBoard == '0'"
         flat
         ref="edit-table"
         @click="handleClick('edit-table')"
@@ -36,16 +36,24 @@ export default {
     EditTableForm
   },
   data: () => ({
-    labels: {
+    labelsEn: {
       add_table: "Add Table",
       edit: "Edit",
       table: "Table"
+    },
+    labels: {
+      add_table: "Aggiungi tavolo",
+      edit: "Modifica",
+      table: "Tavolo"
     },
     selectedGroup: null
   }),
   computed: {
     layoutName() {
       return this.$store.state.layout.layout_name;
+    },
+    blockBoard() {
+      return this.$store.getters.getInfo.block_board;
     }
   },
   methods: {
@@ -71,18 +79,18 @@ export default {
     }
   },
   created() {
-    EventBus.$on("fetch-done", () => {
-      const translatedLabels = this.$store.state.translatedLabels;
-      const labels = this.labels;
+    // EventBus.$on("fetch-done", () => {
+    //   const translatedLabels = this.$store.state.translatedLabels;
+    //   const labels = this.labels;
 
-      for (const translatedLabel of translatedLabels) {
-        for (const label in labels) {
-          if (translatedLabel.placeholder === label) {
-            labels[label] = translatedLabel.content;
-          }
-        }
-      }
-    });
+    //   for (const translatedLabel of translatedLabels) {
+    //     for (const label in labels) {
+    //       if (translatedLabel.placeholder === label) {
+    //         labels[label] = translatedLabel.content;
+    //       }
+    //     }
+    //   }
+    // });
 
     EventBus.$on("table-select", group => {
       this.selectedGroup = group;

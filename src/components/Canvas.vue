@@ -25,7 +25,7 @@
           :ref="group.name"
           @click="tableSelect(group.name)"
           @dragend="moveTable"
-          v-for="group in table.groups"
+          v-for="group in tableGroups"
           :config="group"
           :key="group.name"
         >
@@ -90,7 +90,11 @@
         </v-group>
         <!-- <v-text ref="totaleCounter" :config="guestTotals"></v-text> -->
         <v-text ref="totaleCounterV2" :config="guestTotalsV2"></v-text>
-        <v-text ref="title" :config="printTitle"></v-text>
+        <v-text
+          v-if="printTitleConfig.text"
+          ref="title"
+          :config="printTitleConfig"
+        ></v-text>
       </v-layer>
     </v-stage>
   </v-card>
@@ -100,7 +104,8 @@
 import axios from "axios";
 import Toolbar from "./Toolbar";
 import { EventBus } from "../event-bus.js";
-import { mapState, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
+import store from "@/store/store";
 
 export default {
   name: "Canvas",
@@ -108,11 +113,39 @@ export default {
     Toolbar
   },
   data: () => ({
+    this: this,
     dialog: false,
     selectedTable: null,
-    otherBackground: null
+    otherBackground: null,
+    backgroundConfig: {
+      x: 0,
+      y: 0,
+      width: null,
+      height: null,
+      fillPatternImage: null
+    },
+    imageSrc: null,
+    printTitleConfig: {
+      name: "printTItle",
+      text: null,
+      fontSize: 16,
+      draggable: true,
+      fontFamily: "Poppins",
+      fontStyle: "bold",
+      fill: "#000000",
+      align: "left",
+      verticalAlign: "middle",
+      x: 10,
+      y: 10
+    }
   }),
   computed: {
+    backgroundImg() {
+      return this.$store.getters.getBackgroundImg;
+    },
+    blockBoard() {
+      return this.$store.getters.getInfo.block_board;
+    },
     showTablesCounters() {
       let status = this.$store.state.labels.show_tables_counters;
       return status;
@@ -130,81 +163,34 @@ export default {
         return true;
       }
     },
-    printTitle() {
-      const payload = this.$store.getters.printTitle;
-      const eventDate =
-        payload.eventDate != "0000-00-00" ? `- ${payload.eventDate}` : "";
-      const eventName = payload.eventName;
-      let textConfig = {
-        name: "printTItle",
-        text: `${eventName} ${eventDate}`,
-        fontSize: 16,
-        draggable: true,
-        fontFamily: "Poppins",
-        fontStyle: "bold",
-        fill: "#000000",
-        align: "left",
-        verticalAlign: "middle",
-        x: 10,
-        y: 10
-      };
-      return textConfig;
-    },
-    imageSrc() {
-      let src =
-        this.$store.state.layout.mappa != "0"
-          ? this.$store.state.layout.mappa
-          : "";
-      return src;
-    },
-    backgroundConfig() {
-      let image = new Image();
-      image.src = this.imageSrc;
-
-      let config = {
-        x: 0,
-        y: 0,
-        width: 1200,
-        height: 792,
-        fillPatternImage: image
-      };
-
-      if (this.$store.state.layout.orientation == 1) {
-        config.width = 792;
-        config.height = 1200;
-      }
-
-      return config;
-    },
     stageBackground() {
       let url;
-      if (this.$store.state.layout.orientation == 0) {
+      if (this.orientation == 0) {
         url = `https://${this.hostname}/fl_app/tableManager/assets/grid.png`;
-      }
-      if (this.$store.state.layout.orientation == 1) {
-        url = `https://${
-          this.hostname
-        }/fl_app/tableManager/assets/vertical-grid.png`;
+      } else {
+        url = `https://${this.hostname}/fl_app/tableManager/assets/vertical-grid.png`;
       }
 
       return url;
     },
-    hostname() {
-      return this.$store.state.hostname;
-    },
-    orientation() {
-      return this.$store.state.layout.orientation;
-    },
-    stageConfig() {
-      return this.$store.state.configKonva;
-    },
-    ...mapState(["table"]),
     ...mapGetters({
-      // guestTotals: "guest/guestTotals",
-      guestTotalsV2: "guest/guestTotalsV2"
+      guestTotalsV2: "guest/guestTotalsV2",
+      tableGroups: "table/getGroups",
+      stageConfig: "getStageConfig",
+      orientation: "getOrientation",
+      hostname: "getHostname",
+      printTitle: "getPrintTitle",
+      loading: "getLoading"
     })
   },
   methods: {
+    handlePrintTitle() {
+      console.log("title", this.printTitle);
+      let { eventName, eventDate } = this.printTitle;
+      eventDate = eventDate != "0000-00-00" ? `- ${eventDate}` : "";
+
+      this.printTitleConfig.text = `${eventName} ${eventDate}`;
+    },
     guestSeraleCounters(counters) {
       let count = 0;
       counters.forEach(element => {
@@ -216,87 +202,47 @@ export default {
       console.log(e);
       EventBus.$emit("guest-list-select");
     },
-    tableTypeDeparser(type) {
-      let id;
-      switch (type) {
-        case "circle":
-          id = "2";
-          break;
+    async moveTable(e) {
+      let { table, x, y } = e.target.attrs;
+      let tableId = table.id;
+      let layoutId = this.$store.state.layout.id;
 
-        case "square":
-          id = "3";
-          break;
-
-        case "rectangle":
-          id = "4";
-          break;
-
-        case "ellipse":
-          id = "5";
-          break;
+      try {
+        const response = await axios.get(
+          `https://${this.hostname}/fl_api/tables-v3/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
+        );
+        console.log(response);
+      } catch (error) {
+        console.log(error);
       }
-      return id;
     },
-    moveTable(e) {
-      let group = e.target.attrs;
-      let table = group.table;
-      let layout_id = this.$store.state.layout.id;
-
-      axios
-        .get(
-          `https://${
-            this.hostname
-          }/fl_api/tables-v2/?move_table&token=1&table_id=${
-            table.id
-          }&layout_id=${layout_id}&x=${group.x}&y=${group.y}`
-        )
-        .then(function(response) {
-          console.log("Response", response);
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-      // console.log(table);
-    },
-    handleTableTransform(event) {
-      let shape = event.target.attrs;
+    async handleTableTransform(event) {
+      let { scaleX, scaleY, rotation } = event.target.attrs;
       let tableId = this.selectedTable.attrs.table.id;
       let layoutId = this.$store.state.layout.id;
-      let rotation = shape.rotation.toFixed(2);
-      let { scaleX, scaleY } = shape;
-      console.log("shape", shape);
-      if (shape.scaleX != 1 || shape.scaleY != 1) {
-        axios
-          .get(
-            `https://${
-              this.hostname
-            }/fl_api/tables-v2/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
-          )
-          .then(function(response) {
-            console.log("Response", response);
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
-        console.log("Shape scaled", rotation);
-      }
-      axios
-        .get(
-          `https://${
-            this.hostname
-          }/fl_api/tables-v2/?rotate_table&token=1&table_id=${tableId}&layout_id=${layoutId}&angolare=${rotation}`
-        )
-        .then(function(response) {
-          console.log("Response", response);
-        })
-        .catch(function(error) {
+      rotation = rotation.toFixed(2);
+
+      if (scaleX != 1 || scaleY != 1) {
+        try {
+          const response = await axios.get(
+            `https://${this.hostname}/fl_api/tables-v2/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
+          );
+          console.log(response);
+        } catch (error) {
           console.log(error);
-        });
-      console.log("Shape transformed", rotation);
+        }
+      }
+      try {
+        const response = await axios.get(
+          `https://${this.hostname}/fl_api/tables-v2/?rotate_table&token=1&table_id=${tableId}&layout_id=${layoutId}&angolare=${rotation}`
+        );
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
     },
     stageClick(e) {
-      let stage = this.$store.state.stage;
-      // console.log(e);
+      const { stage } = this.$store.state;
       // if click on empty area - remove all transformers
       if (e.target === stage) {
         if (this.$store.state.selectedGroup != null) {
@@ -309,22 +255,30 @@ export default {
       }
     },
     tableSelect(groupName) {
-      let stage = this.$store.state.stage;
-      let group = stage.find("." + groupName)[0];
+      const { stage } = this.$store.state;
+      const group = stage.find(`.${groupName}`)[0];
 
       if (
         !this.$store.state.selectedGroup ||
-        this.$store.state.selectedGroup.name != group.attrs.name
+        this.$store.state.selectedGroup.name !== group.attrs.name
       ) {
         console.log("Group selected", group);
-        let name = "." + String(groupName) + "-tbl";
+        let name = `.${String(groupName)}-tbl`;
         stage.find("Transformer").destroy();
         // create new transformer
-        var tr = new window.Konva.Transformer({
-          rotateEnabled: true,
-          // resizeEnabled: false,
-          rotationSnaps: [0, 90, 180, 270]
-        });
+        let tr;
+        if (this.blockBoard == "0") {
+          tr = new window.Konva.Transformer({
+            rotateEnabled: true,
+            rotationSnaps: [0, 90, 180, 270]
+          });
+        } else {
+          tr = new window.Konva.Transformer({
+            rotateEnabled: false,
+            resizeEnabled: false,
+            rotationSnaps: [0, 90, 180, 270]
+          });
+        }
 
         let layer = this.$refs.layer.getStage(tr);
         tr.attachTo(stage.find(name)[0]);
@@ -338,9 +292,47 @@ export default {
       }
     }
   },
+  watch: {
+    orientation() {
+      if (this.orientation == 1) {
+        this.backgroundConfig.height = 1200;
+        this.backgroundConfig.width = 792;
+      } else {
+        this.backgroundConfig.height = 792;
+        this.backgroundConfig.width = 1200;
+      }
+    },
+    backgroundImg() {
+      const image = new window.Image();
+      image.src = this.backgroundImg;
+      image.onload = () => {
+        // set image only when it is loaded
+        this.imageSrc = image;
+        this.backgroundConfig.fillPatternImage = image;
+      };
+    },
+    loading() {
+      if (this.loading === false) {
+        this.handlePrintTitle();
+      }
+    }
+  },
   mounted() {
-    this.$store.dispatch("setStage", this.$refs.stage.getStage());
-    this.$store.dispatch("setLayer", this.$refs.layer);
+    const stage = this.$refs.stage.getStage();
+    this.$store.dispatch("setStage", stage);
+    const layer = this.$refs.layer;
+    this.$store.dispatch("setLayer", layer);
+    if (this.orientation === "1") {
+      console.log("1");
+      this.backgroundConfig.height = 1200;
+      this.backgroundConfig.width = 792;
+    }
+    if (this.orientation === "0") {
+      console.log("0");
+
+      this.backgroundConfig.height = 792;
+      this.backgroundConfig.width = 1200;
+    }
   }
 };
 </script>
