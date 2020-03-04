@@ -194,7 +194,7 @@ export default {
       add_table: "Aggiungi tavolo",
       table_name: "Nome tavolo",
       table_number: "Numero tavolo",
-      customers_table_name: "Nome tabella cliente",
+      customers_table_name: "Nome tavolo cliente",
       type: "Tipo",
       size: "Formato",
       dimension: "Dimensione",
@@ -225,7 +225,7 @@ export default {
         }
       ],
       create: "Crea",
-      table_inserted: "Tabella inserita"
+      table_inserted: "Tavolo inserito"
     },
     numberRules: [
       v => typeof v === "number" || "Per favore inserisci un numero"

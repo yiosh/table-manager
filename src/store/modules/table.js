@@ -190,7 +190,7 @@ export const actions = {
           type: "error",
           multiLine: true,
           message:
-            "Si è verificato un problema durante il recupero dei tipi di tabella: " +
+            "Si è verificato un problema durante il recupero dei tipi di tavoli: " +
             error.message
         };
         dispatch("notification/add", notification, { root: true });
@@ -212,7 +212,7 @@ export const actions = {
         const notification = {
           type: "success",
           message:
-            "Si è verificato un problema durante lo spostamento della tabella: " +
+            "Si è verificato un problema durante lo spostamento del tavolo: " +
             error.message
         };
         dispatch("notification/add", notification, { root: true });

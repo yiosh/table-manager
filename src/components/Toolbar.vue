@@ -68,7 +68,7 @@ export default {
           } else {
             const notification = {
               type: "warning",
-              message: "Seleziona una tabella da modificare"
+              message: "Seleziona un tavolo da modificare"
             };
             this.$store.dispatch("notification/add", notification, {
               root: true
