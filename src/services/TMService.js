@@ -101,14 +101,22 @@ export default {
     return apiClient.get(`${endpoint}get_guests&token=1&layout_id=${layoutId}`);
   },
   addGuest(layoutId, tableId, guest) {
+    let menus = "";
+    if (guest.menu1) {
+      menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${guest.menu3}&menu4=${guest.menu4}`;
+    }
     return apiClient.get(
-      `${endpoint}insert_guest&token=1&layout_id=${layoutId}&guest_type=${guest.guest_type}&table_id=${tableId}&cognome=${guest.cognome}&peoples=${guest.peoples}&nome=${guest.nome}&baby=${guest.baby}&chairs_only=${guest.chairs_only}&highchair=${guest.high_chair}&note_intolleranze=${guest.note_intolleranze}`
+      `${endpoint}insert_guest&token=1&layout_id=${layoutId}&guest_type=${guest.guest_type}&table_id=${tableId}&cognome=${guest.cognome}&peoples=${guest.peoples}&nome=${guest.nome}&baby=${guest.baby}&chairs_only=${guest.chairs_only}&highchair=${guest.high_chair}&note_intolleranze=${guest.note_intolleranze}${menus}`
     );
   },
   updateGuest(guest) {
     console.log("guest", guest);
+    let menus = "";
+    if (guest.menu1) {
+      menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${guest.menu3}&menu4=${guest.menu4}`;
+    }
     return apiClient.get(
-      `${endpoint}update_guest&token=1&guest_id=${guest.id}&guest_type=${guest.guest_type}&cognome=${guest.cognome}&peoples=${guest.peoples}&nome=${guest.nome}&baby=${guest.baby}&chairs_only=${guest.chairs_only}&highchair=${guest.high_chair}&note_intolleranze=${guest.note_intolleranze}`
+      `${endpoint}update_guest&token=1&guest_id=${guest.id}&guest_type=${guest.guest_type}&cognome=${guest.cognome}&peoples=${guest.peoples}&nome=${guest.nome}&baby=${guest.baby}&chairs_only=${guest.chairs_only}&highchair=${guest.high_chair}&note_intolleranze=${guest.note_intolleranze}${menus}`
     );
   },
   deleteGuest(guestId) {

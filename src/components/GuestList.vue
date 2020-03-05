@@ -1,12 +1,13 @@
 <template>
-  <v-layout row justify-center @click="log">
+  <v-layout row justify-center>
     <v-dialog v-model="dialog">
       <v-card>
         <v-toolbar flat dark color="#424242">
           <v-toolbar-title
             >{{ labels.list_of_guests }} - {{ tableName }}
             {{ tableNumber == 0 ? "" : tableNumber }}
-            {{ clientName }} {{ maxSeats ? `(Max ${maxSeats})` : "" }}</v-toolbar-title
+            {{ clientName }}
+            {{ maxSeats ? `(Max ${maxSeats})` : "" }}</v-toolbar-title
           >
           <v-spacer></v-spacer>
 
@@ -72,6 +73,44 @@
                             :label="labels.high_chairs"
                           ></v-text-field>
                         </v-flex>
+
+                        <!-- New Guest Section -->
+                        <template v-if="placeholderLabels.menu1">
+                          <v-flex xs12>
+                            <v-toolbar flat height="24" dark color="#424242">
+                              <v-toolbar-title>PASTI SPECIALI</v-toolbar-title>
+                            </v-toolbar>
+                          </v-flex>
+
+                          <v-flex xs12 sm6 md3>
+                            <v-text-field
+                              v-model="editedItem.menu1"
+                              :label="placeholderLabels.menu1"
+                            ></v-text-field>
+                          </v-flex>
+
+                          <v-flex xs12 sm6 md3>
+                            <v-text-field
+                              v-model="editedItem.menu2"
+                              :label="placeholderLabels.menu2"
+                            ></v-text-field>
+                          </v-flex>
+
+                          <v-flex xs12 sm6 md3>
+                            <v-text-field
+                              v-model="editedItem.menu3"
+                              :label="placeholderLabels.menu3"
+                            ></v-text-field>
+                          </v-flex>
+
+                          <v-flex xs12 sm6 md3>
+                            <v-text-field
+                              v-model="editedItem.menu4"
+                              :label="placeholderLabels.menu4"
+                            ></v-text-field>
+                          </v-flex>
+                        </template>
+                        <!-- End New Guest Section -->
                         <v-flex xs12>
                           <v-text-field
                             v-model="editedItem.note_intolleranze"
@@ -125,7 +164,14 @@
               <td>{{ props.item.baby }}</td>
               <td>{{ props.item.chairs_only }}</td>
               <td>{{ props.item.high_chair }}</td>
+              <template v-if="props.item.menu1">
+                <td>{{ props.item.menu1 }}</td>
+                <td>{{ props.item.menu2 }}</td>
+                <td>{{ props.item.menu3 }}</td>
+                <td>{{ props.item.menu4 }}</td>
+              </template>
               <td>{{ props.item.note_intolleranze }}</td>
+
               <td>
                 <v-icon small class="mr-2" @click="editItem(props.item)"
                   >edit</v-icon
@@ -208,6 +254,10 @@ export default {
         child: "Bambino",
         chairs: "Sedie",
         high_chairs: "Seggioloni",
+        menu1: "Celiachia",
+        menu2: "No lattosio",
+        menu3: "Vegano",
+        menu4: "Vegetariano",
         note: "Nota",
         guest_type: "Tipo di ospite",
         save_and_continue: "Salva e continua",
@@ -268,34 +318,9 @@ export default {
     guestListDialog() {
       return this.$$refs.dialog.isActive;
     },
-    // peopleLabel() {
-    //   if (this.$store.state.labels.peoples_label) {
-    //     return this.$store.state.labels.peoples_label;
-    //   } else {
-    //     return "Persone";
-    //   }
-    // },
-    // babyLabel() {
-    //   if (this.$store.state.labels.baby_label) {
-    //     return this.$store.state.labels.baby_label;
-    //   } else {
-    //     return "Bambini";
-    //   }
-    // },
-    // chairsLabel() {
-    //   if (this.$store.state.labels.chairs_only_label) {
-    //     return this.$store.state.labels.chairs_only_label;
-    //   } else {
-    //     return "Sedie";
-    //   }
-    // },
-    // highChairsLabel() {
-    //   if (this.$store.state.labels.high_chair_label) {
-    //     return this.$store.state.labels.high_chair_label;
-    //   } else {
-    //     return "Seggiolone";
-    //   }
-    // },
+    placeholderLabels() {
+      return this.$store.state.labels;
+    },
     formTitle() {
       return this.editedIndex === -1
         ? this.labels.create_new_guest
@@ -305,9 +330,6 @@ export default {
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" })
   },
   methods: {
-    log() {
-      console.log("this");
-    },
     maxSeatsCheck(newGuest) {
       const maxSeats = Number(this.maxSeats);
       let guests = JSON.parse(JSON.stringify(this.guests(this.tableId)));
@@ -403,15 +425,6 @@ export default {
       //
     }
   },
-  mounted() {
-    // Set dynamic guest list labels if they exist
-    // if (this.$store.state.labels != {}) {
-    //   this.headers[2].text = this.$store.state.labels.peoples_label;
-    //   this.headers[3].text = this.$store.state.labels.baby_label;
-    //   this.headers[4].text = this.$store.state.labels.chairs_only_label;
-    //   this.headers[5].text = this.$store.state.labels.high_chair_label;
-    // }
-  },
   created() {
     EventBus.$on("fetch-done", () => {
       // const translatedLabels = this.$store.state.translatedLabels;
@@ -438,6 +451,21 @@ export default {
       //     }
       //   }
       // }
+      if (this.$store.state.labels.menu1) {
+        this.editedItem.menu1 = 0;
+        this.editedItem.menu2 = 0;
+        this.editedItem.menu3 = 0;
+        this.editedItem.menu4 = 0;
+
+        for (let index = 1; index <= 4; index++) {
+          const menu = "menu" + index;
+          this.labels.headers.splice(5 + index, 0, {
+            placeholder: menu,
+            text: this.placeholderLabels[menu],
+            value: menu
+          });
+        }
+      }
     });
 
     // On table select grab the table's id and other data
