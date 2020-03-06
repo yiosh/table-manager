@@ -3,12 +3,12 @@
     <v-dialog v-model="dialog">
       <v-card>
         <v-toolbar flat dark color="#424242">
-          <v-toolbar-title
-            >{{ labels.list_of_guests }} - {{ tableName }}
+          <v-toolbar-title>
+            {{ labels.list_of_guests }} - {{ tableName }}
             {{ tableNumber == 0 ? "" : tableNumber }}
             {{ clientName }}
-            {{ maxSeats ? `(Max ${maxSeats})` : "" }}</v-toolbar-title
-          >
+            {{ maxSeats ? `(Max ${maxSeats})` : "" }}
+          </v-toolbar-title>
           <v-spacer></v-spacer>
 
           <v-btn icon @click="closeDialog">
@@ -19,9 +19,12 @@
           <v-toolbar flat color="white">
             <v-spacer></v-spacer>
             <v-dialog v-model="guestDialog" max-width="500px">
-              <v-btn slot="activator" color="primary" dark class="mb-2"
-                >{{ labels.create_new_guest }}
-              </v-btn>
+              <v-btn
+                slot="activator"
+                color="primary"
+                dark
+                class="mb-2"
+              >{{ labels.create_new_guest }}</v-btn>
               <v-card>
                 <v-form @submit.prevent="save">
                   <v-card-title>
@@ -40,10 +43,7 @@
                           ></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6 md6>
-                          <v-text-field
-                            v-model="editedItem.nome"
-                            :label="labels.name"
-                          ></v-text-field>
+                          <v-text-field v-model="editedItem.nome" :label="labels.name"></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6 md3>
                           <v-text-field
@@ -84,38 +84,39 @@
 
                           <v-flex xs12 sm6 md3>
                             <v-text-field
-                              v-model="editedItem.menu1"
+                              v-model.number="editedItem.menu1"
+                              :rules="numberRules"
                               :label="placeholderLabels.menu1"
                             ></v-text-field>
                           </v-flex>
 
                           <v-flex xs12 sm6 md3>
                             <v-text-field
-                              v-model="editedItem.menu2"
+                              v-model.number="editedItem.menu2"
+                              :rules="numberRules"
                               :label="placeholderLabels.menu2"
                             ></v-text-field>
                           </v-flex>
 
                           <v-flex xs12 sm6 md3>
                             <v-text-field
-                              v-model="editedItem.menu3"
+                              v-model.number="editedItem.menu3"
+                              :rules="numberRules"
                               :label="placeholderLabels.menu3"
                             ></v-text-field>
                           </v-flex>
 
                           <v-flex xs12 sm6 md3>
                             <v-text-field
-                              v-model="editedItem.menu4"
+                              v-model.number="editedItem.menu4"
+                              :rules="numberRules"
                               :label="placeholderLabels.menu4"
                             ></v-text-field>
                           </v-flex>
                         </template>
                         <!-- End New Guest Section -->
                         <v-flex xs12>
-                          <v-text-field
-                            v-model="editedItem.note_intolleranze"
-                            :label="labels.note"
-                          ></v-text-field>
+                          <v-text-field v-model="editedItem.note_intolleranze" :label="labels.note"></v-text-field>
                         </v-flex>
                         <v-flex xs12>
                           <v-select
@@ -127,23 +128,24 @@
                           ></v-select>
                         </v-flex>
                         <v-flex xs12 v-if="!editForm">
-                          <v-checkbox
-                            v-model="saveAndContinue"
-                            :label="labels.save_and_continue"
-                          ></v-checkbox>
+                          <v-checkbox v-model="saveAndContinue" :label="labels.save_and_continue"></v-checkbox>
                         </v-flex>
                       </v-layout>
                     </v-container>
                   </v-card-text>
 
                   <v-card-actions>
-                    <v-btn color="success" dark type="submit">{{
+                    <v-btn color="success" dark type="submit">
+                      {{
                       labels.save
-                    }}</v-btn>
+                      }}
+                    </v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" flat @click="close">{{
+                    <v-btn color="blue darken-1" flat @click="close">
+                      {{
                       labels.close
-                    }}</v-btn>
+                      }}
+                    </v-btn>
                   </v-card-actions>
                 </v-form>
               </v-card>
@@ -173,9 +175,7 @@
               <td>{{ props.item.note_intolleranze }}</td>
 
               <td>
-                <v-icon small class="mr-2" @click="editItem(props.item)"
-                  >edit</v-icon
-                >
+                <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
                 <v-icon small @click="deleteGuest(props.item)">delete</v-icon>
               </td>
             </template>
@@ -296,7 +296,11 @@ export default {
         chairs_only: 0,
         high_chair: 0,
         note_intolleranze: "",
-        guest_type: 3
+        guest_type: 3,
+        menu1: 0,
+        menu2: 0,
+        menu3: 0,
+        menu4: 0
       },
       defaultItem: {
         id: null,
@@ -307,7 +311,11 @@ export default {
         chairs_only: 0,
         high_chair: 0,
         note_intolleranze: "",
-        guest_type: 3
+        guest_type: 3,
+        menu1: 0,
+        menu2: 0,
+        menu3: 0,
+        menu4: 0
       },
       numberRules: [
         v => typeof v === "number" || "Per favore inserisci un numero"
@@ -330,6 +338,9 @@ export default {
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" })
   },
   methods: {
+    // totalpastiCheck(guest) {
+    //   const maxSeats = Number(this.maxSeats);
+    // },
     maxSeatsCheck(newGuest) {
       const maxSeats = Number(this.maxSeats);
       let guests = JSON.parse(JSON.stringify(this.guests(this.tableId)));
@@ -339,12 +350,30 @@ export default {
       } else {
         guests.push(newGuest);
       }
+      let totalPasti = 0;
       let totalPeople = 0;
       for (const guest of guests) {
         totalPeople += Number(guest.baby);
         totalPeople += Number(guest.chairs_only);
         totalPeople += Number(guest.high_chair);
         totalPeople += Number(guest.peoples);
+
+        if (this.placeholderLabels.menu1) {
+          totalPasti += Number(guest.menu1);
+          totalPasti += Number(guest.menu2);
+          totalPasti += Number(guest.menu3);
+          totalPasti += Number(guest.menu4);
+        }
+      }
+      if (this.placeholderLabels.menu1) {
+        console.log("w", totalPasti, totalPeople);
+        if (totalPeople > maxSeats || totalPasti > maxSeats) {
+          console.log("went too far", totalPasti, totalPeople);
+          return true;
+        } else {
+          console.log("ok", totalPasti, totalPeople);
+          return false;
+        }
       }
       if (totalPeople > maxSeats) {
         return true;
@@ -363,6 +392,10 @@ export default {
       item.chairs_only = Number(item.chairs_only);
       item.high_chair = Number(item.high_chair);
       item.guest_type = Number(item.guest_type);
+      item.menu1 = Number(item.menu1);
+      item.menu2 = Number(item.menu2);
+      item.menu3 = Number(item.menu3);
+      item.menu4 = Number(item.menu4);
 
       this.editedIndex = this.guest.guests.indexOf(item);
       this.editedItem = Object.assign({}, item);
@@ -395,7 +428,7 @@ export default {
           type: "error",
           multiLine: true,
           message:
-            "Hai inserito più ospiti di quelli consentiti da questo tavolo"
+            "Hai inserito più ospiti o pasti, di quelli consentiti da questo tavolo"
         };
         this.$store.dispatch("notification/add", notification, { root: true });
         return;
@@ -452,11 +485,6 @@ export default {
       //   }
       // }
       if (this.$store.state.labels.menu1) {
-        this.editedItem.menu1 = 0;
-        this.editedItem.menu2 = 0;
-        this.editedItem.menu3 = 0;
-        this.editedItem.menu4 = 0;
-
         for (let index = 1; index <= 4; index++) {
           const menu = "menu" + index;
           this.labels.headers.splice(5 + index, 0, {
