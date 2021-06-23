@@ -145,7 +145,7 @@
                             v-model.number="currentTable"
                             :items="tableList"
                             @change="changeTable"
-                            label="Tavolo list"
+                            label="Associa al tavolo"
                           ></v-select>
                         </v-flex>
                         <v-flex xs12 v-if="!editForm">
