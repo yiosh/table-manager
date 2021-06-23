@@ -10,7 +10,7 @@ if (location.hostname !== "localhost") {
 //   ? "calderonimartini.condivision.cloud"
 //   : location.hostname;
 const baseURL = protocol + "://" + hostname;
-let endpoint = "/fl_api/tables-v3/?";
+let endpoint = location.hostname !== "localhost" ? "/fl_api/tables-v3/?" : "/fl_api/tables-dev/?";
 
 const apiClient = axios.create({
   baseURL,
@@ -85,8 +85,72 @@ export default {
     borderType,
     maxSeats
   }) {
+    let params = "";
+    if (layoutId) {
+      params += `&layout_id=${layoutId}`
+    }
+    if (id) {
+      params += `&table_id=${id}`
+    }
+    if (typeId) {
+      params += `&type_id=${typeId}`
+    }
+    if (tableName) {
+      params += `&table_name=${tableName}`
+    }
+    if (tableNumber) {
+      params += `&table_number=${tableNumber}`
+    }
+    if (size) {
+      params += `&size=${size}`
+    }
+    if (scaleX) {
+      params += `&scale_x=${scaleX}`
+    }
+    if (scaleY) {
+      params += `&scale_y=${scaleY}`
+    }
+    if (angolare) {
+      params += `&angolare=${angolare}`
+    }
+    if (nomeCliente) {
+      params += `&nome_cliente=${nomeCliente}`
+    }
+    if (borderColor) {
+      params += `&border_color=${borderColor}`
+    }
+    if (backgroundColor) {
+      params += `&background_color=${backgroundColor}`
+    }
+    if (borderType) {
+      params += `&border_type=${borderType}`
+    }
+    if (maxSeats) {
+      params += `&max_seats=${maxSeats}`
+    }
     return apiClient.get(
-      `${endpoint}update_table&token=1&layout_id=${layoutId}&table_id=${id}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&size=${size}&scale_x=${scaleX}&scale_y=${scaleY}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}&max_seats=${maxSeats}`
+      `${endpoint}update_table&token=1&${params}`
+    );
+  },
+  updateClientName({
+    layoutId,
+    id,
+    nomeCliente,
+  }) {
+    let params = "";
+    if (layoutId) {
+      params += `&layout_id=${layoutId}`
+    }
+    if (id) {
+      params += `&table_id=${id}`
+    }
+    
+    if (nomeCliente) {
+      params += `&nome_cliente=${nomeCliente}`
+    }
+    
+    return apiClient.get(
+      `${endpoint}update_client_name&token=1&${params}`
     );
   },
   deleteTable({ layoutId, tableId }) {
@@ -116,7 +180,7 @@ export default {
       menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${guest.menu3}&menu4=${guest.menu4}`;
     }
     return apiClient.get(
-      `${endpoint}update_guest&token=1&guest_id=${guest.id}&guest_type=${guest.guest_type}&cognome=${guest.cognome}&peoples=${guest.peoples}&nome=${guest.nome}&baby=${guest.baby}&chairs_only=${guest.chairs_only}&highchair=${guest.high_chair}&note_intolleranze=${guest.note_intolleranze}${menus}`
+      `${endpoint}update_guest&token=1&guest_id=${guest.id}&guest_type=${guest.guest_type}&cognome=${guest.cognome}&peoples=${guest.peoples}&nome=${guest.nome}&baby=${guest.baby}&chairs_only=${guest.chairs_only}&highchair=${guest.high_chair}&note_intolleranze=${guest.note_intolleranze}${menus}&table_id=${guest.table_id}`
     );
   },
   deleteGuest(guestId) {

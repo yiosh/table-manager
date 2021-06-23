@@ -20,6 +20,7 @@ export const mutations = {
   },
   GET_GUESTS(state, payload) {
     if (payload.length > 0) {
+      state.guests = [];
       payload.forEach(guest => {
         state.guests.push(guest);
       });
@@ -51,9 +52,6 @@ export const actions = {
       .then(response => {
         // handle success
         commit("GET_GUESTS", response.data.dati);
-        if (response.data.dati.length < 0) {
-        } else {
-        }
       })
       .catch(error => {
         // handle error

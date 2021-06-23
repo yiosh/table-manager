@@ -1,1 +1,1 @@
-export const host = "lacavallerizza.condivision.cloud";
+export const host = "demo.condivision.cloud";

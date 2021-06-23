@@ -19,6 +19,7 @@ export const state = {
 
 export const mutations = {
   GET_TABLES(state, payload) {
+    state.tablesFetched = [];
     state.tablesFetched = payload;
   },
   FETCH_TABLE_TYPES(state, payload) {
@@ -43,6 +44,18 @@ export const mutations = {
 
     groupToEdit.asteriscTextConfig.state = payload.state;
     console.log("groupToEdit", groupToEdit);
+  },
+  UPDATE_TABLE_CLIENT_NAME(state, table) {
+    const groupToEdit = _find(state.groups, group => {
+      return group.table.id == table.id;
+    });
+    console.log("groupToEdit", table)
+
+    groupToEdit.nomeClienteText.nomeCliente = table.nomeCliente;
+    groupToEdit.nomeClienteText.text = table.nomeCliente;
+    const tableToEdit = groupToEdit.table;
+    tableToEdit.textConfig.nomeCliente = table.nomeCliente;
+    table.rootState.stage.draw();
   },
   UPDATE_TABLE(state, table) {
     const groupToEdit = _find(state.groups, group => {
@@ -324,6 +337,43 @@ export const actions = {
         console.log("error", error);
         dispatch("notification/add", notification, { root: true });
       });
+  },
+  updateClientName({ commit, dispatch, rootState }, payload) {
+    TMService.updateClientName(payload)
+      .then(response => {
+        if (response.data.esito) {
+          payload.rootState = rootState;
+          commit("UPDATE_TABLE_CLIENT_NAME", payload);
+
+          const notification = {
+            type: "success",
+            message: response.data.info_txt
+          };
+          dispatch("notification/add", notification, { root: true });
+          return true;
+        } else {
+          const notification = {
+            type: "error",
+            message: response.data.info_txt
+          };
+          dispatch("notification/add", notification, { root: true });
+          return false;
+        }
+      })
+      .then(() => {
+        rootState.stage.draw();
+      })
+      .catch(function(error) {
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message:
+            "Si è verificato un problema durante l'aggiornamento del tavolo: " +
+            error.message
+        };
+        console.log("error", error);
+        dispatch("notification/add", notification, { root: true });
+      });
   }
 };
 
@@ -333,5 +383,8 @@ export const getters = {
   },
   getGroups() {
     return state.groups;
+  },
+  getTables() {
+    return state.tablesFetched;
   }
 };

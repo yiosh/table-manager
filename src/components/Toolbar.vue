@@ -10,7 +10,7 @@
       <v-divider v-if="selectedGroup != null" vertical></v-divider>
 
       <v-btn
-        v-if="selectedGroup != null && blockBoard == '0'"
+        v-if="selectedGroup != null && blockBoard != 1"
         flat
         ref="edit-table"
         @click="handleClick('edit-table')"
@@ -33,28 +33,30 @@ export default {
   name: "Toolbar",
   components: {
     CreateTableForm,
-    EditTableForm
+    EditTableForm,
   },
   data: () => ({
     labelsEn: {
       add_table: "Add Table",
       edit: "Edit",
-      table: "Table"
+      table: "Table",
     },
     labels: {
       add_table: "Aggiungi tavolo",
       edit: "Modifica",
-      table: "Tavolo"
+      table: "Tavolo",
     },
-    selectedGroup: null
+    selectedGroup: null,
   }),
   computed: {
     layoutName() {
       return this.$store.state.layout.layout_name;
     },
     blockBoard() {
-      return this.$store.getters.getInfo.block_board;
-    }
+      return 0;
+
+      // return this.$store.getters.getInfo.block_board;
+    },
   },
   methods: {
     handleClick(payload) {
@@ -68,15 +70,15 @@ export default {
           } else {
             const notification = {
               type: "warning",
-              message: "Seleziona un tavolo da modificare"
+              message: "Seleziona un tavolo da modificare",
             };
             this.$store.dispatch("notification/add", notification, {
-              root: true
+              root: true,
             });
           }
           break;
       }
-    }
+    },
   },
   created() {
     // EventBus.$on("fetch-done", () => {
@@ -92,7 +94,7 @@ export default {
     //   }
     // });
 
-    EventBus.$on("table-select", group => {
+    EventBus.$on("table-select", (group) => {
       this.selectedGroup = group;
     });
 
@@ -103,7 +105,7 @@ export default {
     EventBus.$on("edit-table-dblclick", () => {
       EventBus.$emit("edit-table-select");
     });
-  }
+  },
 };
 </script>
 

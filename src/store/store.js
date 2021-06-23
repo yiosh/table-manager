@@ -21,7 +21,7 @@ export default new Vuex.Store({
     info: {},
     hostname:
       location.hostname == "localhost" ||
-      location.hostname == "dev.condivision.cloud"
+      location.hostname == "demo.condivision.cloud"
         ? host
         : location.hostname,
     selectedGroup: null,
