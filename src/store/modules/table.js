@@ -12,13 +12,14 @@ export const state = {
     type: "circle",
     size: "small",
     text: "",
-    number: ""
+    number: "",
   },
-  counter: 0
+  counter: 0,
 };
 
 export const mutations = {
   GET_TABLES(state, payload) {
+    state.groups = [];
     state.tablesFetched = [];
     state.tablesFetched = payload;
   },
@@ -26,7 +27,7 @@ export const mutations = {
     state.tableTypes = payload;
   },
   DELETE_TABLE(state, id) {
-    let indexToRemove = _findIndex(state.groups, group => {
+    let indexToRemove = _findIndex(state.groups, (group) => {
       return group.table.id == id;
     });
     state.groups.splice(indexToRemove, 1);
@@ -38,18 +39,21 @@ export const mutations = {
   HANDLE_ASTERISC(state, payload) {
     console.log("payload", payload);
 
-    const groupToEdit = _find(state.groups, group => {
+    const groupToEdit = _find(state.groups, (group) => {
       return group.table.id == payload.tableId;
     });
 
-    groupToEdit.asteriscTextConfig.state = payload.state;
+    if (groupToEdit) {
+      groupToEdit.asteriscTextConfig.state = payload.state;
+    }
+
     console.log("groupToEdit", groupToEdit);
   },
   UPDATE_TABLE_CLIENT_NAME(state, table) {
-    const groupToEdit = _find(state.groups, group => {
+    const groupToEdit = _find(state.groups, (group) => {
       return group.table.id == table.id;
     });
-    console.log("groupToEdit", table)
+    console.log("groupToEdit", table);
 
     groupToEdit.nomeClienteText.nomeCliente = table.nomeCliente;
     groupToEdit.nomeClienteText.text = table.nomeCliente;
@@ -58,7 +62,7 @@ export const mutations = {
     table.rootState.stage.draw();
   },
   UPDATE_TABLE(state, table) {
-    const groupToEdit = _find(state.groups, group => {
+    const groupToEdit = _find(state.groups, (group) => {
       return group.table.id == table.id;
     });
 
@@ -145,7 +149,7 @@ export const mutations = {
       table.tableName + (table.tableNumber == 0 ? "" : table.tableNumber);
     tableToEdit.textConfig.nomeCliente = table.nomeCliente;
     tableToEdit.textConfig.maxSeats = table.maxSeats;
-  }
+  },
 };
 
 export const actions = {
@@ -155,7 +159,8 @@ export const actions = {
   },
   getTables({ commit, dispatch }, layoutId) {
     TMService.getTables(layoutId)
-      .then(response => {
+      .then((response) => {
+        this.tablesFetched = [];
         // handle success
         console.log("Tables Fetched:", response.data.dati);
         if (response.data.dati.length == 0) {
@@ -172,24 +177,24 @@ export const actions = {
         }
         return layoutId;
       })
-      .then(layoutId => {
+      .then((layoutId) => {
         dispatch("guest/getGuests", layoutId, { root: true });
       })
-      .catch(error => {
+      .catch((error) => {
         // handle error
         const notification = {
           type: "error",
           multiLine: true,
           message:
             "Si è verificato un problema durante il recupero dei tavoli: " +
-            error.message
+            error.message,
         };
         dispatch("notification/add", notification, { root: true });
       });
   },
   fetchTableTypes({ commit, dispatch }) {
     TMService.fetchTableTypes()
-      .then(response => {
+      .then((response) => {
         // handle success
         let tableTypes = [];
         for (let index = 1; index < response.data.dati.length; index++) {
@@ -197,27 +202,27 @@ export const actions = {
         }
         commit("FETCH_TABLE_TYPES", tableTypes);
       })
-      .catch(error => {
+      .catch((error) => {
         // handle error
         const notification = {
           type: "error",
           multiLine: true,
           message:
             "Si è verificato un problema durante il recupero dei tipi di tavoli: " +
-            error.message
+            error.message,
         };
         dispatch("notification/add", notification, { root: true });
       });
   },
   moveTable({ commit, dispatch }, payload) {
     TMService.moveTable(payload)
-      .then(response => {
+      .then((response) => {
         console.log("response", response);
         payload.group.table.id = response.data.id;
 
         const notification = {
           type: "success",
-          message: "Tavolo aggiunto!"
+          message: "Tavolo aggiunto!",
         };
         dispatch("notification/add", notification, { root: true });
       })
@@ -226,7 +231,7 @@ export const actions = {
           type: "success",
           message:
             "Si è verificato un problema durante lo spostamento del tavolo: " +
-            error.message
+            error.message,
         };
         dispatch("notification/add", notification, { root: true });
         console.log(error);
@@ -236,20 +241,20 @@ export const actions = {
     if (payload.isNew === true) {
       console.log("payload", payload);
       TMService.addTable(payload.details)
-        .then(response => {
+        .then((response) => {
           console.log("response", response);
           if (response.data.esito) {
             payload.group.table.id = response.data.dati.id;
 
             const notification = {
               type: "success",
-              message: response.data.info_txt
+              message: response.data.info_txt,
             };
             dispatch("notification/add", notification, { root: true });
           } else {
             const notification = {
               type: "error",
-              message: response.data.info_txt
+              message: response.data.info_txt,
             };
             dispatch("notification/add", notification, { root: true });
             return false;
@@ -260,7 +265,7 @@ export const actions = {
             type: "success",
             message:
               "Si è verificato un problema durante l'aggiunta del tavolo: " +
-              error.message
+              error.message,
           };
           dispatch("notification/add", notification, { root: true });
           console.log(error);
@@ -273,19 +278,19 @@ export const actions = {
   },
   deleteTable({ state, commit, dispatch }, table) {
     TMService.deleteTable({ layoutId: table.layoutId, tableId: table.id })
-      .then(response => {
+      .then((response) => {
         if (response.data.esito) {
           commit("DELETE_TABLE", table.id);
 
           const notification = {
             type: "success",
-            message: response.data.info_txt
+            message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
         } else {
           const notification = {
             type: "error",
-            message: response.data.info_txt
+            message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
           return false;
@@ -297,27 +302,27 @@ export const actions = {
           multiLine: true,
           message:
             "Si è verificato un problema durante l'eliminazione del tavolo: " +
-            error.message
+            error.message,
         };
         dispatch("notification/add", notification, { root: true });
       });
   },
   updateTable({ commit, dispatch, rootState }, payload) {
     TMService.updateTable(payload)
-      .then(response => {
+      .then((response) => {
         if (response.data.esito) {
           commit("UPDATE_TABLE", payload);
 
           const notification = {
             type: "success",
-            message: response.data.info_txt
+            message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
           return true;
         } else {
           const notification = {
             type: "error",
-            message: response.data.info_txt
+            message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
           return false;
@@ -332,7 +337,7 @@ export const actions = {
           multiLine: true,
           message:
             "Si è verificato un problema durante l'aggiornamento del tavolo: " +
-            error.message
+            error.message,
         };
         console.log("error", error);
         dispatch("notification/add", notification, { root: true });
@@ -340,28 +345,28 @@ export const actions = {
   },
   updateClientName({ commit, dispatch, rootState }, payload) {
     TMService.updateClientName(payload)
-      .then(response => {
+      .then((response) => {
         if (response.data.esito) {
           payload.rootState = rootState;
           commit("UPDATE_TABLE_CLIENT_NAME", payload);
 
           const notification = {
             type: "success",
-            message: response.data.info_txt
+            message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
           return true;
         } else {
           const notification = {
             type: "error",
-            message: response.data.info_txt
+            message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
           return false;
         }
       })
       .then(() => {
-        rootState.stage.draw();
+        // rootState.stage.draw();
       })
       .catch(function(error) {
         const notification = {
@@ -369,12 +374,12 @@ export const actions = {
           multiLine: true,
           message:
             "Si è verificato un problema durante l'aggiornamento del tavolo: " +
-            error.message
+            error.message,
         };
         console.log("error", error);
         dispatch("notification/add", notification, { root: true });
       });
-  }
+  },
 };
 
 export const getters = {
@@ -386,5 +391,5 @@ export const getters = {
   },
   getTables() {
     return state.tablesFetched;
-  }
+  },
 };

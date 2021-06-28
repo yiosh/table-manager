@@ -90,7 +90,17 @@
             :config="group.asteriscTextConfig"
           ></v-text>
         </v-group>
-        <v-text ref="tooltip" :config="tooltipConfig"></v-text>
+        <v-group
+          v-if="tooltipConfig.text != null"
+          ref="tooltip-group"
+          :config="tooltipGroupConfig"
+        >
+          <v-rect
+            ref="tooltip-container"
+            :config="tooltipContainerConfig"
+          ></v-rect>
+          <v-text ref="tooltip" :config="tooltipConfig"></v-text>
+        </v-group>
         <!-- <v-text ref="totaleCounter" :config="guestTotals"></v-text> -->
         <v-text ref="totaleCounterV2" :config="guestTotalsV2"></v-text>
         <v-text
@@ -108,7 +118,6 @@ import axios from "axios";
 import Toolbar from "./Toolbar";
 import { EventBus } from "../event-bus.js";
 import { mapGetters } from "vuex";
-import store from "@/store/store";
 
 export default {
   name: "Canvas",
@@ -127,18 +136,39 @@ export default {
       height: null,
       fillPatternImage: null,
     },
+    tooltipGroupConfig: {
+      x: 434,
+      y: 121,
+      rotation: 0,
+      width: 100,
+      height: 100,
+      draggable: false,
+      isRootInsert: false,
+    },
+    tooltipContainerConfig: {
+      x: 434,
+      y: 121,
+      fill: "white",
+      stroke: "black",
+      strokeWidth: 2,
+      rotation: 0,
+      width: 200,
+      height: 100,
+      draggable: false,
+      isRootInsert: false,
+    },
     tooltipConfig: {
-      elm:Text,
-      fill:"black",
-      fontFamily:"Poppins",
-      fontSize:16,
-      fontStyle:"bold",
-      isRootInsert:false,
-      name:"tooltip",
-      text:null,
-      width:600,
-      x:14,
-      y:1120,
+      elm: Text,
+      fill: "black",
+      fontFamily: "Poppins",
+      fontSize: 16,
+      fontStyle: "bold",
+      isRootInsert: false,
+      name: "tooltip",
+      text: null,
+      width: 600,
+      x: 14,
+      y: 1120,
     },
     imageSrc: null,
     printTitleConfig: {
@@ -207,23 +237,34 @@ export default {
       this.tooltipConfig.text = null;
     },
     handleMouseMove(ev) {
-
-      this.tooltipConfig.x = ev.evt.layerX+10;
-      this.tooltipConfig.y = ev.evt.layerY+ 10;
+      this.tooltipGroupConfig.x = ev.evt.layerX - 70;
+      this.tooltipGroupConfig.y = ev.evt.layerY - 350;
+      this.tooltipContainerConfig.x = ev.evt.layerX;
+      this.tooltipContainerConfig.y = ev.evt.layerY;
+      this.tooltipConfig.x = ev.evt.layerX + 10;
+      this.tooltipConfig.y = ev.evt.layerY + 10;
       if (this.tooltipConfig.text == null) {
         const group = ev.target.parent.attrs;
         const table = group.table;
-  
-        const guests = this.$store.getters['guest/guests'](table.id);
+
+        const guests = this.$store.getters["guest/guests"](table.id);
 
         if (guests.length > 0) {
           if (guests.length > 1) {
-            guests.forEach(g => {
-              this.tooltipConfig.text += `${g.cognome && g.cognome != 'null' ? g.cognome : ""} ${g.nome ? g.nome : ""} A:${g.peoples} B:${g.baby} S:${g.chairs_only} A:${g.high_chair}\n`
-            })
+            guests.forEach((g) => {
+              this.tooltipConfig.text += `${
+                g.cognome && g.cognome != "null" ? g.cognome : ""
+              } ${g.nome ? g.nome : ""} A:${g.peoples} B:${g.baby} S:${
+                g.chairs_only
+              } A:${g.high_chair}\n`;
+            });
           } else {
             const g = guests[0];
-            this.tooltipConfig.text = `${g.cognome && g.cognome != 'null' ? g.cognome : ""} ${g.nome ? g.nome : ""} A:${g.peoples} B:${g.baby} S:${g.chairs_only} A:${g.high_chair}`
+            this.tooltipConfig.text = `${
+              g.cognome && g.cognome != "null" ? g.cognome : ""
+            } ${g.nome ? g.nome : ""} A:${g.peoples} B:${g.baby} S:${
+              g.chairs_only
+            } A:${g.high_chair}`;
           }
         }
       }

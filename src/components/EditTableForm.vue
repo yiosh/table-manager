@@ -375,7 +375,7 @@ export default {
       // ) {
       this.$store.dispatch("table/updateTable", updatedItem);
       this.defaultItem = Object.assign({}, updatedItem);
-      this.$store.state.stage.draw();
+      // this.$store.state.stage.draw();
       // }
       this.dialog = false;
     },

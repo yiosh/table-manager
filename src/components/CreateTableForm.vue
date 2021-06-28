@@ -739,10 +739,12 @@ export default {
       };
 
       // Add guest counters total once all calculations are done
-      group.guestCountersTotal = guestCountersTotal;
-      group.guestSeraleCounters = guestSeraleCounters;
-      group.seraLabel = seraLabel;
-      group.asteriscTextConfig = asteriscTextConfig;
+      if (group) {
+        group.guestCountersTotal = guestCountersTotal;
+        group.guestSeraleCounters = guestSeraleCounters;
+        group.seraLabel = seraLabel;
+        group.asteriscTextConfig = asteriscTextConfig;
+      }
 
       const details = {
         layoutId: this.$store.state.layout.id,

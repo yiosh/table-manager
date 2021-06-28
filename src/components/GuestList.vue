@@ -30,12 +30,9 @@
           <v-toolbar flat color="white">
             <v-spacer></v-spacer>
             <v-dialog v-model="guestDialog" max-width="500px">
-              <v-btn
-                slot="activator"
-                color="primary"
-                dark
-                class="mb-2"
-              >{{ labels.create_new_guest }}</v-btn>
+              <v-btn slot="activator" color="primary" dark class="mb-2">{{
+                labels.create_new_guest
+              }}</v-btn>
               <v-card>
                 <v-form @submit.prevent="save">
                   <v-card-title>
@@ -54,7 +51,10 @@
                           ></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6 md6>
-                          <v-text-field v-model="editedItem.nome" :label="labels.name"></v-text-field>
+                          <v-text-field
+                            v-model="editedItem.nome"
+                            :label="labels.name"
+                          ></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6 md3>
                           <v-text-field
@@ -127,7 +127,10 @@
                         </template>
                         <!-- End New Guest Section -->
                         <v-flex xs12>
-                          <v-text-field v-model="editedItem.note_intolleranze" :label="labels.note"></v-text-field>
+                          <v-text-field
+                            v-model="editedItem.note_intolleranze"
+                            :label="labels.note"
+                          ></v-text-field>
                         </v-flex>
                         <!-- <v-flex xs12>
                           <v-select
@@ -142,14 +145,17 @@
                           <v-select
                             item-text="text"
                             item-value="value"
-                            v-model.number="currentTable"
+                            v-model.number="editedItem.table_id"
                             :items="tableList"
                             @change="changeTable"
                             label="Associa al tavolo"
                           ></v-select>
                         </v-flex>
                         <v-flex xs12 v-if="!editForm">
-                          <v-checkbox v-model="saveAndContinue" :label="labels.save_and_continue"></v-checkbox>
+                          <v-checkbox
+                            v-model="saveAndContinue"
+                            :label="labels.save_and_continue"
+                          ></v-checkbox>
                         </v-flex>
                       </v-layout>
                     </v-container>
@@ -157,15 +163,11 @@
 
                   <v-card-actions>
                     <v-btn color="success" dark type="submit">
-                      {{
-                      labels.save
-                      }}
+                      {{ labels.save }}
                     </v-btn>
                     <v-spacer></v-spacer>
                     <v-btn color="blue darken-1" flat @click="close">
-                      {{
-                      labels.close
-                      }}
+                      {{ labels.close }}
                     </v-btn>
                   </v-card-actions>
                 </v-form>
@@ -194,13 +196,12 @@
               <td>{{ props.item.note_intolleranze }}</td>
 
               <td>
-                <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
+                <v-icon small class="mr-2" @click="editItem(props.item)"
+                  >edit</v-icon
+                >
                 <v-icon small @click="deleteGuest(props.item)">delete</v-icon>
               </td>
             </template>
-
-            
-
           </v-data-table>
         </v-card-text>
       </v-card>
@@ -219,7 +220,7 @@ export default {
       pagination: {
         sortBy: "id",
         descending: true,
-        rowsPerPage: -1
+        rowsPerPage: -1,
       },
       nome_tavolo_cliente: null,
       currentTable: null,
@@ -318,7 +319,7 @@ export default {
           {
             placeholder: "highchairs",
             text: "Seggioloni",
-            value: "high_chair"
+            value: "high_chair",
           },
           { placeholder: "celiachia", text: "Celiachia", value: "menu1" },
           { placeholder: "nolattosio", text: "No lattosio", value: "menu2" },
@@ -329,9 +330,9 @@ export default {
             placeholder: "actions",
             text: "Azioni",
             value: "nome",
-            sortable: false
-          }
-        ]
+            sortable: false,
+          },
+        ],
       },
       editedIndex: -1,
       editedItem: {
@@ -347,7 +348,7 @@ export default {
         menu1: 0,
         menu2: 0,
         menu3: 0,
-        menu4: 0
+        menu4: 0,
       },
       defaultItem: {
         id: null,
@@ -362,11 +363,11 @@ export default {
         menu1: 0,
         menu2: 0,
         menu3: 0,
-        menu4: 0
+        menu4: 0,
       },
       numberRules: [
-        v => typeof v === "number" || "Per favore inserisci un numero"
-      ]
+        (v) => typeof v === "number" || "Per favore inserisci un numero",
+      ],
     };
   },
   computed: {
@@ -382,34 +383,33 @@ export default {
         : this.labels.edit_guest;
     },
     tableList() {
-      const tables = this.$store.getters['table/getTables'];
+      const tables = this.$store.getters["table/getTables"];
       let options = [];
-      tables.forEach(t => {
+      tables.forEach((t) => {
         options.push({
           text: `${t.table_name} ${t.table_number}`,
-          value: Number(t.id)
-        })
+          value: Number(t.id),
+        });
       });
       return options;
     },
     currentGroup() {
-      const groups = this.$store.getters['table/getGroups'];
-      const group = groups.find(g => g.table.id == this.tableId);
+      const groups = this.$store.getters["table/getGroups"];
+      const group = groups.find((g) => g.table.id == this.tableId);
       return group;
     },
     layoutId() {
       return this.$store.state.layout.id;
     },
     ...mapState(["guest"]),
-    ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" })
+    ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
   methods: {
     updateTableName(string) {
-
       let updatedItem = {
         id: this.tableId,
         nomeCliente: string,
-        layoutId: this.layoutId
+        layoutId: this.layoutId,
       };
 
       console.log("updatedItem", updatedItem);
@@ -430,9 +430,13 @@ export default {
     //   const maxSeats = Number(this.maxSeats);
     // },
     maxSeatsCheck(newGuest) {
+      if (Number(this.tableId) != Number(newGuest.table_id)) {
+        return false;
+      }
+      console.log("guest", newGuest);
       const maxSeats = Number(this.maxSeats);
       let guests = JSON.parse(JSON.stringify(this.guests(this.tableId)));
-      const index = guests.findIndex(guest => guest.id === newGuest.id);
+      const index = guests.findIndex((guest) => guest.id === newGuest.id);
       if (index !== -1) {
         guests[index] = Object.assign({}, newGuest);
       } else {
@@ -463,6 +467,7 @@ export default {
           return false;
         }
       }
+
       if (totalPeople > maxSeats) {
         return true;
       } else {
@@ -473,6 +478,7 @@ export default {
       this.dialog = false;
     },
     editItem(item) {
+      console.log("item", item);
       this.editForm = true;
       console.log("item", item);
       item.peoples = Number(item.peoples);
@@ -484,11 +490,12 @@ export default {
       item.menu2 = Number(item.menu2);
       item.menu3 = Number(item.menu3);
       item.menu4 = Number(item.menu4);
+      item.table_id = Number(item.table_id);
 
       this.editedIndex = this.guest.guests.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      this.nome_tavolo_cliente = 
-      this.currentTable = Number(item.table_id);
+      // this.editedItem.nome_cliente = this.guest.
+      // nome_tavolo_cliente = this.currentTable = Number(item.table_id);
       this.guestDialog = true;
     },
     deleteGuest(guest) {
@@ -512,15 +519,17 @@ export default {
       }
     },
     save() {
-      let guest = this.editedItem;
-      guest.table_id = this.currentTable;
-      console.log("up", guest)
+      let guest = Object.assign({}, this.editedItem);
+      console.log("guest", guest);
+      // guest.table_id = this.editedItem.table_id;
+      console.log("up", guest);
+      console.log("isItMax", this.maxSeatsCheck(guest));
       if (this.maxSeatsCheck(guest)) {
         const notification = {
           type: "error",
           multiLine: true,
           message:
-            "Hai inserito più ospiti o pasti, di quelli consentiti da questo tavolo"
+            "Hai inserito più ospiti o pasti, di quelli consentiti da questo tavolo",
         };
         this.$store.dispatch("notification/add", notification, { root: true });
         return;
@@ -529,18 +538,21 @@ export default {
       if (guest.note_intolleranze != "") {
         const payload = {
           tableId: this.tableId,
-          state: true
+          state: true,
         };
         this.$store.dispatch("table/handleAsterisc", payload);
       }
       if (this.editedIndex > -1) {
         // Update existing guest
         this.$store.dispatch("guest/updateGuest", guest);
-        this.$store.dispatch("table/getTables", this.editedItem.layout_id, { root: true });
+        this.$store.dispatch("table/getTables", this.layoutId, {
+          root: true,
+        });
         this.close();
       } else {
         // Create a New Guest
-        const tableId = this.tableId;
+
+        const tableId = this.editedItem.table_id;
         this.$store.dispatch("guest/addGuest", { tableId, guest });
         this.editedItem = Object.assign({}, this.defaultItem);
         document.getElementById("cognomefield").focus();
@@ -549,7 +561,7 @@ export default {
         this.close();
       }
       //
-    }
+    },
   },
   created() {
     EventBus.$on("fetch-done", () => {
@@ -590,14 +602,14 @@ export default {
     });
 
     // On table select grab the table's id and other data
-    EventBus.$on("table-select", group => {
+    EventBus.$on("table-select", (group) => {
       let table = group.attrs.table;
       this.tableId = table.id;
       this.tableName = table.textConfig.name;
       if (table.textConfig.maxSeats) {
         this.maxSeats = table.textConfig.maxSeats;
       }
-      this.nome_tavolo_cliente = table.textConfig.nomeCliente
+      this.nome_tavolo_cliente = table.textConfig.nomeCliente;
       this.tableNumber = table.textConfig.number;
       this.clientName = table.textConfig.nomeCliente;
     });
@@ -610,11 +622,11 @@ export default {
         const notification = {
           type: "warning",
           message:
-            "Devi selezionare un tavolo per aprire la sua lista degli ospiti"
+            "Devi selezionare un tavolo per aprire la sua lista degli ospiti",
         };
         this.$store.dispatch("notification/add", notification, { root: true });
       }
     });
-  }
+  },
 };
 </script>
