@@ -25,14 +25,15 @@
           :ref="group.name"
           @click="tableSelect(group.name)"
           @dragend="moveTable"
+          @dragstart="handleMouseOut"
+          @mousemove="handleMouseMove"
+          @mouseout="handleMouseOut"
           v-for="group in tableGroups"
           :config="group"
           :key="group.name"
         >
           <v-circle
             v-if="group.table.type === 'circle'"
-            @mousemove="handleMouseMove"
-            @mouseout="handleMouseOut"
             :ref="group.table.tableConfig.name"
             @transformend="handleTableTransform"
             :config="group.table.tableConfig"
@@ -148,11 +149,11 @@ export default {
     tooltipContainerConfig: {
       x: 434,
       y: 121,
-      fill: "white",
+      fill: "#fafafa",
       stroke: "black",
       strokeWidth: 2,
       rotation: 0,
-      width: 200,
+      width: 300,
       height: 100,
       draggable: false,
       isRootInsert: false,
@@ -237,12 +238,13 @@ export default {
       this.tooltipConfig.text = null;
     },
     handleMouseMove(ev) {
-      this.tooltipGroupConfig.x = ev.evt.layerX - 70;
-      this.tooltipGroupConfig.y = ev.evt.layerY - 350;
-      this.tooltipContainerConfig.x = ev.evt.layerX;
-      this.tooltipContainerConfig.y = ev.evt.layerY;
-      this.tooltipConfig.x = ev.evt.layerX + 10;
-      this.tooltipConfig.y = ev.evt.layerY + 10;
+      this.tooltipGroupConfig.x = ev.evt.layerX - 400;
+      this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+      // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+      // this.tooltipContainerConfig.y = ev.evt.layerY;
+      this.tooltipConfig.x = 450;
+      this.tooltipConfig.y = 140;
+      this.tooltipConfig.background = "white";
       if (this.tooltipConfig.text == null) {
         const group = ev.target.parent.attrs;
         const table = group.table;
@@ -251,20 +253,25 @@ export default {
 
         if (guests.length > 0) {
           if (guests.length > 1) {
+            this.tooltipConfig.text = "";
             guests.forEach((g) => {
               this.tooltipConfig.text += `${
-                g.cognome && g.cognome != "null" ? g.cognome : ""
-              } ${g.nome ? g.nome : ""} A:${g.peoples} B:${g.baby} S:${
-                g.chairs_only
-              } A:${g.high_chair}\n`;
+                g.cognome && g.cognome != "null"
+                  ? g.cognome.replace("null", "")
+                  : ""
+              } ${g.nome ? g.nome.replace("null", "") : ""} A:${g.peoples} B:${
+                g.baby
+              } S:${g.chairs_only} A:${g.high_chair}\n`;
             });
           } else {
             const g = guests[0];
             this.tooltipConfig.text = `${
-              g.cognome && g.cognome != "null" ? g.cognome : ""
-            } ${g.nome ? g.nome : ""} A:${g.peoples} B:${g.baby} S:${
-              g.chairs_only
-            } A:${g.high_chair}`;
+              g.cognome && g.cognome != "null"
+                ? g.cognome.replace("null", "")
+                : ""
+            } ${g.nome ? g.nome.replace("null", "") : ""} A:${g.peoples} B:${
+              g.baby
+            } S:${g.chairs_only} A:${g.high_chair}`;
           }
         }
       }

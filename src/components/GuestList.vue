@@ -30,9 +30,14 @@
           <v-toolbar flat color="white">
             <v-spacer></v-spacer>
             <v-dialog v-model="guestDialog" max-width="500px">
-              <v-btn slot="activator" color="primary" dark class="mb-2">{{
-                labels.create_new_guest
-              }}</v-btn>
+              <v-btn
+                slot="activator"
+                @click="editedItem.table_id = Number(tableId)"
+                color="primary"
+                dark
+                class="mb-2"
+                >{{ labels.create_new_guest }}</v-btn
+              >
               <v-card>
                 <v-form @submit.prevent="save">
                   <v-card-title>
@@ -605,6 +610,7 @@ export default {
     EventBus.$on("table-select", (group) => {
       let table = group.attrs.table;
       this.tableId = table.id;
+      this.$store.commit("SET_CURRENT_TABLE_ID", table.id);
       this.tableName = table.textConfig.name;
       if (table.textConfig.maxSeats) {
         this.maxSeats = table.textConfig.maxSeats;

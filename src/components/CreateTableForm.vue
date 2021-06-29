@@ -285,6 +285,7 @@ export default {
     match: "validateField",
     max: "validateField",
     model: "validateField",
+    currentTableId() {},
   },
   methods: {
     validateField() {
