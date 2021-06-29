@@ -391,10 +391,12 @@ export default {
       const tables = this.$store.getters["table/getTables"];
       let options = [];
       tables.forEach((t) => {
-        options.push({
-          text: `${t.table_name} ${t.table_number}`,
-          value: Number(t.id),
-        });
+        if (!t.table_name.includes("HIDDEN")) {
+          options.push({
+            text: `${t.table_name} ${t.table_number}`,
+            value: Number(t.id),
+          });
+        }
       });
       return options;
     },
