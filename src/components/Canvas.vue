@@ -151,7 +151,7 @@ export default {
       y: 121,
       fill: "#fafafa",
       stroke: "black",
-      strokeWidth: 2,
+      strokeWidth: 1,
       rotation: 0,
       width: 300,
       height: 100,
