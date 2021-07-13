@@ -238,12 +238,21 @@ export default {
       this.tooltipConfig.text = null;
     },
     handleMouseMove(ev) {
-      this.tooltipGroupConfig.x = ev.evt.layerX - 400;
-      this.tooltipGroupConfig.y = ev.evt.layerY - 100;
-      // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
-      // this.tooltipContainerConfig.y = ev.evt.layerY;
-      this.tooltipConfig.x = 450;
-      this.tooltipConfig.y = 140;
+      if (ev.evt.x > 600) {
+        this.tooltipGroupConfig.x = ev.evt.layerX - 750;
+        this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+        // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+        // this.tooltipContainerConfig.y = ev.evt.layerY;
+        this.tooltipConfig.x = 450;
+        this.tooltipConfig.y = 140;
+      } else {
+        this.tooltipGroupConfig.x = ev.evt.layerX - 400;
+        this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+        // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+        // this.tooltipContainerConfig.y = ev.evt.layerY;
+        this.tooltipConfig.x = 450;
+        this.tooltipConfig.y = 140;
+      }
       this.tooltipConfig.background = "white";
       if (this.tooltipConfig.text == null) {
         const group = ev.target.parent.attrs;
@@ -252,6 +261,7 @@ export default {
         const guests = this.$store.getters["guest/guests"](table.id);
 
         if (guests.length > 0) {
+          console.log("ev", ev);
           if (guests.length > 1) {
             this.tooltipConfig.text = "";
             guests.forEach((g) => {

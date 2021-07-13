@@ -326,7 +326,7 @@ export default {
             text: "Seggioloni",
             value: "high_chair",
           },
-          { placeholder: "celiachia", text: "Celiachia", value: "menu1" },
+          { placeholder: "noglutine", text: "No glutine", value: "menu1" },
           { placeholder: "nolattosio", text: "No lattosio", value: "menu2" },
           { placeholder: "vegano", text: "Vegano", value: "menu3" },
           { placeholder: "vegetariano", text: "Vegetariano", value: "menu4" },
