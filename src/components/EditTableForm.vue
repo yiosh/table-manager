@@ -129,7 +129,7 @@ import { tableTypeDeparser, tableTypeParser } from "@/utils";
 export default {
   name: "EditTableForm",
   components: {
-    "compact-picker": Compact
+    "compact-picker": Compact,
   },
   data: () => ({
     labelsEn: {
@@ -152,23 +152,23 @@ export default {
           id: 1,
           placeholder: "solid",
           label: "Solid",
-          value: "intero"
+          value: "intero",
         },
         {
           id: 2,
           placeholder: "dashed",
           label: "Dashed",
-          value: "trattegiato"
+          value: "trattegiato",
         },
         {
           id: 3,
           placeholder: "none",
           label: "None",
-          value: "nessuno"
-        }
+          value: "nessuno",
+        },
       ],
       save: "Save",
-      delete: "Delete"
+      delete: "Delete",
     },
     labels: {
       table: "Tavolo",
@@ -190,27 +190,27 @@ export default {
           id: 1,
           placeholder: "solid",
           label: "Solido",
-          value: "intero"
+          value: "intero",
         },
         {
           id: 2,
           placeholder: "dashed",
           label: "Trattegiato",
-          value: "trattegiato"
+          value: "trattegiato",
         },
         {
           id: 3,
           placeholder: "none",
           label: "Nessuno",
-          value: "nessuno"
-        }
+          value: "nessuno",
+        },
       ],
       save: "Salva",
-      delete: "Elimina"
+      delete: "Elimina",
     },
     valid: true,
     numberRules: [
-      v => typeof v === "number" || "Per favore inserisci un numero"
+      (v) => typeof v === "number" || "Per favore inserisci un numero",
     ],
     layer: null,
     dialog: false,
@@ -229,7 +229,7 @@ export default {
       borderColor: "#000000",
       backgroundColor: "#ffffff",
       borderType: "intero",
-      maxSeats: null
+      maxSeats: null,
     },
     defaultItem: {
       id: "",
@@ -243,14 +243,14 @@ export default {
       nomeCliente: "",
       borderColor: "#000000",
       backgroundColor: "#ffffff",
-      borderType: "intero"
+      borderType: "intero",
     },
     // tableTypes: [],
     angolareRules: [
-      v => !!v || "Angolare è richiesto ",
-      v => v < 360 || "Angolare deve essere inferiore a 360°"
+      (v) => !!v || "Angolare è richiesto ",
+      (v) => v < 360 || "Angolare deve essere inferiore a 360°",
     ],
-    nameRules: [v => !!v || "Nome è richiesto"]
+    nameRules: [(v) => !!v || "Nome è richiesto"],
   }),
   computed: {
     groupsLength() {
@@ -267,7 +267,7 @@ export default {
         ? 91
         : this.editedItem.angolare;
     },
-    ...mapState(["table"])
+    ...mapState(["table"]),
   },
   methods: {
     defaultColor(value) {
@@ -287,6 +287,7 @@ export default {
     },
     fetchSelectedTable(group) {
       let table = group.attrs.table;
+      console.log("table", table);
       // console.log("table", table);
       let size;
 
@@ -322,7 +323,7 @@ export default {
         borderColor: table.tableConfig.stroke,
         backgroundColor: table.tableConfig.fill,
         borderType,
-        maxSeats: table.textConfig.maxSeats
+        maxSeats: table.textConfig.maxSeats,
       };
       this.editedItem = Object.assign({}, item);
       this.defaultItem = Object.assign({}, item);
@@ -364,7 +365,7 @@ export default {
         borderColor: borderColor.replace("#", ""),
         backgroundColor: backgroundColor.replace("#", ""),
         borderType: this.editedItem.borderType,
-        maxSeats: this.editedItem.maxSeats
+        maxSeats: this.editedItem.maxSeats,
       };
 
       console.log("updatedItem", updatedItem);
@@ -374,7 +375,7 @@ export default {
       // ) {
       this.$store.dispatch("table/updateTable", updatedItem);
       this.defaultItem = Object.assign({}, updatedItem);
-      this.$store.state.stage.draw();
+      // this.$store.state.stage.draw();
       // }
       this.dialog = false;
     },
@@ -384,12 +385,12 @@ export default {
       if (confirm) {
         let item = {
           layoutId: this.$store.state.layout.id,
-          id: this.editedItem.id
+          id: this.editedItem.id,
         };
         this.$store.dispatch("table/deleteTable", item);
       }
       this.dialog = false;
-    }
+    },
   },
   mounted() {
     this.layer = this.$store.state.layer;
@@ -420,7 +421,7 @@ export default {
     //   }
     // });
 
-    EventBus.$on("table-select", group => {
+    EventBus.$on("table-select", (group) => {
       console.log("groupselected", group);
       this.fetchSelectedTable(group);
     });
@@ -428,6 +429,6 @@ export default {
     EventBus.$on("edit-table-select", () => {
       this.dialog = true;
     });
-  }
+  },
 };
 </script>

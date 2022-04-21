@@ -7,20 +7,21 @@ export const state = {
   guests: [],
   guestTypes: [],
   adultCounter: 0,
-  babyCounter: 0
+  babyCounter: 0,
 };
 
 export const mutations = {
   GET_GUEST_TYPES(state, payload) {
     if (payload.length > 0) {
-      payload.forEach(guest => {
+      payload.forEach((guest) => {
         state.guestTypes.push(guest);
       });
     }
   },
   GET_GUESTS(state, payload) {
     if (payload.length > 0) {
-      payload.forEach(guest => {
+      state.guests = [];
+      payload.forEach((guest) => {
         state.guests.push(guest);
       });
     }
@@ -30,58 +31,55 @@ export const mutations = {
     state.guests.push(newGuest);
   },
   UPDATE_GUEST(state, updatedGuest) {
-    let index = state.guests.findIndex(guest => {
+    let index = state.guests.findIndex((guest) => {
       return guest.id == updatedGuest.id;
     });
     console.log("updatedGuest", updatedGuest);
     Object.assign(state.guests[index], updatedGuest);
   },
   DELETE_GUEST(state, guest) {
-    let index = state.guests.findIndex(guestFound => {
+    let index = state.guests.findIndex((guestFound) => {
       return guestFound.id == guest.id;
     });
 
     state.guests.splice(index, 1);
-  }
+  },
 };
 
 export const actions = {
   getGuests({ commit, dispatch }, layoutId) {
     TMService.getGuests(layoutId)
-      .then(response => {
+      .then((response) => {
         // handle success
         commit("GET_GUESTS", response.data.dati);
-        if (response.data.dati.length < 0) {
-        } else {
-        }
       })
-      .catch(error => {
+      .catch((error) => {
         // handle error
         const notification = {
           type: "error",
           multiLine: true,
           message:
             "Si è verificato un problema durante il recupero degli ospiti: " +
-            error.message
+            error.message,
         };
         dispatch("notification/add", notification, { root: true });
       });
   },
   getGuestTypes({ commit, dispatch }) {
     TMService.getGuestTypes()
-      .then(response => {
+      .then((response) => {
         // handle success
         console.log("GuestTypes", response.data);
         return commit("GET_GUEST_TYPES", response.data.dati);
       })
-      .catch(error => {
+      .catch((error) => {
         // handle error
         const notification = {
           type: "error",
           multiLine: true,
           message:
             "Si è verificato un problema durante il recupero degli ospiti: " +
-            error.message
+            error.message,
         };
         dispatch("notification/add", notification, { root: true });
       });
@@ -89,7 +87,7 @@ export const actions = {
   addGuest({ commit, dispatch, rootState }, { tableId, guest }) {
     const layoutId = rootState.layout.id;
     return TMService.addGuest(layoutId, tableId, guest)
-      .then(response => {
+      .then((response) => {
         if (response.data.esito) {
           guest.id = response.data.dati.id;
           guest.table_id = tableId;
@@ -98,93 +96,93 @@ export const actions = {
 
           const notification = {
             type: "success",
-            message: response.data.info_txt
+            message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
           return guest;
         } else {
           const notification = {
             type: "error",
-            message: response.data.info_txt
+            message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
           return false;
         }
       })
-      .then(guest => {
+      .then((guest) => {
         dispatch("updateGuestCounters", guest);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
         const notification = {
           type: "error",
           multiLine: true,
           message:
             "Si è verificato un problema durante l'aggiunta dell'ospite: " +
-            error.message
+            error.message,
         };
         dispatch("notification/add", notification, { root: true });
       });
   },
   updateGuest({ commit, dispatch }, guest) {
     TMService.updateGuest(guest)
-      .then(response => {
+      .then((response) => {
         if (response.data.esito) {
           const updatedGuest = response.data.dati[0];
           commit("UPDATE_GUEST", updatedGuest);
 
           const notification = {
             type: "success",
-            message: response.data.info_txt
+            message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
           return updatedGuest;
         } else {
           const notification = {
             type: "error",
-            message: response.data.info_txt
+            message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
           return false;
         }
       })
-      .then(updatedGuest => {
+      .then((updatedGuest) => {
         dispatch("updateGuestCounters", updatedGuest);
         dispatch("handleIfNote", { tableId: guest.table_id });
       })
-      .catch(error => {
+      .catch((error) => {
         const notification = {
           type: "error",
           multiLine: true,
           message:
             "Si è verificato un problema durante l'aggiornamento del ospite: " +
-            error.message
+            error.message,
         };
         dispatch("notification/add", notification, { root: true });
       });
   },
   deleteGuest({ commit, dispatch }, guest) {
     TMService.deleteGuest(guest.id)
-      .then(response => {
+      .then((response) => {
         if (response.data.esito) {
           commit("DELETE_GUEST", guest);
 
           const notification = {
             type: "success",
-            message: response.data.info_txt
+            message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
           return guest;
         } else {
           const notification = {
             type: "error",
-            message: response.data.info_txt
+            message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
           return false;
         }
       })
-      .then(guest => {
+      .then((guest) => {
         dispatch("updateGuestCounters", guest);
         dispatch("handleIfNote", { tableId: guest.table_id });
       })
@@ -194,7 +192,7 @@ export const actions = {
           multiLine: true,
           message:
             "Si è verificato un problema durante l'eliminazione del ospite: " +
-            error.message
+            error.message,
         };
         dispatch("notification/add", notification, { root: true });
       });
@@ -202,9 +200,9 @@ export const actions = {
   handleIfNote({ state, dispatch }, payload) {
     console.log("payload", payload);
     let tableGuests = state.guests.filter(
-      guest => guest.table_id == payload.tableId
+      (guest) => guest.table_id == payload.tableId
     );
-    let test = tableGuests.find(guest => guest.note_intolleranze != "");
+    let test = tableGuests.find((guest) => guest.note_intolleranze != "");
     console.log("test", test);
 
     if (test == undefined) {
@@ -223,7 +221,7 @@ export const actions = {
   },
   updateGuestCounters({ rootState }, updatedGuest) {
     console.log("updatedGuest", updatedGuest);
-    let groupIndex = rootState.table.groups.findIndex(group => {
+    let groupIndex = rootState.table.groups.findIndex((group) => {
       return group.table.id == updatedGuest.table_id;
     });
 
@@ -232,7 +230,7 @@ export const actions = {
       babies: 0,
       chairs: 0,
       highchairs: 0,
-      text: ""
+      text: "",
     };
 
     let seraleCounters = {
@@ -240,18 +238,18 @@ export const actions = {
       babies: 0,
       chairs: 0,
       highchairs: 0,
-      text: ""
+      text: "",
     };
     console.log("state", rootState);
 
     let guests = state.guests
-      ? state.guests.filter(guest => {
+      ? state.guests.filter((guest) => {
           return guest.table_id == updatedGuest.table_id;
         })
       : [];
 
     if (guests.length > 0) {
-      guests.forEach(guest => {
+      guests.forEach((guest) => {
         if (guest.guest_type == 4) {
           if (Number(guest.peoples) > 0) {
             seraleCounters.people += Number(guest.peoples);
@@ -336,32 +334,33 @@ export const actions = {
       seraleCounters.babies +
       seraleCounters.chairs +
       seraleCounters.highchairs;
-
-    rootState.table.groups[groupIndex].guestCounters.text = counters.text;
-    rootState.table.groups[groupIndex].guestSeraleCounters.text =
-      seraleCounters.text;
-    rootState.table.groups[groupIndex].guestCountersTotal.text =
-      showTablesTotal + total;
-  }
+    if (rootState.table.groups[groupIndex]) {
+      rootState.table.groups[groupIndex].guestCounters.text = counters.text;
+      rootState.table.groups[groupIndex].guestSeraleCounters.text =
+        seraleCounters.text;
+      rootState.table.groups[groupIndex].guestCountersTotal.text =
+        showTablesTotal + total;
+    }
+  },
 };
 
 export const getters = {
-  guestTypes: state => {
+  guestTypes: (state) => {
     let guestTypesArray = state.guestTypes;
     let newArray = [];
-    guestTypesArray.forEach(element => {
+    guestTypesArray.forEach((element) => {
       let number = parseInt(element.id);
       let guestTypeObject = {
         text: element.label,
-        value: number
+        value: number,
       };
       newArray.push(guestTypeObject);
     });
     return newArray;
   },
-  guests: state => tableId => {
+  guests: (state) => (tableId) => {
     return state.guests.filter(
-      guest => String(guest.table_id) === String(tableId)
+      (guest) => String(guest.table_id) === String(tableId)
     );
   },
   guestTotals(state, getters, rootState) {
@@ -370,7 +369,7 @@ export const getters = {
       people: 0,
       babies: 0,
       chairs: 0,
-      highchairs: 0
+      highchairs: 0,
     };
 
     let peopleLabel = rootState.labels.peoples_label
@@ -386,7 +385,7 @@ export const getters = {
       ? rootState.labels.high_chair_label
       : "0/2";
 
-    guests.forEach(guest => {
+    guests.forEach((guest) => {
       if (Number(guest.peoples) > 0) {
         guestTotals.people += Number(guest.peoples);
       }
@@ -419,7 +418,7 @@ export const getters = {
       fill: "black",
       width: 600,
       x: 14,
-      y
+      y,
     };
     return total;
   },
@@ -432,7 +431,7 @@ export const getters = {
       let babyCounter = 0;
       let guestType = guestTypesArray[index - 1];
 
-      state.guests.forEach(guest => {
+      state.guests.forEach((guest) => {
         if (guest.guest_type == guestType.id) {
           if (guest.peoples) {
             adultCounter += parseInt(guest.peoples);
@@ -472,9 +471,9 @@ export const getters = {
       width: 600,
       draggable: true,
       x: 14,
-      y
+      y,
     };
 
     return total;
-  }
+  },
 };

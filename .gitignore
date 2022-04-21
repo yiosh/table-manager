@@ -1,6 +1,10 @@
 .DS_Store
 node_modules
 /dist
+rootCA.pem
+rootCA.key
+client-1.local.key
+client-1.local.csr
 
 # local env files
 .env.local
