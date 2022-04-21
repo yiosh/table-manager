@@ -52,10 +52,12 @@
             @transformend="handleTableTransform"
             :config="group.table.tableConfig"
           ></v-ellipse>
+          <!-- TABLE TITLE -->
           <v-text
             :ref="group.table.textConfig.name"
             :config="group.table.textConfig"
           ></v-text>
+          <!-- COUNTERS -->
           <v-text
             v-if="showTablesCounters"
             :ref="group.guestCounters.name"

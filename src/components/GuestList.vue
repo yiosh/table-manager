@@ -200,7 +200,7 @@
               <td>{{ props.item.menu4 }}</td>
               <td>{{ props.item.note_intolleranze }}</td>
 
-              <td>
+              <td class="d-flex">
                 <v-icon small class="mr-2" @click="editItem(props.item)"
                   >edit</v-icon
                 >

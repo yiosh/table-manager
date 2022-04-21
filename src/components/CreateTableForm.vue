@@ -364,10 +364,12 @@ export default {
       let guestSeraleCounterName = "gsc" + uID;
       let table = {};
 
+      const t = name + " " + (number == 0 ? "" : number);
+
       let textConfig = {
         name: textName,
         number,
-        text: name + " " + (number == 0 ? "" : number),
+        text: t,
         fontSize: 16,
         fontFamily: "Poppins",
         fontStyle: "bold",
@@ -375,8 +377,8 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: size / 2,
-        offsetX: size / 2,
+        offsetY: 10,
+        offsetX: t.length + size / 2,
         nomeCliente,
         maxSeats: Number(maxSeats),
       };
@@ -392,8 +394,11 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: size / 4 - 7,
-        offsetX: size / 2,
+        // offsetY: size / 4 - 7,
+        offsetY: -5,
+
+        // offsetX: size / 2,
+        offsetX: t.length + size / 2,
         nomeCliente,
         maxSeats: Number(maxSeats),
       };
@@ -468,8 +473,11 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: nomeCliente ? offsetY - size / 12 : offsetY - size / 4 + 7,
-        offsetX,
+        // offsetY: nomeCliente ? offsetY - size / 12 : offsetY - size / 4 + 7,
+        offsetY: -20,
+
+        // offsetX,
+        offsetX: t.length + size / 2,
         counters: {
           people: 0,
           babies: 0,
