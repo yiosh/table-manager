@@ -516,8 +516,11 @@ export default {
       if (this.editForm) {
         this.editForm = false;
         setTimeout(() => {
+          const tableId = JSON.parse(JSON.stringify(this.editedItem.table_id));
           this.editedItem = Object.assign({}, this.defaultItem);
+          this.editedItem.table_id = tableId;
           this.editedIndex = -1;
+          console.log("e", this.editedItem);
         }, 300);
       }
 
@@ -559,9 +562,10 @@ export default {
       } else {
         // Create a New Guest
 
-        const tableId = this.editedItem.table_id;
+        const tableId = JSON.parse(JSON.stringify(this.editedItem.table_id));
         this.$store.dispatch("guest/addGuest", { tableId, guest });
         this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedItem.table_id = tableId;
         document.getElementById("cognomefield").focus();
       }
       if (!this.saveAndContinue) {

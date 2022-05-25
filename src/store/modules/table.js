@@ -237,7 +237,7 @@ export const actions = {
         console.log(error);
       });
   },
-  addTable({ commit, dispatch }, payload) {
+  addTable({ commit, dispatch, rootState }, payload) {
     if (payload.isNew === true) {
       console.log("payload", payload);
       TMService.addTable(payload.details)
@@ -250,7 +250,11 @@ export const actions = {
               type: "success",
               message: response.data.info_txt,
             };
+
             dispatch("notification/add", notification, { root: true });
+            dispatch("table/getTables", rootState.layout.id, {
+              root: true,
+            });
           } else {
             const notification = {
               type: "error",
@@ -276,7 +280,7 @@ export const actions = {
       dispatch("endProgress", null, { root: true });
     }
   },
-  deleteTable({ state, commit, dispatch }, table) {
+  deleteTable({ state, commit, dispatch, rootState }, table) {
     TMService.deleteTable({ layoutId: table.layoutId, tableId: table.id })
       .then((response) => {
         if (response.data.esito) {
@@ -286,6 +290,9 @@ export const actions = {
             type: "success",
             message: response.data.info_txt,
           };
+          dispatch("table/getTables", rootState.layout.id, {
+            root: true,
+          });
           dispatch("notification/add", notification, { root: true });
         } else {
           const notification = {
@@ -317,6 +324,9 @@ export const actions = {
             type: "success",
             message: response.data.info_txt,
           };
+          dispatch("table/getTables", rootState.layout.id, {
+            root: true,
+          });
           dispatch("notification/add", notification, { root: true });
           return true;
         } else {
