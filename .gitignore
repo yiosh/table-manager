@@ -5,6 +5,7 @@ rootCA.pem
 rootCA.key
 client-1.local.key
 client-1.local.csr
+/backup
 
 # local env files
 .env.local

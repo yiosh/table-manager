@@ -91,7 +91,7 @@
                         </v-flex>
 
                         <!-- New Guest Section -->
-                        <template v-if="placeholderLabels.menu1">
+                        <!-- <template v-if="placeholderLabels.menu1">
                           <v-flex xs12>
                             <v-toolbar flat height="24" dark color="#424242">
                               <v-toolbar-title>PASTI SPECIALI</v-toolbar-title>
@@ -129,12 +129,13 @@
                               :label="placeholderLabels.menu4"
                             ></v-text-field>
                           </v-flex>
-                        </template>
+                        </template> -->
                         <!-- End New Guest Section -->
                         <v-flex xs12>
                           <v-text-field
                             v-model="editedItem.note_intolleranze"
                             :label="labels.note"
+                            placeholder="Note intolleranze, allergie o esigenze speciali"
                           ></v-text-field>
                         </v-flex>
                         <!-- <v-flex xs12>
