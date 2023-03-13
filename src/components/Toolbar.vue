@@ -3,7 +3,7 @@
     <v-toolbar flat dark color="#424242" class="cnv-toolbar">
       <v-toolbar-title>Table Planner</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn v-if="blockBoard == '0'" flat @click="handleClick('create-table')">
+      <v-btn v-if="blockBoard != 1" flat @click="handleClick('create-table')">
         <i class="fas fa-plus icon-margin"></i>
         {{ labels.add_table }}
       </v-btn>
@@ -53,9 +53,9 @@ export default {
       return this.$store.state.layout.layout_name;
     },
     blockBoard() {
-      return 0;
+      // return 0;
 
-      // return this.$store.getters.getInfo.block_board;
+      return this.$store.getters.getInfo.block_board;
     },
   },
   methods: {

@@ -192,7 +192,7 @@ export default {
       return this.$store.getters.getBackgroundImg;
     },
     blockBoard() {
-      return 0;
+      // return 0;
       return this.$store.getters.getInfo.block_board;
     },
     showTablesCounters() {
@@ -376,21 +376,22 @@ export default {
         stage.find("Transformer").destroy();
         // create new transformer
         let tr;
-        if (this.blockBoard == "0") {
+        if (this.blockBoard != 1) {
           tr = new window.Konva.Transformer({
             rotateEnabled: true,
             rotationSnaps: [0, 90, 180, 270],
           });
+          tr.attachTo(stage.find(name)[0]);
         } else {
-          tr = new window.Konva.Transformer({
-            rotateEnabled: false,
-            resizeEnabled: false,
-            rotationSnaps: [0, 90, 180, 270],
-          });
+          // tr = new window.Konva.Transformer({
+          //   rotateEnabled: false,
+          //   resizeEnabled: false,
+          //   rotationSnaps: [0, 90, 180, 270],
+          // });
         }
 
         let layer = this.$refs.layer.getStage(tr);
-        tr.attachTo(stage.find(name)[0]);
+        // tr.attachTo(stage.find(name)[0]);
         group.add(tr);
         layer.add(group);
         layer.draw();
