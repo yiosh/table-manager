@@ -10,15 +10,18 @@ if (location.hostname !== "localhost") {
 //   ? "calderonimartini.condivision.cloud"
 //   : location.hostname;
 const baseURL = protocol + "://" + hostname;
-let endpoint = location.hostname !== "localhost" ? "/fl_api/tables-v3/?" : "/fl_api/tables-dev/?";
+let endpoint =
+  location.hostname !== "localhost"
+    ? "/fl_api/tables-v3/?"
+    : "/fl_api/tables-dev/?";
 
 const apiClient = axios.create({
   baseURL,
   withCredentials: false,
   headers: {
     Accept: "application/json",
-    "Content-Type": "application/json"
-  }
+    "Content-Type": "application/json",
+  },
 });
 
 const CDNClient = axios.create({
@@ -26,8 +29,8 @@ const CDNClient = axios.create({
   withCredentials: false,
   headers: {
     Accept: "application/json",
-    "Content-Type": "application/json"
-  }
+    "Content-Type": "application/json",
+  },
 });
 
 export default {
@@ -59,7 +62,7 @@ export default {
     borderColor,
     backgroundColor,
     borderType,
-    maxSeats
+    maxSeats,
   }) {
     console.log("back", backgroundColor, "border", borderColor);
     borderColor = borderColor.replace("#", "");
@@ -83,75 +86,67 @@ export default {
     borderColor,
     backgroundColor,
     borderType,
-    maxSeats
+    maxSeats,
   }) {
     let params = "";
     if (layoutId) {
-      params += `&layout_id=${layoutId}`
+      params += `&layout_id=${layoutId}`;
     }
     if (id) {
-      params += `&table_id=${id}`
+      params += `&table_id=${id}`;
     }
     if (typeId) {
-      params += `&type_id=${typeId}`
+      params += `&type_id=${typeId}`;
     }
     if (tableName) {
-      params += `&table_name=${tableName}`
+      params += `&table_name=${tableName}`;
     }
     if (tableNumber) {
-      params += `&table_number=${tableNumber}`
+      params += `&table_number=${tableNumber}`;
     }
     if (size) {
-      params += `&size=${size}`
+      params += `&size=${size}`;
     }
     if (scaleX) {
-      params += `&scale_x=${scaleX}`
+      params += `&scale_x=${scaleX}`;
     }
     if (scaleY) {
-      params += `&scale_y=${scaleY}`
+      params += `&scale_y=${scaleY}`;
     }
     if (angolare) {
-      params += `&angolare=${angolare}`
+      params += `&angolare=${angolare}`;
     }
     if (nomeCliente) {
-      params += `&nome_cliente=${nomeCliente}`
+      params += `&nome_cliente=${nomeCliente}`;
     }
     if (borderColor) {
-      params += `&border_color=${borderColor}`
+      params += `&border_color=${borderColor}`;
     }
     if (backgroundColor) {
-      params += `&background_color=${backgroundColor}`
+      params += `&background_color=${backgroundColor}`;
     }
     if (borderType) {
-      params += `&border_type=${borderType}`
+      params += `&border_type=${borderType}`;
     }
     if (maxSeats) {
-      params += `&max_seats=${maxSeats}`
+      params += `&max_seats=${maxSeats}`;
     }
-    return apiClient.get(
-      `${endpoint}update_table&token=1&${params}`
-    );
+    return apiClient.get(`${endpoint}update_table&token=1&${params}`);
   },
-  updateClientName({
-    layoutId,
-    id,
-    nomeCliente,
-  }) {
+  updateClientName({ layoutId, id, nomeCliente }) {
     let params = "";
     if (layoutId) {
-      params += `&layout_id=${layoutId}`
+      params += `&layout_id=${layoutId}`;
     }
     if (id) {
-      params += `&table_id=${id}`
+      params += `&table_id=${id}`;
     }
-    
+
     if (nomeCliente) {
-      params += `&nome_cliente=${nomeCliente}`
+      params += `&nome_cliente=${nomeCliente}`;
     }
-    
-    return apiClient.get(
-      `${endpoint}update_client_name&token=1&${params}`
-    );
+
+    return apiClient.get(`${endpoint}update_client_name&token=1&${params}`);
   },
   deleteTable({ layoutId, tableId }) {
     return apiClient.get(
@@ -167,23 +162,43 @@ export default {
   addGuest(layoutId, tableId, guest) {
     let menus = "";
     if (guest.menu1) {
-      menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${guest.menu3}&menu4=${guest.menu4}`;
+      menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
+        guest.menu3
+      }&menu4=${guest.menu4}`;
     }
     return apiClient.get(
-      `${endpoint}insert_guest&token=1&layout_id=${layoutId}&guest_type=${guest.guest_type}&table_id=${tableId}&cognome=${guest.cognome}&peoples=${guest.peoples}&nome=${guest.nome}&baby=${guest.baby}&chairs_only=${guest.chairs_only}&highchair=${guest.high_chair}&note_intolleranze=${guest.note_intolleranze}${menus}`
+      `${endpoint}insert_guest&token=1&layout_id=${layoutId}&guest_type=${
+        guest.guest_type
+      }&table_id=${tableId}&cognome=${guest.cognome}&peoples=${
+        guest.peoples
+      }&nome=${guest.nome}&baby=${guest.baby}&chairs_only=${
+        guest.chairs_only
+      }&highchair=${guest.high_chair}&note_intolleranze=${
+        guest.note_intolleranze
+      }${menus}`
     );
   },
   updateGuest(guest) {
     console.log("guest", guest);
     let menus = "";
     if (guest.menu1) {
-      menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${guest.menu3}&menu4=${guest.menu4}`;
+      menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
+        guest.menu3
+      }&menu4=${guest.menu4}`;
     }
     return apiClient.get(
-      `${endpoint}update_guest&token=1&guest_id=${guest.id}&guest_type=${guest.guest_type}&cognome=${guest.cognome}&peoples=${guest.peoples}&nome=${guest.nome}&baby=${guest.baby}&chairs_only=${guest.chairs_only}&highchair=${guest.high_chair}&note_intolleranze=${guest.note_intolleranze}${menus}&table_id=${guest.table_id}`
+      `${endpoint}update_guest&token=1&guest_id=${guest.id}&guest_type=${
+        guest.guest_type
+      }&cognome=${guest.cognome}&peoples=${guest.peoples}&nome=${
+        guest.nome
+      }&baby=${guest.baby}&chairs_only=${guest.chairs_only}&highchair=${
+        guest.high_chair
+      }&note_intolleranze=${guest.note_intolleranze}${menus}&table_id=${
+        guest.table_id
+      }`
     );
   },
   deleteGuest(guestId) {
     return apiClient.get(`${endpoint}delete_guest&token=1&guest_id=${guestId}`);
-  }
+  },
 };

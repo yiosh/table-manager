@@ -253,7 +253,7 @@ export default {
   }),
   computed: {
     blockBoard() {
-      return 0;
+      // return 0;
       return this.$store.getters.getInfo.block_board;
     },
     rules() {

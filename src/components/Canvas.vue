@@ -381,17 +381,18 @@ export default {
             rotateEnabled: true,
             rotationSnaps: [0, 90, 180, 270],
           });
-          tr.attachTo(stage.find(name)[0]);
+          // tr.attachTo(stage.find(name)[0]);
         } else {
-          // tr = new window.Konva.Transformer({
-          //   rotateEnabled: false,
-          //   resizeEnabled: false,
-          //   rotationSnaps: [0, 90, 180, 270],
-          // });
+          tr = new window.Konva.Transformer({
+            rotateEnabled: false,
+            resizeEnabled: false,
+            borderEnabled: false,
+            rotationSnaps: [0, 90, 180, 270],
+          });
         }
 
         let layer = this.$refs.layer.getStage(tr);
-        // tr.attachTo(stage.find(name)[0]);
+        tr.attachTo(stage.find(name)[0]);
         group.add(tr);
         layer.add(group);
         layer.draw();

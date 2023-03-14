@@ -39,7 +39,7 @@
                 >{{ labels.create_new_guest }}</v-btn
               >
               <v-card>
-                <v-form @submit.prevent="save">
+                <v-form v-model="valid" @submit.prevent="save">
                   <v-card-title>
                     <span class="headline">{{ formTitle }}</span>
                   </v-card-title>
@@ -66,6 +66,7 @@
                             v-model.number="editedItem.peoples"
                             :rules="numberRules"
                             :label="labels.adults"
+                            type="number"
                           ></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6 md3>
@@ -73,6 +74,7 @@
                             v-model.number="editedItem.baby"
                             :rules="numberRules"
                             :label="labels.child"
+                            type="number"
                           ></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6 md3>
@@ -80,6 +82,7 @@
                             v-model.number="editedItem.chairs_only"
                             :rules="numberRules"
                             :label="labels.chairs"
+                            type="number"
                           ></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6 md3>
@@ -87,11 +90,12 @@
                             v-model.number="editedItem.high_chair"
                             :rules="numberRules"
                             :label="labels.high_chairs"
+                            type="number"
                           ></v-text-field>
                         </v-flex>
 
                         <!-- New Guest Section -->
-                        <template v-if="placeholderLabels.menu1">
+                        <template v-if="info.show_tables_menu">
                           <v-flex xs12>
                             <v-toolbar flat height="24" dark color="#424242">
                               <v-toolbar-title>PASTI SPECIALI</v-toolbar-title>
@@ -125,7 +129,7 @@
                           <v-flex xs12 sm6 md3>
                             <v-text-field
                               v-model.number="editedItem.menu4"
-                              :rules="numberRules"
+                              :rules="numberRules2"
                               :label="placeholderLabels.menu4"
                             ></v-text-field>
                           </v-flex>
@@ -167,7 +171,12 @@
                   </v-card-text>
 
                   <v-card-actions>
-                    <v-btn color="success" dark type="submit">
+                    <v-btn
+                      :disabled="valid == false"
+                      color="success"
+                      class="white--text"
+                      type="submit"
+                    >
                       {{ labels.save }}
                     </v-btn>
                     <v-spacer></v-spacer>
@@ -180,7 +189,7 @@
             </v-dialog>
           </v-toolbar>
           <v-data-table
-            :headers="labels.headers"
+            :headers="headers"
             :items="guests(this.tableId)"
             disable-initial-sort
             hide-actions
@@ -194,10 +203,13 @@
               <td>{{ props.item.baby }}</td>
               <td>{{ props.item.chairs_only }}</td>
               <td>{{ props.item.high_chair }}</td>
-              <td>{{ props.item.menu1 }}</td>
-              <td>{{ props.item.menu2 }}</td>
-              <td>{{ props.item.menu3 }}</td>
-              <td>{{ props.item.menu4 }}</td>
+              <template v-if="info.show_tables_menu == 1">
+                <td>{{ props.item.menu1 }}</td>
+                <td>{{ props.item.menu2 }}</td>
+                <td>{{ props.item.menu3 }}</td>
+                <td>{{ props.item.menu4 }}</td>
+              </template>
+
               <td>{{ props.item.note_intolleranze }}</td>
 
               <td class="d-flex">
@@ -220,7 +232,7 @@ import { mapState, mapGetters } from "vuex";
 
 export default {
   name: "GuestList",
-  data() {
+  data: (vue) => {
     return {
       pagination: {
         sortBy: "id",
@@ -237,6 +249,7 @@ export default {
       maxSeats: "",
       clientName: "",
       dialog: false,
+      valid: true,
       guestDialog: false,
       // labelsEn: {
       //   list_of_guests: "List of Guests",
@@ -296,7 +309,7 @@ export default {
       //   ],
       labels: {
         list_of_guests: "Elenco degli ospiti",
-        create_new_guest: "Crea nuovo ospite",
+        create_new_guest: "Aggiungi ospiti",
         surname: "Cognome",
         name: "Nome",
         adults: "Adulti",
@@ -315,29 +328,29 @@ export default {
         there_are_no_guests_at_this_table: "Non ci sono ospiti a questo tavolo",
         edit_guest: "Modifica ospite",
         delete_guest_confirm: "Sei sicuro di voler cancellare l'ospite ",
-        headers: [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
-          { placeholder: "adults", text: "Adulti", value: "peoples" },
-          { placeholder: "child", text: "Baby", value: "baby" },
-          { placeholder: "chairs", text: "Sedie", value: "chairs_only" },
-          {
-            placeholder: "highchairs",
-            text: "Seggioloni",
-            value: "high_chair",
-          },
-          { placeholder: "noglutine", text: "No glutine", value: "menu1" },
-          { placeholder: "nolattosio", text: "No lattosio", value: "menu2" },
-          { placeholder: "vegano", text: "Vegano", value: "menu3" },
-          { placeholder: "vegetariano", text: "Vegetariano", value: "menu4" },
-          { placeholder: "note", text: "Nota", value: "note_intolleranze" },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
-          },
-        ],
+        // headers: [
+        //   { placeholder: "surname", text: "Cognome", value: "cognome" },
+        //   { placeholder: "name", text: "Nome", value: "nome" },
+        //   { placeholder: "adults", text: "Adulti", value: "peoples" },
+        //   { placeholder: "child", text: "Baby", value: "baby" },
+        //   { placeholder: "chairs", text: "Sedie", value: "chairs_only" },
+        //   {
+        //     placeholder: "highchairs",
+        //     text: "Seggioloni",
+        //     value: "high_chair",
+        //   },
+        //   { placeholder: "noglutine", text: "No glutine", value: "menu1" },
+        //   { placeholder: "nolattosio", text: "No lattosio", value: "menu2" },
+        //   { placeholder: "vegano", text: "Vegano", value: "menu3" },
+        //   { placeholder: "vegetariano", text: "Vegetariano", value: "menu4" },
+        //   { placeholder: "note", text: "Nota", value: "note_intolleranze" },
+        //   {
+        //     placeholder: "actions",
+        //     text: "Azioni",
+        //     value: "nome",
+        //     sortable: false,
+        //   },
+        // ],
       },
       editedIndex: -1,
       editedItem: {
@@ -372,12 +385,19 @@ export default {
       },
       numberRules: [
         (v) => typeof v === "number" || "Per favore inserisci un numero",
+        (v) =>
+          Number(v) <= Number(vue.info.max_seats_each_row) ||
+          "Per favore inserisci un numero minore o uguale a " +
+            vue.info.max_seats_each_row,
+      ],
+      numberRules2: [
+        (v) => typeof v === "number" || "Per favore inserisci un numero",
       ],
     };
   },
   computed: {
     guestListDialog() {
-      return this.$$refs.dialog.isActive;
+      return this.$refs.dialog.isActive;
     },
     placeholderLabels() {
       return this.$store.state.labels;
@@ -408,6 +428,90 @@ export default {
     layoutId() {
       return this.$store.state.layout.id;
     },
+    info() {
+      return this.$store.getters.getInfo;
+    },
+    headers() {
+      if (this.info.show_tables_menu == 1) {
+        return [
+          { placeholder: "surname", text: "Cognome", value: "cognome" },
+          { placeholder: "name", text: "Nome", value: "nome" },
+          { placeholder: "adults", text: "Adulti", value: "peoples" },
+          { placeholder: "child", text: "Baby", value: "baby" },
+          { placeholder: "chairs", text: "Sedie", value: "chairs_only" },
+          {
+            placeholder: "highchairs",
+            text: "Seggioloni",
+            value: "high_chair",
+          },
+          {
+            placeholder: "noglutine",
+            text: "No glutine",
+            value: "menu1",
+          },
+          {
+            placeholder: "nolattosio",
+            text: "No lattosio",
+            value: "menu2",
+          },
+          { placeholder: "vegano", text: "Vegano", value: "menu3" },
+          {
+            placeholder: "vegetariano",
+            text: "Vegetariano",
+            value: "menu4",
+          },
+          {
+            placeholder: "note",
+            text: "Nota",
+            value: "note_intolleranze",
+          },
+          {
+            placeholder: "actions",
+            text: "Azioni",
+            value: "nome",
+            sortable: false,
+          },
+        ];
+      } else {
+        return [
+          { placeholder: "surname", text: "Cognome", value: "cognome" },
+          { placeholder: "name", text: "Nome", value: "nome" },
+          { placeholder: "adults", text: "Adulti", value: "peoples" },
+          { placeholder: "child", text: "Baby", value: "baby" },
+          { placeholder: "chairs", text: "Sedie", value: "chairs_only" },
+          {
+            placeholder: "highchairs",
+            text: "Seggioloni",
+            value: "high_chair",
+          },
+
+          {
+            placeholder: "note",
+            text: "Nota",
+            value: "note_intolleranze",
+          },
+          {
+            placeholder: "actions",
+            text: "Azioni",
+            value: "nome",
+            sortable: false,
+          },
+        ];
+      }
+    },
+    numberOfGuests() {
+      const guests = this.guests(this.tableId);
+      let total = 0;
+
+      guests.forEach((g) => {
+        total += Number(g.peoples);
+        total += Number(g.baby);
+        total += Number(g.chairs_only);
+        total += Number(g.high_chair);
+      });
+      return total;
+    },
+
     ...mapState(["guest"]),
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
