@@ -65,7 +65,7 @@
                           <v-text-field
                             v-model.number="editedItem.peoples"
                             :rules="numberRules"
-                            :label="labels.adults"
+                            :label="info.peoples_label"
                             type="number"
                           ></v-text-field>
                         </v-flex>
@@ -73,7 +73,7 @@
                           <v-text-field
                             v-model.number="editedItem.baby"
                             :rules="numberRules"
-                            :label="labels.child"
+                            :label="info.baby_label"
                             type="number"
                           ></v-text-field>
                         </v-flex>
@@ -81,7 +81,7 @@
                           <v-text-field
                             v-model.number="editedItem.chairs_only"
                             :rules="numberRules"
-                            :label="labels.chairs"
+                            :label="info.chairs_only_label"
                             type="number"
                           ></v-text-field>
                         </v-flex>
@@ -89,7 +89,7 @@
                           <v-text-field
                             v-model.number="editedItem.high_chair"
                             :rules="numberRules"
-                            :label="labels.high_chairs"
+                            :label="info.high_chair_label"
                             type="number"
                           ></v-text-field>
                         </v-flex>
@@ -436,12 +436,20 @@ export default {
         return [
           { placeholder: "surname", text: "Cognome", value: "cognome" },
           { placeholder: "name", text: "Nome", value: "nome" },
-          { placeholder: "adults", text: "Adulti", value: "peoples" },
-          { placeholder: "child", text: "Baby", value: "baby" },
-          { placeholder: "chairs", text: "Sedie", value: "chairs_only" },
+          {
+            placeholder: "adults",
+            text: this.info.peoples_label,
+            value: "peoples",
+          },
+          { placeholder: "child", text: this.info.baby_label, value: "baby" },
+          {
+            placeholder: "chairs",
+            text: this.info.chairs_only_label,
+            value: "chairs_only",
+          },
           {
             placeholder: "highchairs",
-            text: "Seggioloni",
+            text: this.info.high_chair_label,
             value: "high_chair",
           },
           {
@@ -476,12 +484,20 @@ export default {
         return [
           { placeholder: "surname", text: "Cognome", value: "cognome" },
           { placeholder: "name", text: "Nome", value: "nome" },
-          { placeholder: "adults", text: "Adulti", value: "peoples" },
-          { placeholder: "child", text: "Baby", value: "baby" },
-          { placeholder: "chairs", text: "Sedie", value: "chairs_only" },
+          {
+            placeholder: "adults",
+            text: this.info.peoples_label,
+            value: "peoples",
+          },
+          { placeholder: "child", text: this.info.baby_label, value: "baby" },
+          {
+            placeholder: "chairs",
+            text: this.info.chairs_only_label,
+            value: "chairs_only",
+          },
           {
             placeholder: "highchairs",
-            text: "Seggioloni",
+            text: this.info.high_chair_label,
             value: "high_chair",
           },
 
