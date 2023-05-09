@@ -272,7 +272,7 @@ export default {
                   : ""
               } ${g.nome ? g.nome.replace("null", "") : ""} A:${g.peoples} B:${
                 g.baby
-              } S:${g.chairs_only} A:${g.high_chair}\n`;
+              } S:${g.chairs_only} H:${g.high_chair}\n`;
             });
           } else {
             const g = guests[0];
@@ -282,7 +282,7 @@ export default {
                 : ""
             } ${g.nome ? g.nome.replace("null", "") : ""} A:${g.peoples} B:${
               g.baby
-            } S:${g.chairs_only} A:${g.high_chair}`;
+            } S:${g.chairs_only} H:${g.high_chair}`;
           }
         }
       }
