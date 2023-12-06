@@ -51,6 +51,7 @@
                           <v-text-field
                             id="cognomefield"
                             ref="cognomefield"
+                            @input="onInput"
                             v-model="editedItem.cognome"
                             :label="labels.surname"
                           ></v-text-field>
@@ -58,6 +59,7 @@
                         <v-flex xs12 sm6 md6>
                           <v-text-field
                             v-model="editedItem.nome"
+                            @input="onInput"
                             :label="labels.name"
                           ></v-text-field>
                         </v-flex>
@@ -395,7 +397,23 @@ export default {
       ],
     };
   },
+  watch: {
+    nome(newValue) {
+      this.editedItem.nome =
+        newValue.charAt(0).toUpperCase() + newValue.slice(1);
+    },
+    cognome(newValue) {
+      this.editedItem.cognome =
+        newValue.charAt(0).toUpperCase() + newValue.slice(1);
+    },
+  },
   computed: {
+    nome() {
+      return this.editedItem.nome;
+    },
+    cognome() {
+      return this.editedItem.cognome;
+    },
     guestListDialog() {
       return this.$refs.dialog.isActive;
     },
@@ -532,6 +550,11 @@ export default {
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
   methods: {
+    onInput(event) {
+      // Prevent the default input event from being triggered,
+      // which would cause the input value to be updated before the watch function is called.
+      event.preventDefault();
+    },
     updateTableName(string) {
       let updatedItem = {
         id: this.tableId,
@@ -681,11 +704,16 @@ export default {
 
         const tableId = this.editedItem.table_id;
         this.$store.dispatch("guest/addGuest", { tableId, guest });
-        this.editedItem = Object.assign({}, this.defaultItem);
         document.getElementById("cognomefield").focus();
       }
       if (!this.saveAndContinue) {
+        this.editedItem = Object.assign({}, this.defaultItem);
         this.close();
+      } else {
+        const tId = this.editedItem.table_id;
+
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedItem.table_id = tId;
       }
       //
     },
