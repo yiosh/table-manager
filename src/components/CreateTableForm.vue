@@ -150,7 +150,7 @@ import { tableTypeDeparser, tableTypeParser } from "@/utils";
 export default {
   name: "CreateTableForm",
   components: {
-    "compact-picker": Compact
+    "compact-picker": Compact,
   },
   data: () => ({
     labelsEn: {
@@ -172,29 +172,29 @@ export default {
           id: 1,
           placeholder: "solid",
           label: "Solid",
-          value: "intero"
+          value: "intero",
         },
         {
           id: 2,
           placeholder: "dashed",
           label: "Dashed",
-          value: "trattegiato"
+          value: "trattegiato",
         },
         {
           id: 3,
           placeholder: "none",
           label: "None",
-          value: "nessuno"
-        }
+          value: "nessuno",
+        },
       ],
       create: "Create",
-      table_inserted: "Table Inserted"
+      table_inserted: "Table Inserted",
     },
     labels: {
       add_table: "Aggiungi tavolo",
       table_name: "Nome tavolo",
       table_number: "Numero tavolo",
-      customers_table_name: "Nome tabella cliente",
+      customers_table_name: "Nome tavolo cliente",
       type: "Tipo",
       size: "Formato",
       dimension: "Dimensione",
@@ -209,26 +209,26 @@ export default {
           id: 1,
           placeholder: "solid",
           label: "Solido",
-          value: "intero"
+          value: "intero",
         },
         {
           id: 2,
           placeholder: "dashed",
           label: "Trattegiato",
-          value: "trattegiato"
+          value: "trattegiato",
         },
         {
           id: 3,
           placeholder: "none",
           label: "Nessuno",
-          value: "nessuno"
-        }
+          value: "nessuno",
+        },
       ],
       create: "Crea",
-      table_inserted: "Tabella inserita"
+      table_inserted: "Tavolo inserito",
     },
     numberRules: [
-      v => typeof v === "number" || "Per favore inserisci un numero"
+      (v) => typeof v === "number" || "Per favore inserisci un numero",
     ],
     guestTypeLabel: "",
     dialog: false,
@@ -247,12 +247,13 @@ export default {
       borderColor: "#000000",
       backgroundColor: "#ffffff",
       borderType: "intero",
-      maxSeats: null
+      maxSeats: null,
     },
-    nameRules: [v => !!v || "Inserisci nome tavolo per procedere"]
+    nameRules: [(v) => !!v || "Inserisci nome tavolo per procedere"],
   }),
   computed: {
     blockBoard() {
+      // return 0;
       return this.$store.getters.getInfo.block_board;
     },
     rules() {
@@ -277,13 +278,14 @@ export default {
     ...mapState(["table", "guest"]),
     ...mapGetters({
       groupsLength: "table/groupsLength",
-      guestTypes: "guest/guestTypes"
-    })
+      guestTypes: "guest/guestTypes",
+    }),
   },
   watch: {
     match: "validateField",
     max: "validateField",
-    model: "validateField"
+    model: "validateField",
+    currentTableId() {},
   },
   methods: {
     validateField() {
@@ -341,7 +343,7 @@ export default {
       let hasNote = false;
 
       if (guests.length > 0) {
-        guests.forEach(guest => {
+        guests.forEach((guest) => {
           if (guest.note_intolleranze != "") {
             hasNote = true;
           }
@@ -362,10 +364,12 @@ export default {
       let guestSeraleCounterName = "gsc" + uID;
       let table = {};
 
+      const t = name + " " + (number == 0 ? "" : number);
+
       let textConfig = {
         name: textName,
         number,
-        text: name + " " + (number == 0 ? "" : number),
+        text: t,
         fontSize: 16,
         fontFamily: "Poppins",
         fontStyle: "bold",
@@ -373,10 +377,10 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: size / 2,
-        offsetX: size / 2,
+        offsetY: 10,
+        offsetX: t.length + size / 2,
         nomeCliente,
-        maxSeats
+        maxSeats: Number(maxSeats),
       };
 
       let nomeClienteText = {
@@ -390,9 +394,13 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: size / 4 - 7,
-        offsetX: size / 2,
-        nomeCliente
+        // offsetY: size / 4 - 7,
+        offsetY: -5,
+
+        // offsetX: size / 2,
+        offsetX: t.length + size / 2,
+        nomeCliente,
+        maxSeats: Number(maxSeats),
       };
 
       let ellipseTextConfig = {
@@ -408,7 +416,8 @@ export default {
         rotation: angolare,
         offsetY: size / 2,
         offsetX: size / 2,
-        nomeCliente
+        nomeCliente,
+        maxSeats: Number(maxSeats),
       };
 
       let rettangoloTextConfig = {
@@ -425,7 +434,8 @@ export default {
         padding: 5,
         offsetY: size / 2,
         offsetX: (size * 2) / 2,
-        nomeCliente
+        nomeCliente,
+        maxSeats: Number(maxSeats),
       };
 
       let asteriscTextConfig = {
@@ -441,7 +451,8 @@ export default {
         rotation: angolare,
         offsetY: size / 1.5,
         // offsetX: size,
-        nomeCliente
+        nomeCliente,
+        maxSeats: Number(maxSeats),
       };
 
       let offsetX = size / 3;
@@ -462,14 +473,17 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        offsetY: nomeCliente ? offsetY - size / 12 : offsetY - size / 4 + 7,
-        offsetX,
+        // offsetY: nomeCliente ? offsetY - size / 12 : offsetY - size / 4 + 7,
+        offsetY: -20,
+
+        // offsetX,
+        offsetX: t.length + size / 2,
         counters: {
           people: 0,
           babies: 0,
           chairs: 0,
-          highchairs: 0
-        }
+          highchairs: 0,
+        },
       };
 
       let guestSeraleCounters = {
@@ -488,8 +502,8 @@ export default {
           people: 0,
           babies: 0,
           chairs: 0,
-          highchairs: 0
-        }
+          highchairs: 0,
+        },
       };
 
       let seraLabel = {
@@ -503,7 +517,7 @@ export default {
         verticalAlign: "middle",
         rotation: angolare,
         offsetY: nomeCliente ? offsetY - size / 3 : offsetY - size / 4 - 5,
-        offsetX: offsetX + this.guestTypes[3].text.length * 7
+        offsetX: offsetX + this.guestTypes[3].text.length * 7,
       };
 
       let guestCountersTotal = {
@@ -518,11 +532,11 @@ export default {
         rotation: angolare,
         offsetY: offsetY - size / 4,
         offsetX,
-        total: 0
+        total: 0,
       };
 
       if (tableGuests.length > 0) {
-        tableGuests.forEach(guest => {
+        tableGuests.forEach((guest) => {
           if (guest.guest_type == 4) {
             if (Number(guest.peoples) > 0) {
               guestSeraleCounters.counters.people += Number(guest.peoples);
@@ -647,8 +661,8 @@ export default {
               strokeEnabled: strokeEnabled,
               strokeWidth: 2,
               dash: [10, 5],
-              dashEnabled: dashEnabled
-            }
+              dashEnabled: dashEnabled,
+            },
           };
           break;
         case "square":
@@ -670,8 +684,8 @@ export default {
               strokeEnabled: strokeEnabled,
               strokeWidth: 2,
               dash: [10, 5],
-              dashEnabled: dashEnabled
-            }
+              dashEnabled: dashEnabled,
+            },
           };
           break;
         case "rectangle":
@@ -693,8 +707,8 @@ export default {
               strokeEnabled: strokeEnabled,
               strokeWidth: 2,
               dash: [10, 5],
-              dashEnabled: dashEnabled
-            }
+              dashEnabled: dashEnabled,
+            },
           };
           break;
         case "ellipse":
@@ -714,8 +728,8 @@ export default {
               strokeEnabled: strokeEnabled,
               strokeWidth: 2,
               dash: [10, 5],
-              dashEnabled: dashEnabled
-            }
+              dashEnabled: dashEnabled,
+            },
           };
           break;
       }
@@ -730,14 +744,16 @@ export default {
         draggable: this.blockBoard == "0" ? true : false,
         guestCounters,
         nomeClienteText,
-        table
+        table,
       };
 
       // Add guest counters total once all calculations are done
-      group.guestCountersTotal = guestCountersTotal;
-      group.guestSeraleCounters = guestSeraleCounters;
-      group.seraLabel = seraLabel;
-      group.asteriscTextConfig = asteriscTextConfig;
+      if (group) {
+        group.guestCountersTotal = guestCountersTotal;
+        group.guestSeraleCounters = guestSeraleCounters;
+        group.seraLabel = seraLabel;
+        group.asteriscTextConfig = asteriscTextConfig;
+      }
 
       const details = {
         layoutId: this.$store.state.layout.id,
@@ -753,13 +769,13 @@ export default {
         borderColor: borderColor,
         borderType,
         backgroundColor,
-        maxSeats
+        maxSeats,
       };
 
       let payload = {
         isNew: false,
         group,
-        details: null
+        details: null,
       };
 
       if (newTable) {
@@ -768,7 +784,7 @@ export default {
       }
       this.$store.dispatch("table/addTable", payload);
       this.dialog = false;
-    }
+    },
   },
 
   created() {
@@ -778,8 +794,8 @@ export default {
       let guests = this.guest.guests;
       let tableGuests = [];
       if (tablesFetchedLength > 0) {
-        tablesFetched.forEach(payload => {
-          tableGuests = guests.filter(guest => {
+        tablesFetched.forEach((payload) => {
+          tableGuests = guests.filter((guest) => {
             return guest.table_id == payload.id;
           });
           this.createTable(
@@ -831,6 +847,6 @@ export default {
     EventBus.$on("create-table-select", () => {
       this.dialog = true;
     });
-  }
+  },
 };
 </script>

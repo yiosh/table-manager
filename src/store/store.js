@@ -13,7 +13,7 @@ export default new Vuex.Store({
   modules: {
     table,
     notification,
-    guest
+    guest,
   },
   state: {
     guestListDialog: false,
@@ -21,7 +21,7 @@ export default new Vuex.Store({
     info: {},
     hostname:
       location.hostname == "localhost" ||
-      location.hostname == "dev.condivision.cloud"
+      location.hostname == "demo.condivision.cloud"
         ? host
         : location.hostname,
     selectedGroup: null,
@@ -37,14 +37,15 @@ export default new Vuex.Store({
       orientation: "",
       sede_id: "",
       updated_at: "",
-      mappa: ""
+      mappa: "",
     },
     stage: null,
     layer: null,
     configKonva: {
       width: 1200,
-      height: 792
-    }
+      height: 792,
+    },
+    currentTableId: null,
   },
   mutations: {
     GUEST_LIST_DIALOG(state, payload) {
@@ -68,7 +69,7 @@ export default new Vuex.Store({
           {},
           {
             width: 792,
-            height: 1200
+            height: 1200,
           }
         );
       }
@@ -85,7 +86,10 @@ export default new Vuex.Store({
     CHANGE_ORIENTATION(state) {
       state.configKonva.width = 792;
       state.configKonva.height = 1200;
-    }
+    },
+    SET_CURRENT_TABLE_ID(state, payload) {
+      state.currentTableId = payload;
+    },
   },
   actions: {
     redrawCanvas({ state }) {
@@ -113,12 +117,12 @@ export default new Vuex.Store({
     },
     setLanguageLabels({ commit }, language) {
       TMService.fetchLabels(language)
-        .then(response => {
+        .then((response) => {
           for (let label of response.data) {
             commit("SET_TRANSLATED_LABELS", label);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           // handle error
           console.log(error);
         });
@@ -126,7 +130,7 @@ export default new Vuex.Store({
 
     setLayout({ commit, dispatch }, layoutId) {
       TMService.fetchLayout(layoutId)
-        .then(response => {
+        .then((response) => {
           let info;
           let layout;
           if (response.data.dati) {
@@ -145,13 +149,13 @@ export default new Vuex.Store({
             const notification = {
               type: "error",
               multiLine: false,
-              message: "Nessun layout è stato trovato"
+              message: "Nessun layout è stato trovato",
             };
             dispatch("notification/add", notification, { root: true });
             return commit("ERROR");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           // handle error
           console.log(error);
           const notification = {
@@ -159,26 +163,26 @@ export default new Vuex.Store({
             multiLine: true,
             message:
               "Si è verificato un problema durante il recupero del layout: " +
-              error.message
+              error.message,
           };
           dispatch("notification/add", notification, { root: true });
         });
-    }
+    },
   },
   getters: {
     getPrintTitle(state) {
       return {
         eventDate: state.layout.board_event_date,
-        eventName: state.layout.layout_name
+        eventName: state.layout.layout_name,
       };
     },
-    getInfo: state => {
+    getInfo: (state) => {
       return state.info;
     },
-    getBackgroundImg: state => state.layout.mappa,
-    getStageConfig: state => state.configKonva,
-    getOrientation: state => state.layout.orientation,
-    getHostname: state => state.hostname,
-    getLoading: state => state.loading
-  }
+    getBackgroundImg: (state) => state.layout.mappa,
+    getStageConfig: (state) => state.configKonva,
+    getOrientation: (state) => state.layout.orientation,
+    getHostname: (state) => state.hostname,
+    getLoading: (state) => state.loading,
+  },
 });

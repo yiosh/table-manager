@@ -3,7 +3,7 @@
     class="cnv-canvas elevation-2"
     :class="{
       horizontal: orientation == 0,
-      vertical: orientation == 1
+      vertical: orientation == 1,
     }"
     style="margin: auto"
   >
@@ -25,6 +25,9 @@
           :ref="group.name"
           @click="tableSelect(group.name)"
           @dragend="moveTable"
+          @dragstart="handleMouseOut"
+          @mousemove="handleMouseMove"
+          @mouseout="handleMouseOut"
           v-for="group in tableGroups"
           :config="group"
           :key="group.name"
@@ -49,10 +52,12 @@
             @transformend="handleTableTransform"
             :config="group.table.tableConfig"
           ></v-ellipse>
+          <!-- TABLE TITLE -->
           <v-text
             :ref="group.table.textConfig.name"
             :config="group.table.textConfig"
           ></v-text>
+          <!-- COUNTERS -->
           <v-text
             v-if="showTablesCounters"
             :ref="group.guestCounters.name"
@@ -88,6 +93,17 @@
             :config="group.asteriscTextConfig"
           ></v-text>
         </v-group>
+        <v-group
+          v-if="tooltipConfig.text != null"
+          ref="tooltip-group"
+          :config="tooltipGroupConfig"
+        >
+          <v-rect
+            ref="tooltip-container"
+            :config="tooltipContainerConfig"
+          ></v-rect>
+          <v-text ref="tooltip" :config="tooltipConfig"></v-text>
+        </v-group>
         <!-- <v-text ref="totaleCounter" :config="guestTotals"></v-text> -->
         <v-text ref="totaleCounterV2" :config="guestTotalsV2"></v-text>
         <v-text
@@ -105,12 +121,11 @@ import axios from "axios";
 import Toolbar from "./Toolbar";
 import { EventBus } from "../event-bus.js";
 import { mapGetters } from "vuex";
-import store from "@/store/store";
 
 export default {
   name: "Canvas",
   components: {
-    Toolbar
+    Toolbar,
   },
   data: () => ({
     this: this,
@@ -122,7 +137,40 @@ export default {
       y: 0,
       width: null,
       height: null,
-      fillPatternImage: null
+      fillPatternImage: null,
+    },
+    tooltipGroupConfig: {
+      x: 434,
+      y: 121,
+      rotation: 0,
+      width: 100,
+      height: 100,
+      draggable: false,
+      isRootInsert: false,
+    },
+    tooltipContainerConfig: {
+      x: 434,
+      y: 121,
+      fill: "#fafafa",
+      stroke: "black",
+      strokeWidth: 1,
+      rotation: 0,
+      width: 350,
+      height: 150,
+      draggable: false,
+      isRootInsert: false,
+    },
+    tooltipConfig: {
+      elm: Text,
+      fill: "black",
+      fontFamily: "Poppins",
+      fontSize: 16,
+      isRootInsert: false,
+      name: "tooltip",
+      text: null,
+      width: 600,
+      x: 14,
+      y: 1120,
     },
     imageSrc: null,
     printTitleConfig: {
@@ -136,14 +184,15 @@ export default {
       align: "left",
       verticalAlign: "middle",
       x: 10,
-      y: 10
-    }
+      y: 10,
+    },
   }),
   computed: {
     backgroundImg() {
       return this.$store.getters.getBackgroundImg;
     },
     blockBoard() {
+      // return 0;
       return this.$store.getters.getInfo.block_board;
     },
     showTablesCounters() {
@@ -168,7 +217,9 @@ export default {
       if (this.orientation == 0) {
         url = `https://${this.hostname}/fl_app/tableManager/assets/grid.png`;
       } else {
-        url = `https://${this.hostname}/fl_app/tableManager/assets/vertical-grid.png`;
+        url = `https://${
+          this.hostname
+        }/fl_app/tableManager/assets/vertical-grid.png`;
       }
 
       return url;
@@ -180,10 +231,62 @@ export default {
       orientation: "getOrientation",
       hostname: "getHostname",
       printTitle: "getPrintTitle",
-      loading: "getLoading"
-    })
+      loading: "getLoading",
+    }),
   },
   methods: {
+    handleMouseOut() {
+      this.tooltipConfig.text = null;
+    },
+    handleMouseMove(ev) {
+      if (ev.evt.x > 600) {
+        this.tooltipGroupConfig.x = ev.evt.layerX - 750;
+        this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+        // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+        // this.tooltipContainerConfig.y = ev.evt.layerY;
+        this.tooltipConfig.x = 450;
+        this.tooltipConfig.y = 140;
+      } else {
+        this.tooltipGroupConfig.x = ev.evt.layerX - 400;
+        this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+        // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+        // this.tooltipContainerConfig.y = ev.evt.layerY;
+        this.tooltipConfig.x = 450;
+        this.tooltipConfig.y = 140;
+      }
+      this.tooltipConfig.background = "white";
+      if (this.tooltipConfig.text == null) {
+        const group = ev.target.parent.attrs;
+        const table = group.table;
+
+        const guests = this.$store.getters["guest/guests"](table.id);
+
+        if (guests.length > 0) {
+          console.log("ev", ev);
+          if (guests.length > 1) {
+            this.tooltipConfig.text = "";
+            guests.forEach((g) => {
+              this.tooltipConfig.text += `${
+                g.cognome && g.cognome != "null"
+                  ? g.cognome.replace("null", "")
+                  : ""
+              } ${g.nome ? g.nome.replace("null", "") : ""} A:${g.peoples} B:${
+                g.baby
+              } S:${g.chairs_only} H:${g.high_chair}\n`;
+            });
+          } else {
+            const g = guests[0];
+            this.tooltipConfig.text = `${
+              g.cognome && g.cognome != "null"
+                ? g.cognome.replace("null", "")
+                : ""
+            } ${g.nome ? g.nome.replace("null", "") : ""} A:${g.peoples} B:${
+              g.baby
+            } S:${g.chairs_only} H:${g.high_chair}`;
+          }
+        }
+      }
+    },
     handlePrintTitle() {
       console.log("title", this.printTitle);
       let { eventName, eventDate } = this.printTitle;
@@ -193,7 +296,7 @@ export default {
     },
     guestSeraleCounters(counters) {
       let count = 0;
-      counters.forEach(element => {
+      counters.forEach((element) => {
         count += element;
       });
       return count;
@@ -209,7 +312,9 @@ export default {
 
       try {
         const response = await axios.get(
-          `https://${this.hostname}/fl_api/tables-v3/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
+          `https://${
+            this.hostname
+          }/fl_api/tables-v3/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
         );
         console.log(response);
       } catch (error) {
@@ -225,7 +330,9 @@ export default {
       if (scaleX != 1 || scaleY != 1) {
         try {
           const response = await axios.get(
-            `https://${this.hostname}/fl_api/tables-v2/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
+            `https://${
+              this.hostname
+            }/fl_api/tables-v2/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
           );
           console.log(response);
         } catch (error) {
@@ -234,7 +341,9 @@ export default {
       }
       try {
         const response = await axios.get(
-          `https://${this.hostname}/fl_api/tables-v2/?rotate_table&token=1&table_id=${tableId}&layout_id=${layoutId}&angolare=${rotation}`
+          `https://${
+            this.hostname
+          }/fl_api/tables-v2/?rotate_table&token=1&table_id=${tableId}&layout_id=${layoutId}&angolare=${rotation}`
         );
         console.log(response);
       } catch (error) {
@@ -267,16 +376,18 @@ export default {
         stage.find("Transformer").destroy();
         // create new transformer
         let tr;
-        if (this.blockBoard == "0") {
+        if (this.blockBoard != 1) {
           tr = new window.Konva.Transformer({
             rotateEnabled: true,
-            rotationSnaps: [0, 90, 180, 270]
+            rotationSnaps: [0, 90, 180, 270],
           });
+          // tr.attachTo(stage.find(name)[0]);
         } else {
           tr = new window.Konva.Transformer({
             rotateEnabled: false,
             resizeEnabled: false,
-            rotationSnaps: [0, 90, 180, 270]
+            borderEnabled: false,
+            rotationSnaps: [0, 90, 180, 270],
           });
         }
 
@@ -290,7 +401,7 @@ export default {
         this.$store.dispatch("selectGroup", group.attrs);
         EventBus.$emit("table-select", group);
       }
-    }
+    },
   },
   watch: {
     orientation() {
@@ -315,7 +426,7 @@ export default {
       if (this.loading === false) {
         this.handlePrintTitle();
       }
-    }
+    },
   },
   mounted() {
     const stage = this.$refs.stage.getStage();
@@ -333,7 +444,7 @@ export default {
       this.backgroundConfig.height = 792;
       this.backgroundConfig.width = 1200;
     }
-  }
+  },
 };
 </script>
 

@@ -11,7 +11,7 @@
         <v-list class="pa-0">
           <v-list-tile avatar @click.stop="mini = !mini">
             <v-list-tile-avatar>
-              <img src="../assets/condivision.jpeg" />
+              <img :src="logo" />
             </v-list-tile-avatar>
 
             <v-list-tile-content>
@@ -57,6 +57,7 @@
 import GuestList from "./GuestList";
 import PrintCanvas from "./PrintCanvas";
 import { EventBus } from "../event-bus.js";
+import { host } from "@/localHost";
 
 export default {
   name: "Sidebar",
@@ -80,6 +81,15 @@ export default {
         "È necessario selezionare un tavolo per aprire il suo elenco di ospiti"
     }
   }),
+  computed: {
+    logo() {
+      let myHost = location.hostname;
+      if (myHost === "localhost") {
+        myHost = host;
+      }
+      return "https://" + myHost + "/set/img/condivision_emblem.png";
+    }
+  },
   methods: {
     handleDialog(element) {
       switch (element) {
