@@ -30,7 +30,8 @@
               createTableForm.borderColor,
               createTableForm.backgroundColor,
               createTableForm.borderType,
-              createTableForm.maxSeats
+              createTableForm.maxSeats,
+              createForm.nomeCliente
             )
           "
           ref="createForm"
@@ -248,6 +249,7 @@ export default {
       backgroundColor: "#ffffff",
       borderType: "intero",
       maxSeats: null,
+      noteCliente: "",
     },
     nameRules: [(v) => !!v || "Inserisci nome tavolo per procedere"],
   }),
@@ -312,7 +314,8 @@ export default {
       borderColor = "#000000",
       backgroundColor,
       borderType,
-      maxSeats
+      maxSeats,
+      noteCliente = ""
     ) {
       let strokeEnabled = true;
       if (borderType == "nessuno") {
@@ -381,6 +384,7 @@ export default {
         offsetX: t.length + size / 2,
         nomeCliente,
         maxSeats: Number(maxSeats),
+        noteCliente,
       };
 
       let nomeClienteText = {
@@ -401,6 +405,7 @@ export default {
         offsetX: t.length + size / 2,
         nomeCliente,
         maxSeats: Number(maxSeats),
+        noteCliente,
       };
 
       let ellipseTextConfig = {
@@ -418,6 +423,7 @@ export default {
         offsetX: size / 2,
         nomeCliente,
         maxSeats: Number(maxSeats),
+        noteCliente,
       };
 
       let rettangoloTextConfig = {
@@ -436,6 +442,7 @@ export default {
         offsetX: (size * 2) / 2,
         nomeCliente,
         maxSeats: Number(maxSeats),
+        noteCliente,
       };
 
       let asteriscTextConfig = {
@@ -453,6 +460,7 @@ export default {
         // offsetX: size,
         nomeCliente,
         maxSeats: Number(maxSeats),
+        noteCliente,
       };
 
       let offsetX = size / 3;
@@ -795,6 +803,7 @@ export default {
       let tableGuests = [];
       if (tablesFetchedLength > 0) {
         tablesFetched.forEach((payload) => {
+          console.log("payload", payload);
           tableGuests = guests.filter((guest) => {
             return guest.table_id == payload.id;
           });
@@ -815,7 +824,8 @@ export default {
             `#${payload.border_color}`,
             `#${payload.background_color}`,
             payload.border_type,
-            payload.max_seats
+            payload.max_seats,
+            payload.note_tavolo
           );
         });
       }

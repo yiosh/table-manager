@@ -20,6 +20,21 @@
             @change="updateTableName"
             label="Nome tavolo cliente"
           ></v-text-field>
+          <v-text-field
+            id="notetavolo"
+            class="ml-2"
+            ref="notefield"
+            hide-details
+            solo
+            light
+            v-model="note_tavolo_cliente"
+            @change="updateTableNote"
+            placeholder="Note tavolo"
+          >
+            <template v-slot:append>
+              <v-icon dark @click="updateTableNote">mdi-content-save</v-icon>
+            </template>
+          </v-text-field>
           <v-spacer></v-spacer>
 
           <v-btn icon @click="closeDialog">
@@ -242,6 +257,7 @@ export default {
         rowsPerPage: -1,
       },
       nome_tavolo_cliente: null,
+      note_tavolo_cliente: null,
       currentTable: null,
       saveAndContinue: true,
       editForm: false,
@@ -571,6 +587,22 @@ export default {
       // this.defaultItem = Object.assign({}, updatedItem);
       this.$store.state.stage.draw();
     },
+    updateTableNote(string) {
+      let updatedItem = {
+        id: this.tableId,
+        noteCliente: string,
+        layoutId: this.layoutId,
+      };
+
+      console.log("updatedItem", updatedItem);
+
+      // if (
+      //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
+      // ) {
+      this.$store.dispatch("table/updateClientNote", updatedItem);
+      // this.defaultItem = Object.assign({}, updatedItem);
+      this.$store.state.stage.draw();
+    },
     changeTable(id) {
       let guest = Object.assign(this.editedItem);
       guest.table_id = id;
@@ -755,17 +787,21 @@ export default {
       //   }
       // }
     });
+    let v = this;
 
     // On table select grab the table's id and other data
     EventBus.$on("table-select", (group) => {
       let table = group.attrs.table;
+      console.log("group", table.textConfig);
       this.tableId = table.id;
       this.$store.commit("SET_CURRENT_TABLE_ID", table.id);
       this.tableName = table.textConfig.name;
       if (table.textConfig.maxSeats) {
         this.maxSeats = table.textConfig.maxSeats;
       }
-      this.nome_tavolo_cliente = table.textConfig.nomeCliente;
+      v.nome_tavolo_cliente = table.textConfig.nomeCliente;
+      v.note_tavolo_cliente = table.textConfig.noteCliente;
+
       this.tableNumber = table.textConfig.number;
       this.clientName = table.textConfig.nomeCliente;
     });

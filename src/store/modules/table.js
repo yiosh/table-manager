@@ -54,11 +54,26 @@ export const mutations = {
       return group.table.id == table.id;
     });
     console.log("groupToEdit", table);
-
-    groupToEdit.nomeClienteText.nomeCliente = table.nomeCliente;
-    groupToEdit.nomeClienteText.text = table.nomeCliente;
-    const tableToEdit = groupToEdit.table;
-    tableToEdit.textConfig.nomeCliente = table.nomeCliente;
+    if (groupToEdit) {
+      groupToEdit.nomeClienteText.nomeCliente = table.nomeCliente;
+      groupToEdit.nomeClienteText.text = table.nomeCliente;
+      const tableToEdit = groupToEdit.table;
+      tableToEdit.textConfig.nomeCliente = table.nomeCliente;
+      tableToEdit.textConfig.noteCliente = table.noteCliente;
+    }
+    table.rootState.stage.draw();
+  },
+  UPDATE_TABLE_CLIENT_NOTE(state, table) {
+    const groupToEdit = _find(state.groups, (group) => {
+      return group.table.id == table.id;
+    });
+    console.log("groupToEdit", groupToEdit, table);
+    // if (groupToEdit) {
+    //   groupToEdit.noteClienteText.noteCliente = groupToEdit.noteCliente;
+    //   groupToEdit.noteClienteText.text = groupToEdit.noteCliente;
+    //   const tableToEdit = groupToEdit.table;
+    //   tableToEdit.textConfig.noteCliente = groupToEdit.noteCliente;
+    // }
     table.rootState.stage.draw();
   },
   UPDATE_TABLE(state, table) {
@@ -148,6 +163,8 @@ export const mutations = {
     tableToEdit.textConfig.text =
       table.tableName + (table.tableNumber == 0 ? "" : table.tableNumber);
     tableToEdit.textConfig.nomeCliente = table.nomeCliente;
+    tableToEdit.textConfig.noteCliente = table.noteCliente;
+
     tableToEdit.textConfig.maxSeats = table.maxSeats;
   },
 };
@@ -349,6 +366,43 @@ export const actions = {
         if (response.data.esito) {
           payload.rootState = rootState;
           commit("UPDATE_TABLE_CLIENT_NAME", payload);
+
+          const notification = {
+            type: "success",
+            message: response.data.info_txt,
+          };
+          dispatch("notification/add", notification, { root: true });
+          return true;
+        } else {
+          const notification = {
+            type: "error",
+            message: response.data.info_txt,
+          };
+          dispatch("notification/add", notification, { root: true });
+          return false;
+        }
+      })
+      .then(() => {
+        // rootState.stage.draw();
+      })
+      .catch(function(error) {
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message:
+            "Si è verificato un problema durante l'aggiornamento del tavolo: " +
+            error.message,
+        };
+        console.log("error", error);
+        dispatch("notification/add", notification, { root: true });
+      });
+  },
+  updateClientNote({ commit, dispatch, rootState }, payload) {
+    TMService.updateClientNote(payload)
+      .then((response) => {
+        if (response.data.esito) {
+          payload.rootState = rootState;
+          commit("UPDATE_TABLE_CLIENT_NOTE", payload);
 
           const notification = {
             type: "success",

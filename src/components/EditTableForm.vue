@@ -230,6 +230,7 @@ export default {
       backgroundColor: "#ffffff",
       borderType: "intero",
       maxSeats: null,
+      noteCliente: "",
     },
     defaultItem: {
       id: "",
@@ -244,6 +245,7 @@ export default {
       borderColor: "#000000",
       backgroundColor: "#ffffff",
       borderType: "intero",
+      noteCliente: "",
     },
     // tableTypes: [],
     angolareRules: [
@@ -324,6 +326,7 @@ export default {
         backgroundColor: table.tableConfig.fill,
         borderType,
         maxSeats: table.textConfig.maxSeats,
+        noteCliente: table.textConfig.noteCliente,
       };
       this.editedItem = Object.assign({}, item);
       this.defaultItem = Object.assign({}, item);
@@ -366,6 +369,7 @@ export default {
         backgroundColor: backgroundColor.replace("#", ""),
         borderType: this.editedItem.borderType,
         maxSeats: this.editedItem.maxSeats,
+        noteCliente: this.editedItem.noteCliente,
       };
 
       console.log("updatedItem", updatedItem);

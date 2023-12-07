@@ -3,7 +3,7 @@ import { host } from "@/localHost";
 
 let hostname = host;
 let protocol = "https";
-if (location.hostname !== "localhost") {
+if (!location.hostname.includes("localhost")) {
   hostname = location.hostname;
 }
 // location.hostname == "localhost"
@@ -63,13 +63,14 @@ export default {
     backgroundColor,
     borderType,
     maxSeats,
+    noteCliente,
   }) {
     console.log("back", backgroundColor, "border", borderColor);
     borderColor = borderColor.replace("#", "");
     backgroundColor = backgroundColor.replace("#", "");
 
     return apiClient.get(
-      `${endpoint}insert_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}&max_seats=${maxSeats}`
+      `${endpoint}insert_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}&max_seats=${maxSeats}&note_tavolo=${noteCliente}`
     );
   },
   updateTable({
@@ -87,6 +88,7 @@ export default {
     backgroundColor,
     borderType,
     maxSeats,
+    noteCliente,
   }) {
     let params = "";
     if (layoutId) {
@@ -131,6 +133,9 @@ export default {
     if (maxSeats) {
       params += `&max_seats=${maxSeats}`;
     }
+    if (noteCliente) {
+      params += `&note_tavolo=${noteCliente}`;
+    }
     return apiClient.get(`${endpoint}update_table&token=1&${params}`);
   },
   updateClientName({ layoutId, id, nomeCliente }) {
@@ -147,6 +152,21 @@ export default {
     }
 
     return apiClient.get(`${endpoint}update_client_name&token=1&${params}`);
+  },
+  updateClientNote({ layoutId, id, noteCliente }) {
+    let params = "";
+    if (layoutId) {
+      params += `&layout_id=${layoutId}`;
+    }
+    if (id) {
+      params += `&table_id=${id}`;
+    }
+
+    if (noteCliente) {
+      params += `&note_tavolo=${noteCliente}`;
+    }
+
+    return apiClient.get(`${endpoint}update_table_note&token=1&${params}`);
   },
   deleteTable({ layoutId, tableId }) {
     return apiClient.get(
