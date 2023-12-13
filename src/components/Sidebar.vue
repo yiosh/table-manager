@@ -47,6 +47,11 @@
       </v-list>
     </v-navigation-drawer>
     <GuestList v-if="this.$store.state.layout.evento_id != 0"></GuestList>
+    <TableList
+      :tableListDialog="tableListDialog"
+      @dialog-closed="tableListDialog = false"
+    ></TableList>
+
     <PrintCanvas></PrintCanvas>
     <!-- <TableSelector></TableSelector> -->
   </v-layout>
@@ -55,6 +60,8 @@
 <script>
 // import TableSelector from "./TableSelector";
 import GuestList from "./GuestList";
+import TableList from "./TableList";
+
 import PrintCanvas from "./PrintCanvas";
 import { EventBus } from "../event-bus.js";
 import { host } from "@/localHost";
@@ -64,7 +71,8 @@ export default {
   components: {
     // TableSelector,
     GuestList,
-    PrintCanvas
+    PrintCanvas,
+    TableList,
   },
   data: () => ({
     drawer: true,
@@ -74,12 +82,13 @@ export default {
     right: null,
     labelsEn: {
       you_must_select_a_table_to_open_its_guest_list:
-        "You must select a table to open its guest list"
+        "You must select a table to open its guest list",
     },
     labels: {
       you_must_select_a_table_to_open_its_guest_list:
-        "È necessario selezionare un tavolo per aprire il suo elenco di ospiti"
-    }
+        "È necessario selezionare un tavolo per aprire il suo elenco di ospiti",
+    },
+    tableListDialog: false,
   }),
   computed: {
     logo() {
@@ -88,7 +97,7 @@ export default {
         myHost = host;
       }
       return "https://" + myHost + "/set/img/condivision_emblem.png";
-    }
+    },
   },
   methods: {
     handleDialog(element) {
@@ -102,18 +111,21 @@ export default {
               type: "warning",
               multiLine: true,
               message:
-                "È necessario selezionare un tavolo per aprire il suo elenco di ospiti"
+                "È necessario selezionare un tavolo per aprire il suo elenco di ospiti",
             };
             this.$store.dispatch("notification/add", notification, {
-              root: true
+              root: true,
             });
           }
+          break;
+        case "list":
+          this.tableListDialog = true;
           break;
         case "print":
           EventBus.$emit("preview-select");
           break;
       }
-    }
+    },
   },
   created() {
     EventBus.$on("fetch-done", () => {
@@ -132,13 +144,19 @@ export default {
       if (this.$store.state.layout.evento_id !== "0") {
         this.items.unshift({
           // title: "Guest List",
+          title: "Elenco delle tabelle",
+          icon: "list",
+          ref: "tablelist",
+        });
+        this.items.unshift({
+          // title: "Guest List",
           title: "Elenco degli ospiti",
           icon: "people",
-          ref: "guestlist"
+          ref: "guestlist",
         });
       }
     });
-  }
+  },
 };
 </script>
 

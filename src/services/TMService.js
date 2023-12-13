@@ -168,6 +168,23 @@ export default {
 
     return apiClient.get(`${endpoint}update_table_note&token=1&${params}`);
   },
+  updateNumeroAlternativo({ layoutId, id, numeroAlternativo }) {
+    let params = "";
+    if (layoutId) {
+      params += `&layout_id=${layoutId}`;
+    }
+    if (id) {
+      params += `&table_id=${id}`;
+    }
+
+    if (numeroAlternativo) {
+      params += `&numero_alternativo=${numeroAlternativo}`;
+    }
+
+    return apiClient.get(
+      `${endpoint}update_numero_alternativo&token=1${params}`
+    );
+  },
   deleteTable({ layoutId, tableId }) {
     return apiClient.get(
       `${endpoint}delete_table&token=1&layout_id=${layoutId}&table_id=${tableId}`

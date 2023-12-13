@@ -76,6 +76,19 @@ export const mutations = {
     // }
     table.rootState.stage.draw();
   },
+  UPDATE_NUMERO_ALTERNATIVO(state, table) {
+    const groupToEdit = _find(state.groups, (group) => {
+      return group.table.id == table.id;
+    });
+    console.log("groupToEdit", groupToEdit, table);
+    // if (groupToEdit) {
+    //   groupToEdit.noteClienteText.noteCliente = groupToEdit.noteCliente;
+    //   groupToEdit.noteClienteText.text = groupToEdit.noteCliente;
+    //   const tableToEdit = groupToEdit.table;
+    //   tableToEdit.textConfig.noteCliente = groupToEdit.noteCliente;
+    // }
+    table.rootState.stage.draw();
+  },
   UPDATE_TABLE(state, table) {
     const groupToEdit = _find(state.groups, (group) => {
       return group.table.id == table.id;
@@ -403,6 +416,43 @@ export const actions = {
         if (response.data.esito) {
           payload.rootState = rootState;
           commit("UPDATE_TABLE_CLIENT_NOTE", payload);
+
+          const notification = {
+            type: "success",
+            message: response.data.info_txt,
+          };
+          dispatch("notification/add", notification, { root: true });
+          return true;
+        } else {
+          const notification = {
+            type: "error",
+            message: response.data.info_txt,
+          };
+          dispatch("notification/add", notification, { root: true });
+          return false;
+        }
+      })
+      .then(() => {
+        // rootState.stage.draw();
+      })
+      .catch(function(error) {
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message:
+            "Si è verificato un problema durante l'aggiornamento del tavolo: " +
+            error.message,
+        };
+        console.log("error", error);
+        dispatch("notification/add", notification, { root: true });
+      });
+  },
+  updateNumeroAlternativo({ commit, dispatch, rootState }, payload) {
+    TMService.updateNumeroAlternativo(payload)
+      .then((response) => {
+        if (response.data.esito) {
+          payload.rootState = rootState;
+          commit("UPDATE_NUMERO_ALTERNATIVO", payload);
 
           const notification = {
             type: "success",

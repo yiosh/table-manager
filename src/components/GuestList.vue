@@ -269,62 +269,6 @@ export default {
       dialog: false,
       valid: true,
       guestDialog: false,
-      // labelsEn: {
-      //   list_of_guests: "List of Guests",
-      //   create_new_guest: "Create New Guest",
-      //   surname: "Surname",
-      //   name: "Name",
-      //   adults: "Adults",
-      //   child: "Child",
-      //   chairs: "Chairs",
-      //   high_chairs: "High Chairs",
-      //   note: "Note",
-      //   guest_type: "Guest Type",
-      //   save_and_continue: "Save and Continue",
-      //   save: "Save",
-      //   close: "Close",
-      //   there_are_no_guests_at_this_table: "There are no guests at this table",
-      //   edit_guest: "Edit Guest",
-      //   delete_guest_confirm: "Are you sure you wish to delete guest ",
-      //   headers: [
-      //     { placeholder: "surname", text: "Surname", value: "cognome" },
-      //     { placeholder: "name", text: "Name", value: "nome" },
-      //     { placeholder: "adults", text: "Adults", value: "peoples" },
-      //     { placeholder: "child", text: "Child", value: "baby" },
-      //     { placeholder: "chairs", text: "Chairs", value: "chairs_only" },
-      //     {
-      //       placeholder: "highchairs",
-      //       text: "Highchairs",
-      //       value: "high_chair"
-      //     },
-      //     { placeholder: "note", text: "Note", value: "note_intolleranze" },
-      //     {
-      //       placeholder: "actions",
-      //       text: "Actions",
-      //       value: "nome",
-      //       sortable: false
-      //     }
-      //   ]
-      // },
-      // headers: [
-      //     { placeholder: "surname", text: "Cognome", value: "cognome" },
-      //     { placeholder: "name", text: "Nome", value: "nome" },
-      //     { placeholder: "adults", text: "Adulti", value: "peoples" },
-      //     { placeholder: "child", text: "Baby", value: "baby" },
-      //     { placeholder: "chairs", text: "Sedie", value: "chairs_only" },
-      //     {
-      //       placeholder: "highchairs",
-      //       text: "Seggioloni",
-      //       value: "high_chair"
-      //     },
-      //     { placeholder: "note", text: "Nota", value: "note_intolleranze" },
-      //     {
-      //       placeholder: "actions",
-      //       text: "Azioni",
-      //       value: "nome",
-      //       sortable: false
-      //     }
-      //   ],
       labels: {
         list_of_guests: "Elenco degli ospiti",
         create_new_guest: "Aggiungi ospiti",
@@ -346,29 +290,6 @@ export default {
         there_are_no_guests_at_this_table: "Non ci sono ospiti a questo tavolo",
         edit_guest: "Modifica ospite",
         delete_guest_confirm: "Sei sicuro di voler cancellare l'ospite ",
-        // headers: [
-        //   { placeholder: "surname", text: "Cognome", value: "cognome" },
-        //   { placeholder: "name", text: "Nome", value: "nome" },
-        //   { placeholder: "adults", text: "Adulti", value: "peoples" },
-        //   { placeholder: "child", text: "Baby", value: "baby" },
-        //   { placeholder: "chairs", text: "Sedie", value: "chairs_only" },
-        //   {
-        //     placeholder: "highchairs",
-        //     text: "Seggioloni",
-        //     value: "high_chair",
-        //   },
-        //   { placeholder: "noglutine", text: "No glutine", value: "menu1" },
-        //   { placeholder: "nolattosio", text: "No lattosio", value: "menu2" },
-        //   { placeholder: "vegano", text: "Vegano", value: "menu3" },
-        //   { placeholder: "vegetariano", text: "Vegetariano", value: "menu4" },
-        //   { placeholder: "note", text: "Nota", value: "note_intolleranze" },
-        //   {
-        //     placeholder: "actions",
-        //     text: "Azioni",
-        //     value: "nome",
-        //     sortable: false,
-        //   },
-        // ],
       },
       editedIndex: -1,
       editedItem: {

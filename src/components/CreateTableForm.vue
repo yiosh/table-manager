@@ -801,7 +801,6 @@ export default {
       let tableGuests = [];
       if (tablesFetchedLength > 0) {
         tablesFetched.forEach((payload) => {
-          console.log("payload", payload);
           tableGuests = guests.filter((guest) => {
             return guest.table_id == payload.id;
           });
