@@ -31,7 +31,7 @@
               createTableForm.backgroundColor,
               createTableForm.borderType,
               createTableForm.maxSeats,
-              createForm.nomeCliente
+              createTableForm.noteCliente
             )
           "
           ref="createForm"
