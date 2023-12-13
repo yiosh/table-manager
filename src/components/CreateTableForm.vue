@@ -326,13 +326,11 @@ export default {
       if (borderType === "trattegiato") {
         dashEnabled = true;
       }
-      // console.log("b", borderColor, "ba", backgroundColor);
       borderColor =
         typeof borderColor != "object" ? borderColor : borderColor.hex;
       if (borderColor == "#" || borderColor == "") {
         borderColor = "#000000";
       }
-      // console.log("borderColor", borderColor);
       backgroundColor =
         typeof backgroundColor != "object"
           ? backgroundColor
@@ -829,29 +827,6 @@ export default {
           );
         });
       }
-
-      // const translatedLabels = this.$store.state.translatedLabels;
-      // const labels = this.labels;
-
-      // for (const translatedLabel of translatedLabels) {
-      //   if (
-      //     translatedLabel.placeholder === "solid" ||
-      //     translatedLabel.placeholder === "dashed" ||
-      //     translatedLabel.placeholder === "none"
-      //   ) {
-      //     for (const borderOption of labels.borderOptions) {
-      //       if (translatedLabel.placeholder === borderOption.placeholder) {
-      //         borderOption.label = translatedLabel.content;
-      //       }
-      //     }
-      //   }
-
-      //   for (const label in labels) {
-      //     if (translatedLabel.placeholder === label) {
-      //       labels[label] = translatedLabel.content;
-      //     }
-      //   }
-      // }
     });
 
     EventBus.$on("create-table-select", () => {
