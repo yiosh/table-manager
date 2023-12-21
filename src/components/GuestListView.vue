@@ -91,6 +91,7 @@
 import GuestEditDialog from "./GuestEditDialog.vue";
 import { mapState, mapGetters } from "vuex";
 export default {
+  name: "GuestListView",
   props: {
     tableId: Number,
     tableList: Array,
@@ -107,7 +108,6 @@ export default {
     nome_tavolo_cliente: null,
     note_tavolo_cliente: null,
     numero_alternativo: null,
-    currentTable: null,
     saveAndContinue: true,
     editForm: false,
     tableName: "",
@@ -182,6 +182,10 @@ export default {
     guestEditDialog: false,
   }),
   computed: {
+    currentTable() {
+      const tables = this.$store.getters["table/getTables"];
+      return tables.find((t) => t.id == this.tableId);
+    },
     layoutId() {
       return this.$store.state.layout.id;
     },
@@ -354,6 +358,13 @@ export default {
       // nome_tavolo_cliente = this.currentTable = Number(item.table_id);
       this.guestEditDialog = true;
     },
+  },
+  mounted() {
+    if (this.currentTable) {
+      this.nome_tavolo_cliente = this.currentTable.nome_cliente;
+      this.note_tavolo_cliente = this.currentTable.note_tavolo;
+      this.numero_alternativo = this.currentTable.numero_alternativo;
+    }
   },
 };
 </script>
