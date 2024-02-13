@@ -5,7 +5,7 @@
       @click="editedItem.table_id = Number(tableId)"
       color="primary"
       dark
-      class="mb-2"
+      class="mb-2 hidden-print-only"
       >{{ labels.create_new_guest }}</v-btn
     >
     <v-card>

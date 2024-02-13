@@ -148,12 +148,12 @@ export default {
           icon: "list",
           ref: "tablelist",
         });
-        this.items.unshift({
-          // title: "Guest List",
-          title: "Elenco degli ospiti",
-          icon: "people",
-          ref: "guestlist",
-        });
+        // this.items.unshift({
+        //   // title: "Guest List",
+        //   title: "Elenco degli ospiti",
+        //   icon: "people",
+        //   ref: "guestlist",
+        // });
       }
     });
   },

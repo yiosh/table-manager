@@ -1,8 +1,8 @@
 <template>
   <v-card>
     <v-card-text class="px-0">
-      <v-toolbar flat color="white">
-        <v-text-field
+      <v-toolbar flat color="white" class="hidden-print-only">
+        <!-- <v-text-field
           id="nometavolocliente"
           light
           class=""
@@ -35,7 +35,7 @@
           v-model="numero_alternativo"
           @change="updateNumberoAlternativo"
           label="Numero alternativo"
-        ></v-text-field>
+        ></v-text-field> -->
         <v-spacer></v-spacer>
 
         <GuestEditDialog

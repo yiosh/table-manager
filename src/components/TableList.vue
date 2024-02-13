@@ -6,6 +6,9 @@
           <v-toolbar-title>
             Elenco dei tavoli
           </v-toolbar-title>
+          <v-btn icon class="ml-4" @click="printElm">
+            <v-icon>print</v-icon>
+          </v-btn>
 
           <v-spacer></v-spacer>
 
@@ -16,7 +19,7 @@
             style="max-width: 300px;"
             ref="numeroalternativofield"
             hide-details
-            class="mr-2"
+            class="mr-2 hidden-print-only"
             v-model="search"
             label="Ricerca"
             prepend-inner-icon="search"
@@ -26,22 +29,94 @@
             <v-icon>clear</v-icon>
           </v-btn>
         </v-toolbar>
-        <v-card-text class="pa-0">
-          <v-expansion-panel expand>
-            <v-expansion-panel-content
-              v-for="({ text, value }, i) in tableListFiltered"
-              :key="i"
-            >
-              <template v-slot:header>
-                <div>{{ text }}</div>
-              </template>
-              <v-card>
-                <v-card-text
-                  ><GuestListView :tableList="tableList" :tableId="value"
-                /></v-card-text>
-              </v-card>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
+        <v-card-text id="print" class="pa-0">
+          <v-data-table
+            :headers="headers"
+            :items="tables"
+            :search="search"
+            :pagination.sync="pagination"
+            hide-actions
+            :expand="true"
+          >
+            <template v-slot:items="props">
+              <tr>
+                <td>
+                  <div>{{ props.item.text }}</div>
+                </td>
+                <td>
+                  <v-text-field
+                    id="nometavolocliente"
+                    light
+                    ref="cognomefield"
+                    @click.stop=""
+                    hide-details
+                    class="pb-2"
+                    v-model="props.item.nome_cliente"
+                    @change="updateTableName($event, props.item)"
+                    :placeholder="
+                      props.item.nome_cliente
+                        ? props.item.nome_cliente
+                        : 'Nome tavolo cliente'
+                    "
+                  ></v-text-field>
+                </td>
+                <td>
+                  <v-text-field
+                    id="notetavolo"
+                    ref="notefield"
+                    hide-details
+                    @click.stop=""
+                    light
+                    class="pb-2"
+                    v-model="props.item.note_tavolo"
+                    @change="updateTableNote($event, props.item)"
+                    :placeholder="
+                      props.item.note_tavolo
+                        ? props.item.note_tavolo
+                        : 'Note tavolo'
+                    "
+                  >
+                    <template v-slot:append>
+                      <v-icon dark @click="updateTableNote"
+                        >mdi-content-save</v-icon
+                      >
+                    </template>
+                  </v-text-field>
+                </td>
+                <td>
+                  <v-text-field
+                    id="numeroalternativo"
+                    light
+                    @click.stop=""
+                    ref="numeroalternativofield"
+                    hide-details
+                    class="pb-2"
+                    v-model="props.item.numero_alternativo"
+                    @change="updateNumberoAlternativo($event, props.item)"
+                    :placeholder="
+                      props.item.numero_alternativo
+                        ? props.item.numero_alternativo
+                        : 'Numero alternativo'
+                    "
+                  ></v-text-field>
+                </td>
+
+                <td
+                  style="cursor: pointer;"
+                  class="text-xs-right"
+                  @click="props.expanded = !props.expanded"
+                >
+                  <v-icon>expand_more</v-icon>
+                </td>
+              </tr>
+            </template>
+            <template v-slot:expand="props">
+              <GuestListView
+                :tableList="tableList"
+                :tableId="props.item.value"
+              />
+            </template>
+          </v-data-table>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -61,6 +136,38 @@ export default {
   },
   data: (vue) => {
     return {
+      pagination: {
+        rowsPerPage: -1,
+        sortBy: "text",
+      },
+      headers: [
+        {
+          text: "Nome tavolo",
+          value: "text",
+        },
+        {
+          text: "Nome tavolo cliente",
+          value: "nome_cliente",
+        },
+        {
+          text: "Note tavolo",
+
+          value: "note_tavolo",
+        },
+        {
+          text: "Numero alternativo",
+
+          value: "numero_alternativo",
+        },
+        {
+          text: "",
+          align: "end",
+
+          sortable: false,
+          value: "toggle",
+        },
+      ],
+      expanded: [],
       search: "",
       pagination: {
         sortBy: "id",
@@ -80,62 +187,7 @@ export default {
       dialog: false,
       valid: true,
       guestDialog: false,
-      // labelsEn: {
-      //   list_of_guests: "List of Guests",
-      //   create_new_guest: "Create New Guest",
-      //   surname: "Surname",
-      //   name: "Name",
-      //   adults: "Adults",
-      //   child: "Child",
-      //   chairs: "Chairs",
-      //   high_chairs: "High Chairs",
-      //   note: "Note",
-      //   guest_type: "Guest Type",
-      //   save_and_continue: "Save and Continue",
-      //   save: "Save",
-      //   close: "Close",
-      //   there_are_no_guests_at_this_table: "There are no guests at this table",
-      //   edit_guest: "Edit Guest",
-      //   delete_guest_confirm: "Are you sure you wish to delete guest ",
-      //   headers: [
-      //     { placeholder: "surname", text: "Surname", value: "cognome" },
-      //     { placeholder: "name", text: "Name", value: "nome" },
-      //     { placeholder: "adults", text: "Adults", value: "peoples" },
-      //     { placeholder: "child", text: "Child", value: "baby" },
-      //     { placeholder: "chairs", text: "Chairs", value: "chairs_only" },
-      //     {
-      //       placeholder: "highchairs",
-      //       text: "Highchairs",
-      //       value: "high_chair"
-      //     },
-      //     { placeholder: "note", text: "Note", value: "note_intolleranze" },
-      //     {
-      //       placeholder: "actions",
-      //       text: "Actions",
-      //       value: "nome",
-      //       sortable: false
-      //     }
-      //   ]
-      // },
-      // headers: [
-      //     { placeholder: "surname", text: "Cognome", value: "cognome" },
-      //     { placeholder: "name", text: "Nome", value: "nome" },
-      //     { placeholder: "adults", text: "Adulti", value: "peoples" },
-      //     { placeholder: "child", text: "Baby", value: "baby" },
-      //     { placeholder: "chairs", text: "Sedie", value: "chairs_only" },
-      //     {
-      //       placeholder: "highchairs",
-      //       text: "Seggioloni",
-      //       value: "high_chair"
-      //     },
-      //     { placeholder: "note", text: "Nota", value: "note_intolleranze" },
-      //     {
-      //       placeholder: "actions",
-      //       text: "Azioni",
-      //       value: "nome",
-      //       sortable: false
-      //     }
-      //   ],
+
       labels: {
         list_of_guests: "Elenco degli ospiti",
         create_new_guest: "Aggiungi ospiti",
@@ -157,29 +209,6 @@ export default {
         there_are_no_guests_at_this_table: "Non ci sono ospiti a questo tavolo",
         edit_guest: "Modifica ospite",
         delete_guest_confirm: "Sei sicuro di voler cancellare l'ospite ",
-        // headers: [
-        //   { placeholder: "surname", text: "Cognome", value: "cognome" },
-        //   { placeholder: "name", text: "Nome", value: "nome" },
-        //   { placeholder: "adults", text: "Adulti", value: "peoples" },
-        //   { placeholder: "child", text: "Baby", value: "baby" },
-        //   { placeholder: "chairs", text: "Sedie", value: "chairs_only" },
-        //   {
-        //     placeholder: "highchairs",
-        //     text: "Seggioloni",
-        //     value: "high_chair",
-        //   },
-        //   { placeholder: "noglutine", text: "No glutine", value: "menu1" },
-        //   { placeholder: "nolattosio", text: "No lattosio", value: "menu2" },
-        //   { placeholder: "vegano", text: "Vegano", value: "menu3" },
-        //   { placeholder: "vegetariano", text: "Vegetariano", value: "menu4" },
-        //   { placeholder: "note", text: "Nota", value: "note_intolleranze" },
-        //   {
-        //     placeholder: "actions",
-        //     text: "Azioni",
-        //     value: "nome",
-        //     sortable: false,
-        //   },
-        // ],
       },
       editedIndex: -1,
       editedItem: {
@@ -245,11 +274,11 @@ export default {
   computed: {
     tableListFiltered() {
       if (this.search) {
-        return this.tableList.filter((t) =>
+        return this.tables.filter((t) =>
           t.text.toUpperCase().includes(this.search.toUpperCase())
         );
       }
-      return this.tableList;
+      return this.tables;
     },
     nome() {
       return this.editedItem.nome;
@@ -277,6 +306,19 @@ export default {
             text: `${t.table_name} ${t.table_number}`,
             value: Number(t.id),
           });
+        }
+      });
+      return options;
+    },
+    tables() {
+      const tables = this.$store.getters["table/getTables"];
+      let options = [];
+      tables.forEach((t) => {
+        if (!t.table_name.includes("HIDDEN")) {
+          t.text = `${t.table_name} ${t.table_number}`;
+          t.value = Number(t.id);
+
+          options.push(t);
         }
       });
       return options;
@@ -390,18 +432,112 @@ export default {
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
   methods: {
-    onInput(event) {
-      // Prevent the default input event from being triggered,
-      // which would cause the input value to be updated before the watch function is called.
-      event.preventDefault();
+    printElm() {
+      // Get HTML to print from element
+      const prtHtml = document.getElementById("print").innerHTML;
+
+      // Get all stylesheets HTML
+      let stylesHtml = "";
+      for (const node of [
+        ...document.querySelectorAll('link[rel="stylesheet"], style'),
+      ]) {
+        stylesHtml += node.outerHTML;
+      }
+
+      // Open the print window
+      const WinPrint = window.open(
+        "",
+        "",
+        "left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0"
+      );
+
+      WinPrint.document.write(`<!DOCTYPE html>
+<html>
+  <head>
+    ${stylesHtml}
+    <style>
+    @media print {
+  .v-btn, .v-icon, .v-toolbar {
+    display: none !important;
+  }
+  .v-datatable__expand-content {
+    border-bottom: 2px solid black;
+  }
+}
+</style>
+  </head>
+  <body>
+    ${prtHtml}
+  </body>
+</html>`);
+
+      WinPrint.document.close();
+      WinPrint.focus();
+      WinPrint.print();
+      WinPrint.close();
     },
-    updateTableName(string) {
+    // printDialogContent() {
+    //   window.print();
+    //   return;
+    //   // Get the dialog content element
+    //   // const dialogContent = document.getElementById("table-print");
+
+    //   // // Create a printable element (optional)
+    //   // const printableElement = document.createElement("div");
+
+    //   // printableElement.appendChild(dialogContent.cloneNode(true));
+
+    //   // // Trigger printing (adjust printing logic as needed)
+    //   // const printWindow = window.open("", "PRINT");
+
+    //   // printWindow.document.write(printableElement.outerHTML);
+
+    //   // printWindow.document.close();
+    //   // printWindow.print();
+    //   // printWindow.close();
+    // },
+    updateTableNote(string) {
       let updatedItem = {
         id: this.tableId,
+        noteCliente: string,
+        layoutId: this.layoutId,
+      };
+
+      console.log("updatedItem", updatedItem);
+
+      // if (
+      //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
+      // ) {
+      this.$store.dispatch("table/updateClientNote", updatedItem);
+      // this.defaultItem = Object.assign({}, updatedItem);
+      this.$store.state.stage.draw();
+    },
+    updateNumberoAlternativo(string, table) {
+      let updatedItem = {
+        id: table.id,
+        numeroAlternativo: string,
+        layoutId: this.layoutId,
+      };
+
+      console.log("updatedItem", updatedItem);
+
+      // if (
+      //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
+      // ) {
+      this.$store.dispatch("table/updateNumeroAlternativo", updatedItem);
+      // this.defaultItem = Object.assign({}, updatedItem);
+      this.$store.state.stage.draw();
+    },
+    updateTableName(string, table) {
+      console.log(string, table);
+      let updatedItem = {
+        id: table.id,
         nomeCliente: string,
         layoutId: this.layoutId,
       };
+
       console.log("updatedItem", updatedItem);
+
       // if (
       //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
       // ) {
@@ -409,9 +545,28 @@ export default {
       // this.defaultItem = Object.assign({}, updatedItem);
       this.$store.state.stage.draw();
     },
-    updateTableNote(string) {
+    onInput(event) {
+      // Prevent the default input event from being triggered,
+      // which would cause the input value to be updated before the watch function is called.
+      event.preventDefault();
+    },
+    // updateTableName(string) {
+    //   let updatedItem = {
+    //     id: this.tableId,
+    //     nomeCliente: string,
+    //     layoutId: this.layoutId,
+    //   };
+    //   console.log("updatedItem", updatedItem);
+    //   // if (
+    //   //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
+    //   // ) {
+    //   this.$store.dispatch("table/updateClientName", updatedItem);
+    //   // this.defaultItem = Object.assign({}, updatedItem);
+    //   this.$store.state.stage.draw();
+    // },
+    updateTableNote(string, table) {
       let updatedItem = {
-        id: this.tableId,
+        id: table.id,
         noteCliente: string,
         layoutId: this.layoutId,
       };
@@ -564,36 +719,14 @@ export default {
       //
     },
   },
-  created() {
-    // let v = this;
-    // // On table select grab the table's id and other data
-    // EventBus.$on("table-select", (group) => {
-    //   let table = group.attrs.table;
-    //   console.log("group", table.textConfig);
-    //   this.tableId = table.id;
-    //   this.$store.commit("SET_CURRENT_TABLE_ID", table.id);
-    //   this.tableName = table.textConfig.name;
-    //   if (table.textConfig.maxSeats) {
-    //     this.maxSeats = table.textConfig.maxSeats;
-    //   }
-    //   v.nome_tavolo_cliente = table.textConfig.nomeCliente;
-    //   v.note_tavolo_cliente = table.textConfig.noteCliente;
-    //   this.tableNumber = table.textConfig.number;
-    //   this.clientName = table.textConfig.nomeCliente;
-    // });
-    // EventBus.$on("guest-list-select", () => {
-    //   if (this.$store.state.selectedGroup != null) {
-    //     this.dialog = true;
-    //     // console.log("vm", this);
-    //   } else {
-    //     const notification = {
-    //       type: "warning",
-    //       message:
-    //         "Devi selezionare un tavolo per aprire la sua lista degli ospiti",
-    //     };
-    //     this.$store.dispatch("notification/add", notification, { root: true });
-    //   }
-    // });
-  },
 };
 </script>
+
+<style>
+@media print {
+  .v-btn,
+  .v-icon {
+    display: none !important;
+  }
+}
+</style>

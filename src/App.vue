@@ -31,16 +31,16 @@ export default {
   components: {
     Sidebar,
     Canvas,
-    BaseNotification
+    BaseNotification,
   },
   data: () => ({
     title: null,
-    orientation: 0
+    orientation: 0,
   }),
   watch: {
     layoutName() {
       document.title = `${this.layoutName} - Table Planner v5`;
-    }
+    },
   },
   computed: {
     layout() {
@@ -55,7 +55,7 @@ export default {
     error() {
       return this.$store.state.error;
     },
-    ...mapState("notification", ["notifications"])
+    ...mapState("notification", ["notifications"]),
   },
   methods: {
     // handleDrawer() {
@@ -74,7 +74,7 @@ export default {
         }
       }
       return false;
-    }
+    },
   },
   mounted() {
     document.title = this.$store.state.layout.layout_name
@@ -92,7 +92,7 @@ export default {
         this.$store.dispatch("table/getTables", layoutId, { root: true });
       }
     }
-    document.addEventListener("dblclick", event => {
+    document.addEventListener("dblclick", (event) => {
       console.log("trigger");
       if (
         event.target.tagName == "CANVAS" &&
@@ -106,7 +106,7 @@ export default {
   },
   created() {
     this.$store.dispatch("startProgress");
-  }
+  },
 };
 </script>
 
@@ -122,5 +122,71 @@ export default {
 }
 .progress-circle {
   flex: none;
+}
+
+@media print {
+  /* .v-application a {
+    color: black !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .v-card__text,
+  .v-card__title,
+  .v-data-table {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  */
+
+  #print,
+  #print * {
+    visibility: visible;
+    border-bottom: none;
+  }
+  /*
+
+  #title {
+    visibility: hidden;
+  }
+
+  .v-main {
+    padding: 0 !important;
+  }
+  */
+
+  #print {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    left: 0;
+    top: 0;
+  }
+
+  /* * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  } */
+
+  /* body * {
+    visibility: hidden;
+  } */
+
+  /* #print,
+  #print *,
+  .d-print-block {
+    visibility: visible;
+  }
+  #print {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  #hideprint,
+  .d-print-none {
+    visibility: hidden !important;
+  } */
 }
 </style>
