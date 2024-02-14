@@ -728,6 +728,7 @@ export default {
     });
 
     EventBus.$on("guest-list-select", () => {
+      console.log("wtf");
       if (this.$store.state.selectedGroup != null) {
         this.dialog = true;
         // console.log("vm", this);

@@ -99,6 +99,7 @@ export const actions = {
             message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
+          EventBus.$emit("data-updated");
           return guest;
         } else {
           const notification = {
@@ -136,6 +137,7 @@ export const actions = {
             message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
+          EventBus.$emit("data-updated");
           return updatedGuest;
         } else {
           const notification = {
@@ -172,6 +174,7 @@ export const actions = {
             message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
+          EventBus.$emit("data-updated");
           return guest;
         } else {
           const notification = {

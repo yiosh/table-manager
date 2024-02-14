@@ -1,120 +1,58 @@
 <template>
   <v-layout row justify-center>
-    <v-dialog v-model="dialog" scrollable>
+    <v-dialog v-model="dialog">
       <v-card>
         <v-toolbar flat dark color="#424242">
           <v-toolbar-title>
-            Elenco dei tavoli
+            Resume
           </v-toolbar-title>
-          <v-btn icon class="ml-4" @click="printElm">
+          <v-btn icon class="ml-4" @click="printDialogContent">
             <v-icon>print</v-icon>
           </v-btn>
 
           <v-spacer></v-spacer>
 
-          <v-text-field
-            id="numeroalternativo"
-            light
-            solo
-            style="max-width: 300px;"
-            ref="numeroalternativofield"
-            hide-details
-            class="mr-2 hidden-print-only"
-            v-model="search"
-            label="Ricerca"
-            prepend-inner-icon="search"
-          ></v-text-field>
-
           <v-btn icon @click="closeDialog">
             <v-icon>clear</v-icon>
           </v-btn>
         </v-toolbar>
-        <v-card-text id="print" class="pa-0">
+        <v-card-text>
           <v-data-table
+            id="table-print"
             :headers="headers"
-            :items="tables"
-            :search="search"
-            :pagination.sync="pagination"
+            :items="items"
+            disable-initial-sort
             hide-actions
-            :expand="true"
+            :pagination.sync="pagination"
+            :no-data-text="labels.there_are_no_guests_at_this_table"
           >
-            <template v-slot:items="props">
+            <template slot="items" slot-scope="props">
               <tr>
-                <td>
-                  <div>{{ props.item.text }}</div>
+                <td class="border-top">{{ props.item.table_name }}</td>
+                <!-- <td>{{ props.item.table_number }}</td> -->
+                <td class="border-top">
+                  <strong>{{ props.item.tot_seats }}</strong>
                 </td>
-                <td>
-                  <v-text-field
-                    id="nometavolocliente"
-                    light
-                    ref="cognomefield"
-                    @click.stop=""
-                    hide-details
-                    class="pb-2"
-                    v-model="props.item.nome_cliente"
-                    @change="updateTableName($event, props.item)"
-                    :placeholder="
-                      props.item.nome_cliente
-                        ? props.item.nome_cliente
-                        : 'Nome tavolo cliente'
-                    "
-                  ></v-text-field>
+                <td class="border-top">
+                  <strong>{{ props.item.tot_peoples }}</strong>
                 </td>
-                <td>
-                  <v-text-field
-                    id="notetavolo"
-                    ref="notefield"
-                    hide-details
-                    @click.stop=""
-                    light
-                    class="pb-2"
-                    v-model="props.item.note_tavolo"
-                    @change="updateTableNote($event, props.item)"
-                    :placeholder="
-                      props.item.note_tavolo
-                        ? props.item.note_tavolo
-                        : 'Note tavolo'
-                    "
-                  >
-                    <template v-slot:append>
-                      <v-icon dark @click="updateTableNote"
-                        >mdi-content-save</v-icon
-                      >
-                    </template>
-                  </v-text-field>
+                <td class="border-top">
+                  <strong>{{ props.item.tot_baby }}</strong>
                 </td>
-                <td>
-                  <v-text-field
-                    id="numeroalternativo"
-                    light
-                    @click.stop=""
-                    ref="numeroalternativofield"
-                    hide-details
-                    class="pb-2"
-                    v-model="props.item.numero_alternativo"
-                    @change="updateNumberoAlternativo($event, props.item)"
-                    :placeholder="
-                      props.item.numero_alternativo
-                        ? props.item.numero_alternativo
-                        : 'Numero alternativo'
-                    "
-                  ></v-text-field>
+                <td class="border-top">
+                  <strong>{{ props.item.tot_chairs_only }}</strong>
                 </td>
+                <td class="border-top">
+                  <strong>{{ props.item.tot_high_chair }}</strong>
+                </td>
+                <template v-if="info.show_tables_menu == 1">
+                  <td class="border-top">
+                    <strong>{{ props.item.tot_menu_speciali }}</strong>
+                  </td>
+                </template>
 
-                <td
-                  style="cursor: pointer;"
-                  class="text-xs-right"
-                  @click="props.expanded = !props.expanded"
-                >
-                  <v-icon>expand_more</v-icon>
-                </td>
+                <td class="border-top">{{ props.item.note_intolleranze }}</td>
               </tr>
-            </template>
-            <template v-slot:expand="props">
-              <GuestListView
-                :tableList="tableList"
-                :tableId="props.item.value"
-              />
             </template>
           </v-data-table>
         </v-card-text>
@@ -126,49 +64,12 @@
 <script>
 import { EventBus } from "../event-bus.js";
 import { mapState, mapGetters } from "vuex";
-import GuestListView from "./GuestListView.vue";
+import TMService from "@/services/TMService";
 
 export default {
-  name: "TableList",
-  components: { GuestListView },
-  props: {
-    tableListDialog: Boolean,
-  },
+  name: "GuestResume",
   data: (vue) => {
     return {
-      pagination: {
-        rowsPerPage: -1,
-        sortBy: "text",
-      },
-      headers: [
-        {
-          text: "Nome tavolo",
-          value: "text",
-        },
-        {
-          text: "Nome tavolo cliente",
-          value: "nome_cliente",
-        },
-        {
-          text: "Note tavolo",
-
-          value: "note_tavolo",
-        },
-        {
-          text: "Numero alternativo",
-
-          value: "numero_alternativo",
-        },
-        {
-          text: "",
-          align: "end",
-
-          sortable: false,
-          value: "toggle",
-        },
-      ],
-      expanded: [],
-      search: "",
       pagination: {
         sortBy: "id",
         descending: true,
@@ -187,7 +88,6 @@ export default {
       dialog: false,
       valid: true,
       guestDialog: false,
-
       labels: {
         list_of_guests: "Elenco degli ospiti",
         create_new_guest: "Aggiungi ospiti",
@@ -251,6 +151,7 @@ export default {
       numberRules2: [
         (v) => typeof v === "number" || "Per favore inserisci un numero",
       ],
+      items: [],
     };
   },
   watch: {
@@ -262,24 +163,8 @@ export default {
       this.editedItem.cognome =
         newValue.charAt(0).toUpperCase() + newValue.slice(1);
     },
-    tableListDialog() {
-      this.dialog = this.tableListDialog;
-    },
-    dialog() {
-      if (this.dialog == false) {
-        this.$emit("dialog-closed");
-      }
-    },
   },
   computed: {
-    tableListFiltered() {
-      if (this.search) {
-        return this.tables.filter((t) =>
-          t.text.toUpperCase().includes(this.search.toUpperCase())
-        );
-      }
-      return this.tables;
-    },
     nome() {
       return this.editedItem.nome;
     },
@@ -310,19 +195,6 @@ export default {
       });
       return options;
     },
-    tables() {
-      const tables = this.$store.getters["table/getTables"];
-      let options = [];
-      tables.forEach((t) => {
-        if (!t.table_name.includes("HIDDEN")) {
-          t.text = `${t.table_name} ${t.table_number}`;
-          t.value = Number(t.id);
-
-          options.push(t);
-        }
-      });
-      return options;
-    },
     currentGroup() {
       const groups = this.$store.getters["table/getGroups"];
       const group = groups.find((g) => g.table.id == this.tableId);
@@ -337,82 +209,105 @@ export default {
     headers() {
       if (this.info.show_tables_menu == 1) {
         return [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
+          // { placeholder: "table_number", text: "N. Tavolo", value: "table_number" },
           {
-            placeholder: "adults",
-            text: this.info.peoples_label,
-            value: "peoples",
-          },
-          { placeholder: "child", text: this.info.baby_label, value: "baby" },
-          {
-            placeholder: "chairs",
-            text: this.info.chairs_only_label,
-            value: "chairs_only",
+            placeholder: "table_name",
+            text: "Nome tavolo",
+            value: "table_name",
           },
           {
-            placeholder: "highchairs",
-            text: this.info.high_chair_label,
-            value: "high_chair",
+            placeholder: "tot_seats",
+            text: "Tot. Posti",
+            width: "10%",
+            value: "tot_seats",
           },
           {
-            placeholder: "noglutine",
-            text: "No glutine",
-            value: "menu1",
+            placeholder: "tot_peoples",
+            text: `Tot. ${this.info.peoples_label}`,
+            width: "10%",
+
+            value: "tot_peoples",
           },
           {
-            placeholder: "nolattosio",
-            text: "No lattosio",
-            value: "menu2",
-          },
-          { placeholder: "vegano", text: "Vegano", value: "menu3" },
-          {
-            placeholder: "vegetariano",
-            text: "Vegetariano",
-            value: "menu4",
+            placeholder: "tot_baby",
+            text: `Tot. ${this.info.baby_label}`,
+            width: "10%",
+
+            value: "tot_baby",
           },
           {
-            placeholder: "note",
-            text: "Nota",
+            placeholder: "tot_chairs_only",
+            text: `Tot. ${this.info.chairs_only_label}`,
+            width: "10%",
+
+            value: "tot_chairs_only",
+          },
+          {
+            placeholder: "tot_high_chair",
+            text: `Tot. ${this.info.high_chair_label}`,
+            width: "10%",
+
+            value: "tot_high_chair",
+          },
+          {
+            placeholder: "tot_menu_speciali",
+            text: "Tot. Pasti speciali",
+            width: "10%",
+
+            value: "tot_menu_speciali",
+          },
+          {
+            placeholder: "note_intolleranze",
+            text: "Note",
             value: "note_intolleranze",
-          },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
           },
         ];
       } else {
         return [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
           {
-            placeholder: "adults",
-            text: this.info.peoples_label,
-            value: "peoples",
-          },
-          { placeholder: "child", text: this.info.baby_label, value: "baby" },
-          {
-            placeholder: "chairs",
-            text: this.info.chairs_only_label,
-            value: "chairs_only",
+            placeholder: "table_name",
+            text: "Nome tavolo",
+            value: "table_name",
           },
           {
-            placeholder: "highchairs",
-            text: this.info.high_chair_label,
-            value: "high_chair",
+            placeholder: "tot_seats",
+            width: "10%",
+
+            text: "Tot. Posti",
+            value: "tot_seats",
           },
           {
-            placeholder: "note",
-            text: "Nota",
+            placeholder: "tot_peoples",
+            text: `Tot. ${this.info.peoples_label}`,
+            width: "10%",
+
+            value: "tot_peoples",
+          },
+          {
+            placeholder: "tot_baby",
+            text: `Tot. ${this.info.baby_label}`,
+            width: "10%",
+
+            value: "tot_baby",
+          },
+          {
+            placeholder: "tot_chairs_only",
+            text: `Tot. ${this.info.chairs_only_label}`,
+            width: "10%",
+
+            value: "tot_chairs_only",
+          },
+          {
+            placeholder: "tot_high_chair",
+            text: `Tot. ${this.info.high_chair_label}`,
+            width: "10%",
+
+            value: "tot_high_chair",
+          },
+          {
+            placeholder: "note_intolleranze",
+            text: "Note",
             value: "note_intolleranze",
-          },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
           },
         ];
       }
@@ -420,6 +315,7 @@ export default {
     numberOfGuests() {
       const guests = this.guests(this.tableId);
       let total = 0;
+
       guests.forEach((g) => {
         total += Number(g.peoples);
         total += Number(g.baby);
@@ -428,13 +324,14 @@ export default {
       });
       return total;
     },
+
     ...mapState(["guest"]),
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
   methods: {
-    printElm() {
+    printDialogContent() {
       // Get HTML to print from element
-      const prtHtml = document.getElementById("print").innerHTML;
+      const prtHtml = document.getElementById("table-print").innerHTML;
 
       // Get all stylesheets HTML
       let stylesHtml = "";
@@ -460,8 +357,8 @@ export default {
   .v-btn, .v-icon, .v-toolbar {
     display: none !important;
   }
-  .v-datatable__expand-content {
-    border-bottom: 2px solid black;
+  .border-top {
+    border-top: 1px solid black;
   }
 }
 </style>
@@ -476,62 +373,75 @@ export default {
       WinPrint.print();
       WinPrint.close();
     },
-    // printDialogContent() {
-    //   window.print();
-    //   return;
-    //   // Get the dialog content element
-    //   // const dialogContent = document.getElementById("table-print");
+    calculateTotSeats(item) {
+      let total = 0;
+      total += Number(item.tot_peoples);
+      total += Number(item.tot_baby);
+      total += Number(item.tot_chairs_only);
+      total += Number(item.tot_high_chair);
+      return total;
+    },
+    async getResume() {
+      try {
+        const response = await TMService.getResume(this.layoutId);
+        // console.log("response", response);
+        let tables = response.data.dati;
+        tables = tables.filter((t) => {
+          if (!t.table_name.includes("HIDDEN")) {
+            return t;
+          }
+        });
+        let totSeats = 0;
+        let totPeoples = 0;
+        let totBaby = 0;
+        let totChairsOnly = 0;
+        let totHighChair = 0;
+        let totMenuSpeciali = 0;
 
-    //   // // Create a printable element (optional)
-    //   // const printableElement = document.createElement("div");
+        for (let index = 0; index < tables.length; index++) {
+          const element = tables[index];
 
-    //   // printableElement.appendChild(dialogContent.cloneNode(true));
+          element.tot_seats = this.calculateTotSeats(element);
+          totSeats += element.tot_seats;
+          if (element.tot_peoples) {
+            totPeoples += Number(element.tot_peoples);
+          }
+          if (element.tot_baby) {
+            totBaby += Number(element.tot_baby);
+          }
+          if (element.tot_chairs_only) {
+            totChairsOnly += Number(element.tot_chairs_only);
+          }
+          if (element.tot_high_chair) {
+            totHighChair += Number(element.tot_high_chair);
+          }
+          if (this.info.show_tables_menu == 1) {
+            totMenuSpeciali += Number(element.tot_menu_speciali);
+          }
+        }
 
-    //   // // Trigger printing (adjust printing logic as needed)
-    //   // const printWindow = window.open("", "PRINT");
-
-    //   // printWindow.document.write(printableElement.outerHTML);
-
-    //   // printWindow.document.close();
-    //   // printWindow.print();
-    //   // printWindow.close();
-    // },
-    updateTableNote(string) {
+        tables.push({
+          table_name: "TOTALE",
+          tot_seats: totSeats,
+          tot_peoples: totPeoples,
+          tot_baby: totBaby,
+          tot_chairs_only: totChairsOnly,
+          tot_high_chair: totHighChair,
+          tot_menu_speciali: totMenuSpeciali,
+        });
+        this.items = tables;
+      } catch (error) {
+        console.log("resumeerror", error);
+      }
+    },
+    onInput(event) {
+      // Prevent the default input event from being triggered,
+      // which would cause the input value to be updated before the watch function is called.
+      event.preventDefault();
+    },
+    updateTableName(string) {
       let updatedItem = {
         id: this.tableId,
-        noteCliente: string,
-        layoutId: this.layoutId,
-      };
-
-      console.log("updatedItem", updatedItem);
-
-      // if (
-      //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
-      // ) {
-      this.$store.dispatch("table/updateClientNote", updatedItem);
-      // this.defaultItem = Object.assign({}, updatedItem);
-      this.$store.state.stage.draw();
-    },
-    updateNumberoAlternativo(string, table) {
-      let updatedItem = {
-        id: table.id,
-        numeroAlternativo: string,
-        layoutId: this.layoutId,
-      };
-
-      console.log("updatedItem", updatedItem);
-
-      // if (
-      //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
-      // ) {
-      this.$store.dispatch("table/updateNumeroAlternativo", updatedItem);
-      // this.defaultItem = Object.assign({}, updatedItem);
-      this.$store.state.stage.draw();
-    },
-    updateTableName(string, table) {
-      console.log(string, table);
-      let updatedItem = {
-        id: table.id,
         nomeCliente: string,
         layoutId: this.layoutId,
       };
@@ -545,32 +455,15 @@ export default {
       // this.defaultItem = Object.assign({}, updatedItem);
       this.$store.state.stage.draw();
     },
-    onInput(event) {
-      // Prevent the default input event from being triggered,
-      // which would cause the input value to be updated before the watch function is called.
-      event.preventDefault();
-    },
-    // updateTableName(string) {
-    //   let updatedItem = {
-    //     id: this.tableId,
-    //     nomeCliente: string,
-    //     layoutId: this.layoutId,
-    //   };
-    //   console.log("updatedItem", updatedItem);
-    //   // if (
-    //   //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
-    //   // ) {
-    //   this.$store.dispatch("table/updateClientName", updatedItem);
-    //   // this.defaultItem = Object.assign({}, updatedItem);
-    //   this.$store.state.stage.draw();
-    // },
-    updateTableNote(string, table) {
+    updateTableNote(string) {
       let updatedItem = {
-        id: table.id,
+        id: this.tableId,
         noteCliente: string,
         layoutId: this.layoutId,
       };
+
       console.log("updatedItem", updatedItem);
+
       // if (
       //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
       // ) {
@@ -606,6 +499,7 @@ export default {
         totalPeople += Number(guest.chairs_only);
         totalPeople += Number(guest.high_chair);
         totalPeople += Number(guest.peoples);
+
         if (this.placeholderLabels.menu1) {
           totalPasti += Number(guest.menu1);
           totalPasti += Number(guest.menu2);
@@ -623,6 +517,7 @@ export default {
           return false;
         }
       }
+
       if (totalPeople > maxSeats) {
         return true;
       } else {
@@ -646,6 +541,7 @@ export default {
       item.menu3 = Number(item.menu3);
       item.menu4 = Number(item.menu4);
       item.table_id = Number(item.table_id);
+
       this.editedIndex = this.guest.guests.indexOf(item);
       this.editedItem = Object.assign({}, item);
       // this.editedItem.nome_cliente = this.guest.
@@ -667,6 +563,7 @@ export default {
           this.editedIndex = -1;
         }, 300);
       }
+
       if (this.guestDialog) {
         this.guestDialog = false;
       }
@@ -704,6 +601,7 @@ export default {
         this.close();
       } else {
         // Create a New Guest
+
         const tableId = this.editedItem.table_id;
         this.$store.dispatch("guest/addGuest", { tableId, guest });
         document.getElementById("cognomefield").focus();
@@ -713,20 +611,26 @@ export default {
         this.close();
       } else {
         const tId = this.editedItem.table_id;
+
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedItem.table_id = tId;
       }
       //
     },
   },
+  created() {
+    this.getResume();
+
+    EventBus.$on("data-updated", () => {
+      this.getResume();
+    });
+
+    let v = this;
+
+    EventBus.$on("table-resume-select", () => {
+      console.log("yes");
+      v.dialog = true;
+    });
+  },
 };
 </script>
-
-<style>
-@media print {
-  .v-btn,
-  .v-icon {
-    display: none !important;
-  }
-}
-</style>

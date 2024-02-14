@@ -1,6 +1,7 @@
 import TMService from "@/services/TMService";
 import _find from "lodash/find";
 import _findIndex from "lodash/findIndex";
+import { EventBus } from "@/event-bus.js";
 
 export const namespaced = true;
 
@@ -244,6 +245,26 @@ export const actions = {
         dispatch("notification/add", notification, { root: true });
       });
   },
+  getResume({ commit, dispatch }, boardId) {
+    TMService.getResume(boardId)
+      .then((response) => {
+        // handle success
+
+        return response;
+        // commit("GET_RESUME", response.data.dati);
+      })
+      .catch((error) => {
+        // handle error
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message:
+            "Si è verificato un problema durante il recupero dei resume di tavoli: " +
+            error.message,
+        };
+        dispatch("notification/add", notification, { root: true });
+      });
+  },
   moveTable({ commit, dispatch }, payload) {
     TMService.moveTable(payload)
       .then((response) => {
@@ -281,6 +302,7 @@ export const actions = {
               message: response.data.info_txt,
             };
             dispatch("notification/add", notification, { root: true });
+            EventBus.$emit("data-updated");
           } else {
             const notification = {
               type: "error",
@@ -317,6 +339,7 @@ export const actions = {
             message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
+          EventBus.$emit("data-updated");
         } else {
           const notification = {
             type: "error",
@@ -348,6 +371,7 @@ export const actions = {
             message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
+          EventBus.$emit("data-updated");
           return true;
         } else {
           const notification = {
@@ -385,6 +409,7 @@ export const actions = {
             message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
+          EventBus.$emit("data-updated");
           return true;
         } else {
           const notification = {
@@ -422,6 +447,7 @@ export const actions = {
             message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
+          EventBus.$emit("data-updated");
           return true;
         } else {
           const notification = {
@@ -459,6 +485,7 @@ export const actions = {
             message: response.data.info_txt,
           };
           dispatch("notification/add", notification, { root: true });
+          EventBus.$emit("data-updated");
           return true;
         } else {
           const notification = {
