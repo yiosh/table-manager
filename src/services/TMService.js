@@ -238,4 +238,9 @@ export default {
   deleteGuest(guestId) {
     return apiClient.get(`${endpoint}delete_guest&token=1&guest_id=${guestId}`);
   },
+  getResume(boardId) {
+    return apiClient.get(
+      `${endpoint}get_tables_report&token=1&board_id=${boardId}`
+    );
+  },
 };

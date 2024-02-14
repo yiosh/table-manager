@@ -47,6 +47,8 @@
       </v-list>
     </v-navigation-drawer>
     <GuestList v-if="this.$store.state.layout.evento_id != 0"></GuestList>
+    <TablesResume v-if="this.$store.state.layout.evento_id != 0"></TablesResume>
+
     <TableList
       :tableListDialog="tableListDialog"
       @dialog-closed="tableListDialog = false"
@@ -60,6 +62,8 @@
 <script>
 // import TableSelector from "./TableSelector";
 import GuestList from "./GuestList";
+import TablesResume from "./TablesResume";
+
 import TableList from "./TableList";
 
 import PrintCanvas from "./PrintCanvas";
@@ -71,6 +75,7 @@ export default {
   components: {
     // TableSelector,
     GuestList,
+    TablesResume,
     PrintCanvas,
     TableList,
   },
@@ -102,21 +107,25 @@ export default {
   methods: {
     handleDialog(element) {
       switch (element) {
+        // case "people":
+        //   if (this.$store.state.selectedGroup != null) {
+        //     EventBus.$emit("guest-list-select");
+        //     this.$store.commit("GUEST_LIST_DIALOG", true);
+        //   } else {
+        //     const notification = {
+        //       type: "warning",
+        //       multiLine: true,
+        //       message:
+        //         "È necessario selezionare un tavolo per aprire il suo elenco di ospiti",
+        //     };
+        //     this.$store.dispatch("notification/add", notification, {
+        //       root: true,
+        //     });
+        //   }
+        //   break;
         case "people":
-          if (this.$store.state.selectedGroup != null) {
-            EventBus.$emit("guest-list-select");
-            this.$store.commit("GUEST_LIST_DIALOG", true);
-          } else {
-            const notification = {
-              type: "warning",
-              multiLine: true,
-              message:
-                "È necessario selezionare un tavolo per aprire il suo elenco di ospiti",
-            };
-            this.$store.dispatch("notification/add", notification, {
-              root: true,
-            });
-          }
+          EventBus.$emit("table-resume-select");
+          console.log("worked");
           break;
         case "list":
           this.tableListDialog = true;
@@ -148,12 +157,12 @@ export default {
           icon: "list",
           ref: "tablelist",
         });
-        // this.items.unshift({
-        //   // title: "Guest List",
-        //   title: "Elenco degli ospiti",
-        //   icon: "people",
-        //   ref: "guestlist",
-        // });
+        this.items.unshift({
+          // title: "Guest List",
+          title: "Resume degli ospiti",
+          icon: "people",
+          ref: "guestlist",
+        });
       }
     });
   },
