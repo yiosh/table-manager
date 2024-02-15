@@ -4,7 +4,7 @@
       <v-card>
         <v-toolbar flat dark color="#424242">
           <v-toolbar-title>
-            Resume
+            Report
           </v-toolbar-title>
           <v-btn icon class="ml-4" @click="printDialogContent">
             <v-icon>print</v-icon>
@@ -16,9 +16,9 @@
             <v-icon>clear</v-icon>
           </v-btn>
         </v-toolbar>
-        <v-card-text>
+        <v-card-text id="table-print">
+          <h3>{{ layout.layout_name }}</h3>
           <v-data-table
-            id="table-print"
             :headers="headers"
             :items="items"
             disable-initial-sort
@@ -28,30 +28,32 @@
           >
             <template slot="items" slot-scope="props">
               <tr>
-                <td class="border-top">{{ props.item.table_name }}</td>
-                <!-- <td>{{ props.item.table_number }}</td> -->
-                <td class="border-top">
+                <td class="border-all">{{ props.item.table_name }}</td>
+                <td class="border-all">
+                  {{ props.item.nome_cliente }}
+                </td>
+                <td class="border-all">
                   <strong>{{ props.item.tot_seats }}</strong>
                 </td>
-                <td class="border-top">
+                <td class="border-all">
                   <strong>{{ props.item.tot_peoples }}</strong>
                 </td>
-                <td class="border-top">
+                <td class="border-all">
                   <strong>{{ props.item.tot_baby }}</strong>
                 </td>
-                <td class="border-top">
+                <td class="border-all">
                   <strong>{{ props.item.tot_chairs_only }}</strong>
                 </td>
-                <td class="border-top">
+                <td class="border-all">
                   <strong>{{ props.item.tot_high_chair }}</strong>
                 </td>
                 <template v-if="info.show_tables_menu == 1">
-                  <td class="border-top">
+                  <td class="border-all">
                     <strong>{{ props.item.tot_menu_speciali }}</strong>
                   </td>
                 </template>
 
-                <td class="border-top">{{ props.item.note_intolleranze }}</td>
+                <td class="border-all">{{ props.item.note_intolleranze }}</td>
               </tr>
             </template>
           </v-data-table>
@@ -203,6 +205,9 @@ export default {
     layoutId() {
       return this.$store.state.layout.id;
     },
+    layout() {
+      return this.$store.state.layout;
+    },
     info() {
       return this.$store.getters.getInfo;
     },
@@ -214,6 +219,11 @@ export default {
             placeholder: "table_name",
             text: "Nome tavolo",
             value: "table_name",
+          },
+          {
+            placeholder: "nome_cliente",
+            text: "Nome cliente",
+            value: "nome_cliente",
           },
           {
             placeholder: "tot_seats",
@@ -268,6 +278,11 @@ export default {
             placeholder: "table_name",
             text: "Nome tavolo",
             value: "table_name",
+          },
+          {
+            placeholder: "nome_cliente",
+            text: "Nome cliente",
+            value: "nome_cliente",
           },
           {
             placeholder: "tot_seats",
@@ -357,9 +372,12 @@ export default {
   .v-btn, .v-icon, .v-toolbar {
     display: none !important;
   }
-  .border-top {
-    border-top: 1px solid black;
+  td {
+    border: 1px solid black;
   }
+  table {
+    border-collapse: collapse;
+}
 }
 </style>
   </head>

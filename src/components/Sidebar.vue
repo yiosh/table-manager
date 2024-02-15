@@ -159,7 +159,7 @@ export default {
         });
         this.items.unshift({
           // title: "Guest List",
-          title: "Resume degli ospiti",
+          title: "Report",
           icon: "people",
           ref: "guestlist",
         });

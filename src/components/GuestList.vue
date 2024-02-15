@@ -16,6 +16,7 @@
             ref="cognomefield"
             hide-details
             solo
+            :readonly="info.block_guests == 1"
             v-model="nome_tavolo_cliente"
             @change="updateTableName"
             label="Nome tavolo cliente"
@@ -27,6 +28,7 @@
             hide-details
             solo
             light
+            :readonly="info.block_guests == 1"
             v-model="note_tavolo_cliente"
             @change="updateTableNote"
             placeholder="Note tavolo"
@@ -46,6 +48,7 @@
             <v-spacer></v-spacer>
             <v-dialog v-model="guestDialog" max-width="500px">
               <v-btn
+                v-if="info.block_guests == 0"
                 slot="activator"
                 @click="editedItem.table_id = Number(tableId)"
                 color="primary"
@@ -230,10 +233,19 @@
               <td>{{ props.item.note_intolleranze }}</td>
 
               <td class="d-flex">
-                <v-icon small class="mr-2" @click="editItem(props.item)"
+                <v-icon
+                  v-if="info.block_guests == 0"
+                  small
+                  class="mr-2"
+                  @click="editItem(props.item)"
                   >edit</v-icon
                 >
-                <v-icon small @click="deleteGuest(props.item)">delete</v-icon>
+                <v-icon
+                  v-if="info.block_guests == 0"
+                  small
+                  @click="deleteGuest(props.item)"
+                  >delete</v-icon
+                >
               </td>
             </template>
           </v-data-table>
