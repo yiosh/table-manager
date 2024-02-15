@@ -254,6 +254,9 @@ export default {
     nameRules: [(v) => !!v || "Inserisci nome tavolo per procedere"],
   }),
   computed: {
+    info() {
+      return this.$store.getters.getInfo;
+    },
     blockBoard() {
       // return 0;
       return this.$store.getters.getInfo.block_board;
@@ -612,13 +615,19 @@ export default {
           : " B" + guestCounters.counters.babies;
       }
 
-      if (guestCounters.counters.chairs > 0) {
+      if (
+        guestCounters.counters.chairs > 0 &&
+        this.info.show_chairs_only != 0
+      ) {
         guestCounters.text += chairsLetter
           ? ` ${chairsLetter}:` + guestCounters.counters.chairs
           : " S" + guestCounters.counters.chairs;
       }
 
-      if (guestCounters.counters.highchairs > 0) {
+      if (
+        guestCounters.counters.highchairs > 0 &&
+        this.info.show_high_chair != 0
+      ) {
         guestCounters.text += highChairLetter
           ? ` ${highChairLetter}:` + guestCounters.counters.highchairs
           : " H" + guestCounters.counters.highchairs;

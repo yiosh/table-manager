@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card :elevation="0" flat>
     <v-card-text class="px-0">
       <v-toolbar flat color="white" class="hidden-print-only">
         <!-- <v-text-field
@@ -64,9 +64,11 @@
           <td>{{ props.item.nome }}</td>
           <td>{{ props.item.peoples }}</td>
           <td>{{ props.item.baby }}</td>
-          <td>{{ props.item.chairs_only }}</td>
-          <td>{{ props.item.high_chair }}</td>
-          <template v-if="info.show_tables_menu == 1">
+          <td v-if="info.show_chairs_only != 0">
+            {{ props.item.chairs_only }}
+          </td>
+          <td v-if="info.show_high_chair != 0">{{ props.item.high_chair }}</td>
+          <template v-if="info.show_tables_menu != 0">
             <td>{{ props.item.menu1 }}</td>
             <td>{{ props.item.menu2 }}</td>
             <td>{{ props.item.menu3 }}</td>
@@ -192,27 +194,145 @@ export default {
     info() {
       return this.$store.getters.getInfo;
     },
+    // headers() {
+    //   if (this.info.show_tables_menu == 1) {
+    //     return [
+    //       { placeholder: "surname", text: "Cognome", value: "cognome" },
+    //       { placeholder: "name", text: "Nome", value: "nome" },
+    //       {
+    //         placeholder: "adults",
+    //         text: this.info.peoples_label,
+    //         value: "peoples",
+    //       },
+    //       { placeholder: "child", text: this.info.baby_label, value: "baby" },
+    //       {
+    //         placeholder: "chairs",
+    //         text: this.info.chairs_only_label,
+    //         value: "chairs_only",
+    //       },
+    //       {
+    //         placeholder: "highchairs",
+    //         text: this.info.high_chair_label,
+    //         value: "high_chair",
+    //       },
+    //       {
+    //         placeholder: "noglutine",
+    //         text: "No glutine",
+    //         value: "menu1",
+    //       },
+    //       {
+    //         placeholder: "nolattosio",
+    //         text: "No lattosio",
+    //         value: "menu2",
+    //       },
+    //       { placeholder: "vegano", text: "Vegano", value: "menu3" },
+    //       {
+    //         placeholder: "vegetariano",
+    //         text: "Vegetariano",
+    //         value: "menu4",
+    //       },
+    //       {
+    //         placeholder: "note",
+    //         text: "Nota",
+    //         value: "note_intolleranze",
+    //       },
+    //       {
+    //         placeholder: "actions",
+    //         text: "Azioni",
+    //         value: "nome",
+    //         sortable: false,
+    //       },
+    //     ];
+    //   } else {
+    //     return [
+    //       { placeholder: "surname", text: "Cognome", value: "cognome" },
+    //       { placeholder: "name", text: "Nome", value: "nome" },
+    //       {
+    //         placeholder: "adults",
+    //         text: this.info.peoples_label,
+    //         value: "peoples",
+    //       },
+    //       { placeholder: "child", text: this.info.baby_label, value: "baby" },
+    //       {
+    //         placeholder: "chairs",
+    //         text: this.info.chairs_only_label,
+    //         value: "chairs_only",
+    //       },
+    //       {
+    //         placeholder: "highchairs",
+    //         text: this.info.high_chair_label,
+    //         value: "high_chair",
+    //       },
+
+    //       {
+    //         placeholder: "note",
+    //         text: "Nota",
+    //         value: "note_intolleranze",
+    //       },
+    //       {
+    //         placeholder: "actions",
+    //         text: "Azioni",
+    //         value: "nome",
+    //         sortable: false,
+    //       },
+    //     ];
+    //   }
+
+    // },
     headers() {
-      if (this.info.show_tables_menu == 1) {
-        return [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
-          {
-            placeholder: "adults",
-            text: this.info.peoples_label,
-            value: "peoples",
-          },
-          { placeholder: "child", text: this.info.baby_label, value: "baby" },
-          {
-            placeholder: "chairs",
-            text: this.info.chairs_only_label,
-            value: "chairs_only",
-          },
-          {
-            placeholder: "highchairs",
-            text: this.info.high_chair_label,
-            value: "high_chair",
-          },
+      let indexAdded = 4;
+      let arr = [
+        { placeholder: "surname", text: "Cognome", value: "cognome" },
+        { placeholder: "name", text: "Nome", value: "nome" },
+        {
+          placeholder: "adults",
+          text: this.info.peoples_label,
+          value: "peoples",
+        },
+        { placeholder: "child", text: this.info.baby_label, value: "baby" },
+
+        {
+          placeholder: "note",
+          text: "Nota",
+          value: "note_intolleranze",
+        },
+        {
+          placeholder: "actions",
+          text: "Azioni",
+          value: "nome",
+          sortable: false,
+        },
+      ];
+
+      if (this.info.show_chairs_only != 0) {
+        arr = arr.slice(0, indexAdded).concat(
+          [
+            {
+              placeholder: "chairs",
+              text: this.info.chairs_only_label,
+              value: "chairs_only",
+            },
+          ],
+          arr.slice(indexAdded)
+        );
+        indexAdded++;
+      }
+
+      if (this.info.show_high_chair != 0) {
+        arr = arr.slice(0, indexAdded).concat(
+          [
+            {
+              placeholder: "highchairs",
+              text: this.info.high_chair_label,
+              value: "high_chair",
+            },
+          ],
+          arr.slice(indexAdded)
+        );
+        indexAdded++;
+      }
+      if (this.info.show_tables_menu != 0) {
+        let toAdd = [
           {
             placeholder: "noglutine",
             text: "No glutine",
@@ -229,52 +349,10 @@ export default {
             text: "Vegetariano",
             value: "menu4",
           },
-          {
-            placeholder: "note",
-            text: "Nota",
-            value: "note_intolleranze",
-          },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
-          },
         ];
-      } else {
-        return [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
-          {
-            placeholder: "adults",
-            text: this.info.peoples_label,
-            value: "peoples",
-          },
-          { placeholder: "child", text: this.info.baby_label, value: "baby" },
-          {
-            placeholder: "chairs",
-            text: this.info.chairs_only_label,
-            value: "chairs_only",
-          },
-          {
-            placeholder: "highchairs",
-            text: this.info.high_chair_label,
-            value: "high_chair",
-          },
-
-          {
-            placeholder: "note",
-            text: "Nota",
-            value: "note_intolleranze",
-          },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
-          },
-        ];
+        arr = arr.slice(0, indexAdded).concat(toAdd, arr.slice(indexAdded));
       }
+      return arr;
     },
     ...mapState(["guest"]),
 

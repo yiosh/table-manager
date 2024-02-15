@@ -39,11 +39,11 @@
             :expand="true"
           >
             <template v-slot:items="props">
-              <tr>
-                <td>
+              <tr class="grey lighten-4">
+                <td class="border-bottom-grey">
                   <div>{{ props.item.text }}</div>
                 </td>
-                <td>
+                <td class="border-bottom-grey">
                   <v-text-field
                     id="nometavolocliente"
                     light
@@ -60,7 +60,7 @@
                     "
                   ></v-text-field>
                 </td>
-                <td>
+                <td class="border-bottom-grey">
                   <v-text-field
                     id="notetavolo"
                     ref="notefield"
@@ -83,7 +83,7 @@
                     </template>
                   </v-text-field>
                 </td>
-                <td>
+                <td class="border-bottom-grey">
                   <v-text-field
                     id="numeroalternativo"
                     light
@@ -103,7 +103,7 @@
 
                 <td
                   style="cursor: pointer;"
-                  class="text-xs-right"
+                  class="text-xs-right border-bottom-grey"
                   @click="props.expanded = !props.expanded"
                 >
                   <v-icon>expand_more</v-icon>
@@ -334,89 +334,89 @@ export default {
     info() {
       return this.$store.getters.getInfo;
     },
-    headers() {
-      if (this.info.show_tables_menu == 1) {
-        return [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
-          {
-            placeholder: "adults",
-            text: this.info.peoples_label,
-            value: "peoples",
-          },
-          { placeholder: "child", text: this.info.baby_label, value: "baby" },
-          {
-            placeholder: "chairs",
-            text: this.info.chairs_only_label,
-            value: "chairs_only",
-          },
-          {
-            placeholder: "highchairs",
-            text: this.info.high_chair_label,
-            value: "high_chair",
-          },
-          {
-            placeholder: "noglutine",
-            text: "No glutine",
-            value: "menu1",
-          },
-          {
-            placeholder: "nolattosio",
-            text: "No lattosio",
-            value: "menu2",
-          },
-          { placeholder: "vegano", text: "Vegano", value: "menu3" },
-          {
-            placeholder: "vegetariano",
-            text: "Vegetariano",
-            value: "menu4",
-          },
-          {
-            placeholder: "note",
-            text: "Nota",
-            value: "note_intolleranze",
-          },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
-          },
-        ];
-      } else {
-        return [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
-          {
-            placeholder: "adults",
-            text: this.info.peoples_label,
-            value: "peoples",
-          },
-          { placeholder: "child", text: this.info.baby_label, value: "baby" },
-          {
-            placeholder: "chairs",
-            text: this.info.chairs_only_label,
-            value: "chairs_only",
-          },
-          {
-            placeholder: "highchairs",
-            text: this.info.high_chair_label,
-            value: "high_chair",
-          },
-          {
-            placeholder: "note",
-            text: "Nota",
-            value: "note_intolleranze",
-          },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
-          },
-        ];
-      }
-    },
+    // headers() {
+    //   if (this.info.show_tables_menu == 1) {
+    //     return [
+    //       { placeholder: "surname", text: "Cognome", value: "cognome" },
+    //       { placeholder: "name", text: "Nome", value: "nome" },
+    //       {
+    //         placeholder: "adults",
+    //         text: this.info.peoples_label,
+    //         value: "peoples",
+    //       },
+    //       { placeholder: "child", text: this.info.baby_label, value: "baby" },
+    //       {
+    //         placeholder: "chairs",
+    //         text: this.info.chairs_only_label,
+    //         value: "chairs_only",
+    //       },
+    //       {
+    //         placeholder: "highchairs",
+    //         text: this.info.high_chair_label,
+    //         value: "high_chair",
+    //       },
+    //       {
+    //         placeholder: "noglutine",
+    //         text: "No glutine",
+    //         value: "menu1",
+    //       },
+    //       {
+    //         placeholder: "nolattosio",
+    //         text: "No lattosio",
+    //         value: "menu2",
+    //       },
+    //       { placeholder: "vegano", text: "Vegano", value: "menu3" },
+    //       {
+    //         placeholder: "vegetariano",
+    //         text: "Vegetariano",
+    //         value: "menu4",
+    //       },
+    //       {
+    //         placeholder: "note",
+    //         text: "Nota",
+    //         value: "note_intolleranze",
+    //       },
+    //       {
+    //         placeholder: "actions",
+    //         text: "Azioni",
+    //         value: "nome",
+    //         sortable: false,
+    //       },
+    //     ];
+    //   } else {
+    //     return [
+    //       { placeholder: "surname", text: "Cognome", value: "cognome" },
+    //       { placeholder: "name", text: "Nome", value: "nome" },
+    //       {
+    //         placeholder: "adults",
+    //         text: this.info.peoples_label,
+    //         value: "peoples",
+    //       },
+    //       { placeholder: "child", text: this.info.baby_label, value: "baby" },
+    //       {
+    //         placeholder: "chairs",
+    //         text: this.info.chairs_only_label,
+    //         value: "chairs_only",
+    //       },
+    //       {
+    //         placeholder: "highchairs",
+    //         text: this.info.high_chair_label,
+    //         value: "high_chair",
+    //       },
+    //       {
+    //         placeholder: "note",
+    //         text: "Nota",
+    //         value: "note_intolleranze",
+    //       },
+    //       {
+    //         placeholder: "actions",
+    //         text: "Azioni",
+    //         value: "nome",
+    //         sortable: false,
+    //       },
+    //     ];
+    //   }
+    // },
     numberOfGuests() {
       const guests = this.guests(this.tableId);
       let total = 0;
@@ -510,6 +510,7 @@ export default {
       // ) {
       this.$store.dispatch("table/updateClientNote", updatedItem);
       // this.defaultItem = Object.assign({}, updatedItem);
+
       this.$store.state.stage.draw();
     },
     updateNumberoAlternativo(string, table) {
@@ -543,6 +544,7 @@ export default {
       // ) {
       this.$store.dispatch("table/updateClientName", updatedItem);
       // this.defaultItem = Object.assign({}, updatedItem);
+
       this.$store.state.stage.draw();
     },
     onInput(event) {
@@ -723,6 +725,9 @@ export default {
 </script>
 
 <style>
+.border-bottom-grey {
+  border-bottom: 1px solid rgb(161, 161, 161);
+}
 @media print {
   .v-btn,
   .v-icon {

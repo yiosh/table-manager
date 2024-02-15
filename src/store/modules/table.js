@@ -54,7 +54,12 @@ export const mutations = {
     const groupToEdit = _find(state.groups, (group) => {
       return group.table.id == table.id;
     });
-    console.log("groupToEdit", table);
+    const tableFound = _find(state.tablesFetched, (t) => {
+      return t.id == table.id;
+    });
+    console.log("groupToEditTable", table);
+    console.log("groupToEdit", groupToEdit);
+
     if (groupToEdit) {
       groupToEdit.nomeClienteText.nomeCliente = table.nomeCliente;
       groupToEdit.nomeClienteText.text = table.nomeCliente;
@@ -62,19 +67,30 @@ export const mutations = {
       tableToEdit.textConfig.nomeCliente = table.nomeCliente;
       tableToEdit.textConfig.noteCliente = table.noteCliente;
     }
+    if (tableFound) {
+      tableFound.nome_cliente = table.nomeCliente;
+    }
     table.rootState.stage.draw();
   },
   UPDATE_TABLE_CLIENT_NOTE(state, table) {
     const groupToEdit = _find(state.groups, (group) => {
       return group.table.id == table.id;
     });
-    console.log("groupToEdit", groupToEdit, table);
+    const tableFound = _find(state.tablesFetched, (t) => {
+      return t.id == table.id;
+    });
+    console.log("groupToEdit", groupToEdit);
+    console.log("tableFound", tableFound);
+
     // if (groupToEdit) {
     //   groupToEdit.noteClienteText.noteCliente = groupToEdit.noteCliente;
     //   groupToEdit.noteClienteText.text = groupToEdit.noteCliente;
     //   const tableToEdit = groupToEdit.table;
     //   tableToEdit.textConfig.noteCliente = groupToEdit.noteCliente;
     // }
+    if (tableFound) {
+      tableFound.note_tavolo = table.noteCliente;
+    }
     table.rootState.stage.draw();
   },
   UPDATE_NUMERO_ALTERNATIVO(state, table) {
@@ -438,6 +454,8 @@ export const actions = {
   updateClientNote({ commit, dispatch, rootState }, payload) {
     TMService.updateClientNote(payload)
       .then((response) => {
+        console.log("workup", response);
+
         if (response.data.esito) {
           payload.rootState = rootState;
           commit("UPDATE_TABLE_CLIENT_NOTE", payload);

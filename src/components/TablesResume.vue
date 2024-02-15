@@ -31,6 +31,10 @@
                 <td class="border-all">{{ props.item.table_name }}</td>
                 <td class="border-all">
                   {{ props.item.nome_cliente }}
+                  <br />
+                  <small class="red--text text--lighten-1">{{
+                    props.item.note_tavolo
+                  }}</small>
                 </td>
                 <td class="border-all">
                   <strong>{{ props.item.tot_seats }}</strong>
@@ -41,10 +45,10 @@
                 <td class="border-all">
                   <strong>{{ props.item.tot_baby }}</strong>
                 </td>
-                <td class="border-all">
+                <td v-if="info.show_chairs_only != 0" class="border-all">
                   <strong>{{ props.item.tot_chairs_only }}</strong>
                 </td>
-                <td class="border-all">
+                <td v-if="info.show_high_chair != 0" class="border-all">
                   <strong>{{ props.item.tot_high_chair }}</strong>
                 </td>
                 <template v-if="info.show_tables_menu == 1">
@@ -211,54 +215,185 @@ export default {
     info() {
       return this.$store.getters.getInfo;
     },
+    // headers() {
+    //   if (this.info.show_tables_menu == 1) {
+    //     return [
+    //       // { placeholder: "table_number", text: "N. Tavolo", value: "table_number" },
+    //       {
+    //         placeholder: "table_name",
+    //         text: "Numero tavolo",
+    //         value: "table_name",
+    //       },
+    //       {
+    //         placeholder: "nome_cliente",
+    //         text: "Nome tavolo",
+    //         value: "nome_cliente",
+    //       },
+    //       {
+    //         placeholder: "tot_seats",
+    //         text: "Tot. Posti",
+    //         width: "10%",
+    //         value: "tot_seats",
+    //       },
+    //       {
+    //         placeholder: "tot_peoples",
+    //         text: `Tot. ${this.info.peoples_label}`,
+    //         width: "10%",
+
+    //         value: "tot_peoples",
+    //       },
+    //       {
+    //         placeholder: "tot_baby",
+    //         text: `Tot. ${this.info.baby_label}`,
+    //         width: "10%",
+
+    //         value: "tot_baby",
+    //       },
+    //       {
+    //         placeholder: "tot_chairs_only",
+    //         text: `Tot. ${this.info.chairs_only_label}`,
+    //         width: "10%",
+
+    //         value: "tot_chairs_only",
+    //       },
+    //       {
+    //         placeholder: "tot_high_chair",
+    //         text: `Tot. ${this.info.high_chair_label}`,
+    //         width: "10%",
+
+    //         value: "tot_high_chair",
+    //       },
+    //       {
+    //         placeholder: "tot_menu_speciali",
+    //         text: "Tot. Pasti speciali",
+    //         width: "10%",
+
+    //         value: "tot_menu_speciali",
+    //       },
+    //       {
+    //         placeholder: "note_intolleranze",
+    //         text: "Note",
+    //         value: "note_intolleranze",
+    //       },
+    //     ];
+    //   } else {
+    //     return [
+    //       {
+    //         placeholder: "table_name",
+    //         text: "Numbero tavolo",
+    //         value: "table_name",
+    //       },
+    //       {
+    //         placeholder: "nome_cliente",
+    //         text: "Nome tavolo",
+    //         value: "nome_cliente",
+    //       },
+    //       {
+    //         placeholder: "tot_seats",
+    //         width: "10%",
+
+    //         text: "Tot. Posti",
+    //         value: "tot_seats",
+    //       },
+    //       {
+    //         placeholder: "tot_peoples",
+    //         text: `Tot. ${this.info.peoples_label}`,
+    //         width: "10%",
+
+    //         value: "tot_peoples",
+    //       },
+    //       {
+    //         placeholder: "tot_baby",
+    //         text: `Tot. ${this.info.baby_label}`,
+    //         width: "10%",
+
+    //         value: "tot_baby",
+    //       },
+    //       {
+    //         placeholder: "tot_chairs_only",
+    //         text: `Tot. ${this.info.chairs_only_label}`,
+    //         width: "10%",
+
+    //         value: "tot_chairs_only",
+    //       },
+    //       {
+    //         placeholder: "tot_high_chair",
+    //         text: `Tot. ${this.info.high_chair_label}`,
+    //         width: "10%",
+
+    //         value: "tot_high_chair",
+    //       },
+    //       {
+    //         placeholder: "note_intolleranze",
+    //         text: "Note",
+    //         value: "note_intolleranze",
+    //       },
+    //     ];
+    //   }
+    // },
     headers() {
+      let indexAdded = 5;
+      let arr = [
+        {
+          placeholder: "table_name",
+          text: "Numero tavolo",
+          value: "table_name",
+        },
+        {
+          placeholder: "nome_cliente",
+          text: "Nome tavolo",
+          value: "nome_cliente",
+        },
+        {
+          placeholder: "tot_seats",
+          width: "10%",
+
+          text: "Tot. Posti",
+          value: "tot_seats",
+        },
+        {
+          placeholder: "adults",
+          text: this.info.peoples_label,
+          value: "peoples",
+        },
+        { placeholder: "child", text: this.info.baby_label, value: "baby" },
+
+        {
+          placeholder: "note",
+          text: "Nota",
+          value: "note_intolleranze",
+        },
+      ];
+
+      if (this.info.show_chairs_only != 0) {
+        arr = arr.slice(0, indexAdded).concat(
+          [
+            {
+              placeholder: "chairs",
+              text: this.info.chairs_only_label,
+              value: "chairs_only",
+            },
+          ],
+          arr.slice(indexAdded)
+        );
+        indexAdded++;
+      }
+
+      if (this.info.show_high_chair != 0) {
+        arr = arr.slice(0, indexAdded).concat(
+          [
+            {
+              placeholder: "highchairs",
+              text: this.info.high_chair_label,
+              value: "high_chair",
+            },
+          ],
+          arr.slice(indexAdded)
+        );
+        indexAdded++;
+      }
       if (this.info.show_tables_menu == 1) {
-        return [
-          // { placeholder: "table_number", text: "N. Tavolo", value: "table_number" },
-          {
-            placeholder: "table_name",
-            text: "Nome tavolo",
-            value: "table_name",
-          },
-          {
-            placeholder: "nome_cliente",
-            text: "Nome cliente",
-            value: "nome_cliente",
-          },
-          {
-            placeholder: "tot_seats",
-            text: "Tot. Posti",
-            width: "10%",
-            value: "tot_seats",
-          },
-          {
-            placeholder: "tot_peoples",
-            text: `Tot. ${this.info.peoples_label}`,
-            width: "10%",
-
-            value: "tot_peoples",
-          },
-          {
-            placeholder: "tot_baby",
-            text: `Tot. ${this.info.baby_label}`,
-            width: "10%",
-
-            value: "tot_baby",
-          },
-          {
-            placeholder: "tot_chairs_only",
-            text: `Tot. ${this.info.chairs_only_label}`,
-            width: "10%",
-
-            value: "tot_chairs_only",
-          },
-          {
-            placeholder: "tot_high_chair",
-            text: `Tot. ${this.info.high_chair_label}`,
-            width: "10%",
-
-            value: "tot_high_chair",
-          },
+        let toAdd = [
           {
             placeholder: "tot_menu_speciali",
             text: "Tot. Pasti speciali",
@@ -266,66 +401,10 @@ export default {
 
             value: "tot_menu_speciali",
           },
-          {
-            placeholder: "note_intolleranze",
-            text: "Note",
-            value: "note_intolleranze",
-          },
         ];
-      } else {
-        return [
-          {
-            placeholder: "table_name",
-            text: "Nome tavolo",
-            value: "table_name",
-          },
-          {
-            placeholder: "nome_cliente",
-            text: "Nome cliente",
-            value: "nome_cliente",
-          },
-          {
-            placeholder: "tot_seats",
-            width: "10%",
-
-            text: "Tot. Posti",
-            value: "tot_seats",
-          },
-          {
-            placeholder: "tot_peoples",
-            text: `Tot. ${this.info.peoples_label}`,
-            width: "10%",
-
-            value: "tot_peoples",
-          },
-          {
-            placeholder: "tot_baby",
-            text: `Tot. ${this.info.baby_label}`,
-            width: "10%",
-
-            value: "tot_baby",
-          },
-          {
-            placeholder: "tot_chairs_only",
-            text: `Tot. ${this.info.chairs_only_label}`,
-            width: "10%",
-
-            value: "tot_chairs_only",
-          },
-          {
-            placeholder: "tot_high_chair",
-            text: `Tot. ${this.info.high_chair_label}`,
-            width: "10%",
-
-            value: "tot_high_chair",
-          },
-          {
-            placeholder: "note_intolleranze",
-            text: "Note",
-            value: "note_intolleranze",
-          },
-        ];
+        arr = arr.slice(0, indexAdded).concat(toAdd, arr.slice(indexAdded));
       }
+      return arr;
     },
     numberOfGuests() {
       const guests = this.guests(this.tableId);

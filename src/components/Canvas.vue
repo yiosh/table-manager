@@ -188,6 +188,9 @@ export default {
     },
   }),
   computed: {
+    info() {
+      return this.$store.getters.getInfo;
+    },
     backgroundImg() {
       return this.$store.getters.getBackgroundImg;
     },
@@ -272,7 +275,9 @@ export default {
                   : ""
               } ${g.nome ? g.nome.replace("null", "") : ""} A:${g.peoples} B:${
                 g.baby
-              } S:${g.chairs_only} H:${g.high_chair}\n`;
+              } ${
+                this.info.show_chairs_only != 0 ? "S:" + g.chairs_only : ""
+              } ${this.info.show_high_chair != 0 ? "H:" + g.high_chair : ""}\n`;
             });
           } else {
             const g = guests[0];
@@ -282,7 +287,9 @@ export default {
                 : ""
             } ${g.nome ? g.nome.replace("null", "") : ""} A:${g.peoples} B:${
               g.baby
-            } S:${g.chairs_only} H:${g.high_chair}`;
+            } ${this.info.show_chairs_only != 0 ? "S:" + g.chairs_only : ""} ${
+              this.info.show_high_chair != 0 ? "H:" + g.high_chair : ""
+            }`;
           }
         }
       }
