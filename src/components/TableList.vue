@@ -142,11 +142,11 @@ export default {
       },
       headers: [
         {
-          text: "Nome tavolo",
+          text: "Numero tavolo",
           value: "text",
         },
         {
-          text: "Nome tavolo cliente",
+          text: "Nome tavolo",
           value: "nome_cliente",
         },
         {

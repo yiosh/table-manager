@@ -28,7 +28,9 @@
           >
             <template slot="items" slot-scope="props">
               <tr>
-                <td class="border-all">{{ props.item.table_name }}</td>
+                <td class="border-all">
+                  {{ props.item.table_name }} {{ props.item.table_number }}
+                </td>
                 <td class="border-all">
                   {{ props.item.nome_cliente }}
                   <br />
