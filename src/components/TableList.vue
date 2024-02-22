@@ -83,7 +83,10 @@
                     </template>
                   </v-text-field>
                 </td>
-                <td class="border-bottom-grey">
+                <td
+                  v-if="Number(info.numero_alternativo != 0)"
+                  class="border-bottom-grey"
+                >
                   <v-text-field
                     id="numeroalternativo"
                     light
@@ -140,33 +143,7 @@ export default {
         rowsPerPage: -1,
         sortBy: "text",
       },
-      headers: [
-        {
-          text: "Numero tavolo",
-          value: "text",
-        },
-        {
-          text: "Nome tavolo",
-          value: "nome_cliente",
-        },
-        {
-          text: "Note tavolo",
 
-          value: "note_tavolo",
-        },
-        {
-          text: "Numero alternativo",
-
-          value: "numero_alternativo",
-        },
-        {
-          text: "",
-          align: "end",
-
-          sortable: false,
-          value: "toggle",
-        },
-      ],
       expanded: [],
       search: "",
       pagination: {
@@ -417,6 +394,38 @@ export default {
     //     ];
     //   }
     // },
+    headers() {
+      let headers = [
+        {
+          text: "Numero tavolo",
+          value: "text",
+        },
+        {
+          text: "Nome tavolo",
+          value: "nome_cliente",
+        },
+        {
+          text: "Note tavolo",
+
+          value: "note_tavolo",
+        },
+        {
+          text: "",
+          align: "end",
+
+          sortable: false,
+          value: "toggle",
+        },
+      ];
+      if (this.info.numero_alternativo != 0) {
+        headers.splice(3, 0, {
+          text: "Numero alternativo",
+
+          value: "numero_alternativo",
+        });
+      }
+      return headers;
+    },
     numberOfGuests() {
       const guests = this.guests(this.tableId);
       let total = 0;
