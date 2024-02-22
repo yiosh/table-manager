@@ -217,12 +217,21 @@ export default {
   },
   updateGuest(guest) {
     console.log("guest", guest);
-    let menus = "";
-    if (guest.menu1) {
-      menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
-        guest.menu3
-      }&menu4=${guest.menu4}`;
-    }
+    let menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
+      guest.menu3
+    }&menu4=${guest.menu4}`;
+    // if (guest.menu1) {
+    //   menus = `&menu1=${guest.menu1}`;
+    // }
+    // if (guest.menu2) {
+    //   menus = `&menu2=${guest.menu2}`;
+    // }
+    // if (guest.menu3) {
+    //   menus = `&menu3=${guest.menu3}`;
+    // }
+    // if (guest.menu4) {
+    //   menus = `&menu4=${guest.menu4}`;
+    // }
     return apiClient.get(
       `${endpoint}update_guest&token=1&guest_id=${guest.id}&guest_type=${
         guest.guest_type

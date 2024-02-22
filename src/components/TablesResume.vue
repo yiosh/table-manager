@@ -39,7 +39,12 @@
                   }}</small>
                 </td>
                 <td class="border-all">
-                  <strong>{{ props.item.tot_seats }}</strong>
+                  <strong>{{
+                    info.show_tables_menu == 1
+                      ? Number(props.item.tot_seats) +
+                        Number(props.item.tot_menu_speciali)
+                      : props.item.tot_seats
+                  }}</strong>
                 </td>
                 <td class="border-all">
                   <strong>{{ props.item.tot_peoples }}</strong>

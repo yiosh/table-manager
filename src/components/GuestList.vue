@@ -590,7 +590,6 @@ export default {
     editItem(item) {
       console.log("item", item);
       this.editForm = true;
-      console.log("item", item);
       item.peoples = Number(item.peoples);
       item.baby = Number(item.baby);
       item.chairs_only = Number(item.chairs_only);
