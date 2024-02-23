@@ -115,6 +115,7 @@
             </template>
             <template v-slot:expand="props">
               <GuestListView
+                :table="props.item"
                 :tableList="tableList"
                 :tableId="props.item.value"
               />

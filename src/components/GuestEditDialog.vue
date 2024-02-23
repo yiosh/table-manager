@@ -1,7 +1,7 @@
 <template>
   <v-dialog persistent v-model="dialog" max-width="500px">
+    <!-- v-if="info.block_guests == 0" -->
     <v-btn
-      v-if="info.block_guests == 0"
       slot="activator"
       @click="editedItem.table_id = Number(tableId)"
       color="primary"
@@ -174,6 +174,7 @@ export default {
     guestEditDialog: Boolean,
     itemSelected: Object,
     eIndex: Number,
+    table: Object,
   },
   data: (vue) => ({
     valid: true,
@@ -234,6 +235,12 @@ export default {
         ? this.labels.create_new_guest
         : this.labels.edit_guest;
     },
+    maxSeats() {
+      if (this.table) {
+        return Number(this.table.max_seats);
+      }
+      return 0;
+    },
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
   watch: {
@@ -283,8 +290,63 @@ export default {
         this.dialog = false;
       }
     },
+    maxSeatsCheck(newGuest) {
+      if (Number(this.tableId) != Number(newGuest.table_id)) {
+        return false;
+      }
+      console.log("guest", newGuest);
+      const maxSeats = Number(this.maxSeats);
+      let guests = JSON.parse(JSON.stringify(this.guests(this.tableId)));
+      const index = guests.findIndex((guest) => guest.id === newGuest.id);
+      if (index !== -1) {
+        guests[index] = Object.assign({}, newGuest);
+      } else {
+        guests.push(newGuest);
+      }
+      let totalPasti = 0;
+      let totalPeople = 0;
+      for (const guest of guests) {
+        totalPeople += Number(guest.baby);
+        totalPeople += Number(guest.chairs_only);
+        totalPeople += Number(guest.high_chair);
+        totalPeople += Number(guest.peoples);
+
+        if (this.placeholderLabels.menu1) {
+          totalPasti += Number(guest.menu1);
+          totalPasti += Number(guest.menu2);
+          totalPasti += Number(guest.menu3);
+          totalPasti += Number(guest.menu4);
+        }
+      }
+      if (this.placeholderLabels.menu1) {
+        console.log("w", totalPasti, totalPeople);
+        if (totalPeople > maxSeats || totalPasti > maxSeats) {
+          console.log("went too far", totalPasti, totalPeople);
+          return true;
+        } else {
+          console.log("ok", totalPasti, totalPeople);
+          return false;
+        }
+      }
+
+      if (totalPeople > maxSeats) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     save() {
       let guest = Object.assign({}, this.editedItem);
+      if (this.maxSeatsCheck(guest)) {
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message:
+            "Hai inserito più ospiti o pasti, di quelli consentiti da questo tavolo",
+        };
+        this.$store.dispatch("notification/add", notification, { root: true });
+        return;
+      }
       console.log("guest", guest);
       // guest.table_id = this.tableId;
       console.log("up", guest);

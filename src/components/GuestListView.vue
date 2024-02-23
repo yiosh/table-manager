@@ -39,6 +39,7 @@
         <v-spacer></v-spacer>
 
         <GuestEditDialog
+          :table="table"
           :labels="labels"
           :tableList="tableList"
           :guestEditDialog="guestEditDialog"
@@ -97,6 +98,7 @@ export default {
   props: {
     tableId: Number,
     tableList: Array,
+    table: Object,
   },
   components: {
     GuestEditDialog,

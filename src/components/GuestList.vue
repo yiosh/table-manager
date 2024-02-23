@@ -47,8 +47,8 @@
           <v-toolbar flat color="white">
             <v-spacer></v-spacer>
             <v-dialog v-model="guestDialog" max-width="500px">
+              <!-- v-if="info.block_guests == 0" -->
               <v-btn
-                v-if="info.block_guests == 0"
                 slot="activator"
                 @click="editedItem.table_id = Number(tableId)"
                 color="primary"
