@@ -1,7 +1,7 @@
 <template>
   <v-dialog persistent v-model="dialog" max-width="500px">
-    <!-- v-if="info.block_guests == 0" -->
     <v-btn
+      v-if="info.block_guests == 0"
       slot="activator"
       @click="editedItem.table_id = Number(tableId)"
       color="primary"
