@@ -79,10 +79,19 @@
           <td>{{ props.item.note_intolleranze }}</td>
 
           <td class="d-flex">
-            <v-icon small class="mr-2" @click="editItem(props.item)"
+            <v-icon
+              v-if="info.block_guests == 0"
+              small
+              class="mr-2"
+              @click="editItem(props.item)"
               >edit</v-icon
             >
-            <v-icon small @click="deleteGuest(props.item)">delete</v-icon>
+            <v-icon
+              v-if="info.block_guests == 0"
+              small
+              @click="deleteGuest(props.item)"
+              >delete</v-icon
+            >
           </td>
         </template>
       </v-data-table>
