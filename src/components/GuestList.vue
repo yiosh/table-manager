@@ -158,6 +158,7 @@
                         <v-flex xs12>
                           <v-text-field
                             v-model="editedItem.note_intolleranze"
+                            :placeholder="info.note_placeholder"
                             :label="labels.note"
                           ></v-text-field>
                         </v-flex>
@@ -458,18 +459,18 @@ export default {
         let toAdd = [
           {
             placeholder: "noglutine",
-            text: "No glutine",
+            text: this.info.menu1,
             value: "menu1",
           },
           {
             placeholder: "nolattosio",
-            text: "No lattosio",
+            text: this.info.menu2,
             value: "menu2",
           },
-          { placeholder: "vegano", text: "Vegano", value: "menu3" },
+          { placeholder: "vegano", text: this.info.menu3, value: "menu3" },
           {
             placeholder: "vegetariano",
-            text: "Vegetariano",
+            text: this.info.menu4,
             value: "menu4",
           },
         ];

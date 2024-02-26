@@ -112,6 +112,7 @@
               <v-flex xs12>
                 <v-text-field
                   v-model="editedItem.note_intolleranze"
+                  :placeholder="info.note_placeholder"
                   :label="labels.note"
                 ></v-text-field>
               </v-flex>

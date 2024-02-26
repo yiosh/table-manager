@@ -129,28 +129,28 @@ export default {
     clientName: "",
     dialog: false,
     valid: true,
-    labels: {
-      list_of_guests: "Elenco degli ospiti",
-      create_new_guest: "Aggiungi ospiti",
-      surname: "Cognome",
-      name: "Nome",
-      adults: "Adulti",
-      child: "Bambino",
-      chairs: "Sedie",
-      high_chairs: "Seggioloni",
-      menu1: "Celiachia",
-      menu2: "No lattosio",
-      menu3: "Vegano",
-      menu4: "Vegetariano",
-      note: "Nota",
-      guest_type: "Tipo di ospite",
-      save_and_continue: "Salva e continua",
-      save: "Salva",
-      close: "Chiudi",
-      there_are_no_guests_at_this_table: "Non ci sono ospiti a questo tavolo",
-      edit_guest: "Modifica ospite",
-      delete_guest_confirm: "Sei sicuro di voler cancellare l'ospite ",
-    },
+    // labels: {
+    //   list_of_guests: "Elenco degli ospiti",
+    //   create_new_guest: "Aggiungi ospiti",
+    //   surname: "Cognome",
+    //   name: "Nome",
+    //   adults: "Adulti",
+    //   child: "Bambino",
+    //   chairs: "Sedie",
+    //   high_chairs: "Seggioloni",
+    //   menu1: "Celiachia",
+    //   menu2: "No lattosio",
+    //   menu3: "Vegano",
+    //   menu4: "Vegetariano",
+    //   note: "Nota",
+    //   guest_type: "Tipo di ospite",
+    //   save_and_continue: "Salva e continua",
+    //   save: "Salva",
+    //   close: "Chiudi",
+    //   there_are_no_guests_at_this_table: "Non ci sono ospiti a questo tavolo",
+    //   edit_guest: "Modifica ospite",
+    //   delete_guest_confirm: "Sei sicuro di voler cancellare l'ospite ",
+    // },
     editedIndex: -1,
     editedItem: {
       id: null,
@@ -195,6 +195,42 @@ export default {
     guestEditDialog: false,
   }),
   computed: {
+    labels() {
+      const labels = {
+        list_of_guests: "Elenco degli ospiti",
+        create_new_guest: "Aggiungi ospiti",
+        surname: "Cognome",
+        name: "Nome",
+        adults: "Adulti",
+        child: "Bambino",
+        chairs: "Sedie",
+        high_chairs: "Seggioloni",
+        menu1: "Celiachia",
+        menu2: "No lattosio",
+        menu3: "Vegano",
+        menu4: "Vegetariano",
+        note: "Nota",
+        guest_type: "Tipo di ospite",
+        save_and_continue: "Salva e continua",
+        save: "Salva",
+        close: "Chiudi",
+        there_are_no_guests_at_this_table: "Non ci sono ospiti a questo tavolo",
+        edit_guest: "Modifica ospite",
+        delete_guest_confirm: "Sei sicuro di voler cancellare l'ospite ",
+      };
+
+      labels.adults = this.info.peoples_label;
+      labels.child = this.info.baby_label;
+      labels.chairs = this.info.chairs_only_label;
+      labels.high_chairs = this.info.high_chair_label;
+
+      labels.menu1 = this.info.menu1;
+      labels.menu2 = this.info.menu2;
+      labels.menu3 = this.info.menu3;
+      labels.menu4 = this.info.menu4;
+
+      return labels;
+    },
     currentTable() {
       const tables = this.$store.getters["table/getTables"];
       return tables.find((t) => t.id == this.tableId);
@@ -346,18 +382,18 @@ export default {
         let toAdd = [
           {
             placeholder: "noglutine",
-            text: "No glutine",
+            text: this.info.menu1,
             value: "menu1",
           },
           {
             placeholder: "nolattosio",
-            text: "No lattosio",
+            text: this.info.menu2,
             value: "menu2",
           },
-          { placeholder: "vegano", text: "Vegano", value: "menu3" },
+          { placeholder: "vegano", text: this.info.menu3, value: "menu3" },
           {
             placeholder: "vegetariano",
-            text: "Vegetariano",
+            text: this.info.menu4,
             value: "menu4",
           },
         ];
