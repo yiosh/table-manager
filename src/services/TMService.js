@@ -197,12 +197,16 @@ export default {
     return apiClient.get(`${endpoint}get_guests&token=1&layout_id=${layoutId}`);
   },
   addGuest(layoutId, tableId, guest) {
-    let menus = "";
-    if (guest.menu1) {
-      menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
-        guest.menu3
-      }&menu4=${guest.menu4}`;
-    }
+    // let menus = "";
+
+    // if (guest.menu1) {
+    //   menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
+    //     guest.menu3
+    //   }&menu4=${guest.menu4}`;
+    // }
+    let menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
+      guest.menu3
+    }&menu4=${guest.menu4}`;
     return apiClient.get(
       `${endpoint}insert_guest&token=1&layout_id=${layoutId}&guest_type=${
         guest.guest_type
