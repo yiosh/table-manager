@@ -38,6 +38,19 @@
             hide-actions
             :expand="true"
           >
+            <template slot="headerCell" slot-scope="props">
+              <v-tooltip v-if="props.header.value == 'toggle'" bottom>
+                <template v-slot:activator="{ on }">
+                  <v-icon v-on="on" @click="toggleAll">{{
+                    toggled ? "expand_less" : "expand_more"
+                  }}</v-icon>
+                </template>
+                <span>
+                  Spiega tutto
+                </span>
+              </v-tooltip>
+              <span v-else>{{ props.header.text }}</span>
+            </template>
             <template v-slot:items="props">
               <tr class="grey lighten-4">
                 <td class="border-bottom-grey">
@@ -105,11 +118,14 @@
                 </td>
 
                 <td
+                  :ref="`expand-${props.item.id}`"
                   style="cursor: pointer;"
                   class="text-xs-right border-bottom-grey"
                   @click="props.expanded = !props.expanded"
                 >
-                  <v-icon>expand_more</v-icon>
+                  <v-icon>{{
+                    props.expanded ? "expand_less" : "expand_more"
+                  }}</v-icon>
                 </td>
               </tr>
             </template>
@@ -229,6 +245,7 @@ export default {
       numberRules2: [
         (v) => typeof v === "number" || "Per favore inserisci un numero",
       ],
+      toggled: false,
     };
   },
   watch: {
@@ -442,6 +459,15 @@ export default {
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
   methods: {
+    toggleAll() {
+      console.log("toggled", this.tables, this.toggled);
+      for (let index = 0; index < this.tables.length; index++) {
+        const element = this.tables[index];
+
+        this.$refs[`expand-${element.id}`].click();
+      }
+      this.toggled = !this.toggled;
+    },
     printElm() {
       // Get HTML to print from element
       const prtHtml = document.getElementById("print").innerHTML;
@@ -735,6 +761,9 @@ export default {
 </script>
 
 <style>
+th[aria-label=": Not sorted."] {
+  text-align: end;
+}
 .border-bottom-grey {
   border-bottom: 1px solid rgb(161, 161, 161);
 }
