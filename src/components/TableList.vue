@@ -46,7 +46,7 @@
                   }}</v-icon>
                 </template>
                 <span>
-                  Spiega tutto
+                  {{ toggled ? "Chiudi" : "Apri" }}
                 </span>
               </v-tooltip>
               <span v-else>{{ props.header.text }}</span>
