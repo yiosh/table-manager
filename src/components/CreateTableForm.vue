@@ -392,9 +392,10 @@ export default {
         name: textName,
         number,
         text: nomeCliente,
-        fontSize: 14,
+        fontSize: 13,
+        background: "white",
         fontFamily: "Poppins",
-        fontStyle: "bold",
+        // fontStyle: "bold",
         fill: borderColor,
         align: "center",
         verticalAlign: "middle",
@@ -475,9 +476,9 @@ export default {
       let guestCounters = {
         name: guestCounterName,
         text: "",
-        fontSize: 12,
+        fontSize: 11,
         fontFamily: "Poppins",
-        fontStyle: "bold",
+        // fontStyle: "bold",
         fill: borderColor,
         align: "center",
         verticalAlign: "middle",
@@ -757,10 +758,16 @@ export default {
         width: 100,
         height: 100,
         draggable: this.blockBoard == "0" ? true : false,
-        guestCounters,
-        nomeClienteText,
         table,
       };
+
+      if (Number(this.info.show_nome_tavolo_cliente) == 1) {
+        group.nomeClienteText = nomeClienteText;
+      }
+
+      if (Number(this.info.show_riepilogo_ospiti) == 1) {
+        group.guestCounters = guestCounters;
+      }
 
       // Add guest counters total once all calculations are done
       if (group) {

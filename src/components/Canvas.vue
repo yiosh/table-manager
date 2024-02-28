@@ -265,30 +265,58 @@ export default {
         const guests = this.$store.getters["guest/guests"](table.id);
 
         if (guests.length > 0) {
-          console.log("ev", ev);
+          // console.log("ev", ev);
           if (guests.length > 1) {
+            this.tooltipContainerConfig.height = (guests.length + 2) * 18;
+
             this.tooltipConfig.text = "";
             guests.forEach((g) => {
               this.tooltipConfig.text += `${
                 g.cognome && g.cognome != "null"
                   ? g.cognome.replace("null", "")
                   : ""
-              } ${g.nome ? g.nome.replace("null", "") : ""} A:${g.peoples} B:${
-                g.baby
+              } ${g.nome ? g.nome.replace("null", "") : ""} ${
+                this.info.peoples_letter ? this.info.peoples_letter : "A"
+              }:${g.peoples} ${
+                this.info.baby_letter ? this.info.baby_letter : "B"
+              }:${g.baby} ${
+                this.info.show_chairs_only != 0
+                  ? this.info.chairs_only_letter
+                    ? this.info.chairs_only_letter
+                    : "S" + ":" + g.chairs_only
+                  : ""
               } ${
-                this.info.show_chairs_only != 0 ? "S:" + g.chairs_only : ""
-              } ${this.info.show_high_chair != 0 ? "H:" + g.high_chair : ""}\n`;
+                this.info.show_high_chair != 0
+                  ? this.info.high_chair_letter
+                    ? this.info.high_chair_letter
+                    : "H" + ":" + g.high_chair
+                  : ""
+              }\n`;
             });
           } else {
             const g = guests[0];
+            this.tooltipContainerConfig.height = (guests.length + 2) * 18;
+
             this.tooltipConfig.text = `${
               g.cognome && g.cognome != "null"
                 ? g.cognome.replace("null", "")
                 : ""
-            } ${g.nome ? g.nome.replace("null", "") : ""} A:${g.peoples} B:${
-              g.baby
-            } ${this.info.show_chairs_only != 0 ? "S:" + g.chairs_only : ""} ${
-              this.info.show_high_chair != 0 ? "H:" + g.high_chair : ""
+            } ${g.nome ? g.nome.replace("null", "") : ""} ${
+              this.info.peoples_letter ? this.info.peoples_letter : "A"
+            }:${g.peoples} ${
+              this.info.baby_letter ? this.info.baby_letter : "B"
+            }:${g.baby} ${
+              this.info.show_chairs_only != 0
+                ? this.info.chairs_only_letter
+                  ? this.info.chairs_only_letter
+                  : "S" + ":" + g.chairs_only
+                : ""
+            } ${
+              this.info.show_high_chair != 0
+                ? this.info.high_chair_letter
+                  ? this.info.high_chair_letter
+                  : "H" + ":" + g.high_chair
+                : ""
             }`;
           }
         }
