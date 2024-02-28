@@ -164,7 +164,7 @@ export default {
           title: "Lista Esigenze Speciali",
           icon: "format_list_numbered",
           ref: "printguestneeds",
-          href: this.$store.state.info.print_tableau,
+          href: this.$store.state.info.print_guest_needs,
         });
       }
       if (this.$store.state.info.print_guest_list) {
@@ -172,7 +172,7 @@ export default {
           title: "Lista Ingresso",
           icon: "checklist",
           ref: "printguestlist",
-          href: this.$store.state.info.print_tableau,
+          href: this.$store.state.info.print_guest_list,
         });
       }
       if (this.$store.state.layout.evento_id !== "0") {
