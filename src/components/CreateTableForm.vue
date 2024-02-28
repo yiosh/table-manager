@@ -483,10 +483,11 @@ export default {
         align: "center",
         verticalAlign: "middle",
         rotation: angolare,
-        // offsetY: nomeCliente ? offsetY - size / 12 : offsetY - size / 4 + 7,
-        offsetY: -20,
-
-        // offsetX,
+        offsetY:
+          Number(this.info.show_riepilogo_ospiti) == 1 &&
+          Number(this.info.show_nome_tavolo_cliente) == 0
+            ? -7
+            : -20,
         offsetX: t.length + size / 2,
         counters: {
           people: 0,
