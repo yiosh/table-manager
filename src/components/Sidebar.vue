@@ -31,7 +31,7 @@
         <v-list-tile
           v-for="item in items"
           :key="item.title"
-          @click.stop="handleDialog(item.icon)"
+          @click.stop="handleDialog(item)"
         >
           <v-list-tile-action>
             <v-tooltip left slot="activator">
@@ -106,7 +106,7 @@ export default {
   },
   methods: {
     handleDialog(element) {
-      switch (element) {
+      switch (element.icon) {
         // case "people":
         //   if (this.$store.state.selectedGroup != null) {
         //     EventBus.$emit("guest-list-select");
@@ -123,6 +123,12 @@ export default {
         //     });
         //   }
         //   break;
+        case "format_list_numbered":
+          window.open(element.href, "_blank");
+          break;
+        case "checklist":
+          window.open(element.href, "_blank");
+          break;
         case "people":
           EventBus.$emit("table-resume-select");
           console.log("worked");
@@ -132,6 +138,9 @@ export default {
           break;
         case "print":
           EventBus.$emit("preview-select");
+          break;
+        case "fact_check":
+          window.open(element.href, "_blank");
           break;
       }
     },
@@ -149,19 +158,41 @@ export default {
         }
       }
 
-      this.items = [{ title: "Stampa", icon: "print", ref: "print" }];
+      this.items = [{ title: "Stampa Schema", icon: "print", ref: "print" }];
+      if (this.$store.state.info.print_guest_needs) {
+        this.items.unshift({
+          title: "Lista Esigenze Speciali",
+          icon: "format_list_numbered",
+          ref: "printguestneeds",
+          href: this.$store.state.info.print_tableau,
+        });
+      }
+      if (this.$store.state.info.print_guest_list) {
+        this.items.unshift({
+          title: "Lista Ingresso",
+          icon: "checklist",
+          ref: "printguestlist",
+          href: this.$store.state.info.print_tableau,
+        });
+      }
       if (this.$store.state.layout.evento_id !== "0") {
         this.items.unshift({
-          // title: "Guest List",
-          title: "Elenco delle tabelle",
+          title: "Elenco Tavoli",
           icon: "list",
           ref: "tablelist",
         });
         this.items.unshift({
-          // title: "Guest List",
-          title: "Report",
+          title: "Report Ospiti",
           icon: "people",
           ref: "guestlist",
+        });
+      }
+      if (this.$store.state.info.print_tableau) {
+        this.items.push({
+          title: "Stampa Cavalieri",
+          icon: "fact_check",
+          ref: "printtableau",
+          href: this.$store.state.info.print_tableau,
         });
       }
     });
