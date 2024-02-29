@@ -490,7 +490,9 @@ export default {
       });
       return total;
     },
-
+    guestsFromTable() {
+      return this.guests(this.tableId);
+    },
     ...mapState(["guest"]),
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
@@ -555,31 +557,31 @@ export default {
       }
       let totalPasti = 0;
       let totalPeople = 0;
+      let maxReached = false;
       for (const guest of guests) {
         totalPeople += Number(guest.baby);
         totalPeople += Number(guest.chairs_only);
         totalPeople += Number(guest.high_chair);
         totalPeople += Number(guest.peoples);
 
-        if (this.placeholderLabels.menu1) {
+        if (this.info.show_tables_menu == 1) {
           totalPasti += Number(guest.menu1);
           totalPasti += Number(guest.menu2);
           totalPasti += Number(guest.menu3);
           totalPasti += Number(guest.menu4);
         }
       }
-      if (this.placeholderLabels.menu1) {
-        console.log("w", totalPasti, totalPeople);
-        if (totalPeople > maxSeats || totalPasti > maxSeats) {
-          console.log("went too far", totalPasti, totalPeople);
-          return true;
-        } else {
-          console.log("ok", totalPasti, totalPeople);
-          return false;
+      if (this.info.show_tables_menu == 1) {
+        if (totalPasti > maxSeats) {
+          maxReached = true;
         }
       }
 
       if (totalPeople > maxSeats) {
+        maxReached = true;
+      }
+
+      if (maxReached) {
         return true;
       } else {
         return false;
