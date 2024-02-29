@@ -312,16 +312,46 @@ export default {
       let maxReached = false;
 
       for (const guest of guests) {
-        totalPeople += Number(guest.baby);
-        totalPeople += Number(guest.chairs_only);
-        totalPeople += Number(guest.high_chair);
-        totalPeople += Number(guest.peoples);
+        const sumPeople =
+          Number(guest.baby) +
+          Number(guest.chairs_only) +
+          Number(guest.high_chair) +
+          Number(guest.peoples);
+        totalPeople += sumPeople;
+        // console.log(
+        //   "sumPeople",
+        //   sumPeople,
+        //   this.info.max_seats_each_row,
+        //   guest
+        // );
+        if (sumPeople > Number(this.info.max_seats_each_row)) {
+          maxReached = true;
+        }
+        // totalPeople += Number(guest.baby);
+        // totalPeople += Number(guest.chairs_only);
+        // totalPeople += Number(guest.high_chair);
+        // totalPeople += Number(guest.peoples);
 
         if (this.info.show_tables_menu == 1) {
-          totalPasti += Number(guest.menu1);
-          totalPasti += Number(guest.menu2);
-          totalPasti += Number(guest.menu3);
-          totalPasti += Number(guest.menu4);
+          const sumMenus =
+            Number(guest.menu1) +
+            Number(guest.menu2) +
+            Number(guest.menu3) +
+            Number(guest.menu4);
+          totalPasti += sumMenus;
+          // console.log(
+          //   "sumMenus",
+          //   sumMenus,
+          //   this.info.max_seats_each_row,
+          //   guest
+          // );
+          if (sumMenus > Number(this.info.max_seats_each_row)) {
+            maxReached = true;
+          }
+          // totalPasti += Number(guest.menu1);
+          // totalPasti += Number(guest.menu2);
+          // totalPasti += Number(guest.menu3);
+          // totalPasti += Number(guest.menu4);
         }
       }
       if (this.info.show_tables_menu == 1) {
@@ -355,7 +385,7 @@ export default {
       console.log("guest", guest);
       // guest.table_id = this.tableId;
       console.log("up", guest);
-      console.log("isItMax", this.maxSeatsCheck(guest));
+      // console.log("isItMax", this.maxSeatsCheck(guest));
       if (this.maxSeatsCheck(guest)) {
         const notification = {
           type: "error",
@@ -366,7 +396,7 @@ export default {
         this.$store.dispatch("notification/add", notification, { root: true });
         return;
       }
-      console.log("isItMax", this.maxSeatsCheck(guest));
+      // console.log("isItMax", this.maxSeatsCheck(guest));
       if (guest.note_intolleranze != "") {
         const payload = {
           tableId: this.tableId,
@@ -399,51 +429,50 @@ export default {
       }
       //
     },
-    maxSeatsCheck(newGuest) {
-      if (Number(this.tableId) != Number(newGuest.table_id)) {
-        return false;
-      }
-      console.log("guest", newGuest);
-      const maxSeats = Number(this.maxSeats);
-      let guests = JSON.parse(JSON.stringify(this.guests(this.tableId)));
-      const index = guests.findIndex((guest) => guest.id === newGuest.id);
-      if (index !== -1) {
-        guests[index] = Object.assign({}, newGuest);
-      } else {
-        guests.push(newGuest);
-      }
-      let totalPasti = 0;
-      let totalPeople = 0;
-      for (const guest of guests) {
-        totalPeople += Number(guest.baby);
-        totalPeople += Number(guest.chairs_only);
-        totalPeople += Number(guest.high_chair);
-        totalPeople += Number(guest.peoples);
+    // maxSeatsCheck(newGuest) {
+    //   if (Number(this.tableId) != Number(newGuest.table_id)) {
+    //     return false;
+    //   }
+    //   console.log("guest", newGuest);
+    //   const maxSeats = Number(this.maxSeats);
+    //   let guests = JSON.parse(JSON.stringify(this.guests(this.tableId)));
+    //   const index = guests.findIndex((guest) => guest.id === newGuest.id);
+    //   if (index !== -1) {
+    //     guests[index] = Object.assign({}, newGuest);
+    //   } else {
+    //     guests.push(newGuest);
+    //   }
+    //   let totalPasti = 0;
+    //   let totalPeople = 0;
+    //   for (const guest of guests) {
+    //     totalPeople += Number(guest.baby);
+    //     totalPeople += Number(guest.chairs_only);
+    //     totalPeople += Number(guest.high_chair);
+    //     totalPeople += Number(guest.peoples);
 
-        if (this.placeholderLabels.menu1) {
-          totalPasti += Number(guest.menu1);
-          totalPasti += Number(guest.menu2);
-          totalPasti += Number(guest.menu3);
-          totalPasti += Number(guest.menu4);
-        }
-      }
-      if (this.placeholderLabels.menu1) {
-        console.log("w", totalPasti, totalPeople);
-        if (totalPeople > maxSeats || totalPasti > maxSeats) {
-          console.log("went too far", totalPasti, totalPeople);
-          return true;
-        } else {
-          console.log("ok", totalPasti, totalPeople);
-          return false;
-        }
-      }
+    //     if (this.placeholderLabels.menu1) {
+    //       totalPasti += Number(guest.menu1);
+    //       totalPasti += Number(guest.menu2);
+    //       totalPasti += Number(guest.menu3);
+    //       totalPasti += Number(guest.menu4);
+    //     }
+    //   }
+    //   if (this.placeholderLabels.menu1) {
+    //     if (totalPeople > maxSeats || totalPasti > maxSeats) {
+    //       console.log("went too far", totalPasti, totalPeople);
+    //       return true;
+    //     } else {
+    //       console.log("ok", totalPasti, totalPeople);
+    //       return false;
+    //     }
+    //   }
 
-      if (totalPeople > maxSeats) {
-        return true;
-      } else {
-        return false;
-      }
-    },
+    //   if (totalPeople > maxSeats) {
+    //     return true;
+    //   } else {
+    //     return false;
+    //   }
+    // },
   },
 };
 </script>

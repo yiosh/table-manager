@@ -559,16 +559,47 @@ export default {
       let totalPeople = 0;
       let maxReached = false;
       for (const guest of guests) {
-        totalPeople += Number(guest.baby);
-        totalPeople += Number(guest.chairs_only);
-        totalPeople += Number(guest.high_chair);
-        totalPeople += Number(guest.peoples);
+        const sumPeople =
+          Number(guest.baby) +
+          Number(guest.chairs_only) +
+          Number(guest.high_chair) +
+          Number(guest.peoples);
+        totalPeople += sumPeople;
+        if (sumPeople > Number(this.info.max_seats_each_row)) {
+          // console.log(
+          //   "sumPeople",
+          //   sumPeople,
+          //   this.info.max_seats_each_row,
+          //   guest
+          // );
+
+          maxReached = true;
+        }
+        // totalPeople += Number(guest.baby);
+        // totalPeople += Number(guest.chairs_only);
+        // totalPeople += Number(guest.high_chair);
+        // totalPeople += Number(guest.peoples);
 
         if (this.info.show_tables_menu == 1) {
-          totalPasti += Number(guest.menu1);
-          totalPasti += Number(guest.menu2);
-          totalPasti += Number(guest.menu3);
-          totalPasti += Number(guest.menu4);
+          const sumMenus =
+            Number(guest.menu1) +
+            Number(guest.menu2) +
+            Number(guest.menu3) +
+            Number(guest.menu4);
+          totalPasti += sumMenus;
+          if (sumMenus > Number(this.info.max_seats_each_row)) {
+            // console.log(
+            //   "sumMenus",
+            //   sumMenus,
+            //   this.info.max_seats_each_row,
+            //   guest
+            // );
+            maxReached = true;
+          }
+          // totalPasti += Number(guest.menu1);
+          // totalPasti += Number(guest.menu2);
+          // totalPasti += Number(guest.menu3);
+          // totalPasti += Number(guest.menu4);
         }
       }
       if (this.info.show_tables_menu == 1) {
@@ -635,7 +666,7 @@ export default {
       console.log("guest", guest);
       // guest.table_id = this.editedItem.table_id;
       console.log("up", guest);
-      console.log("isItMax", this.maxSeatsCheck(guest));
+      // console.log("isItMax", this.maxSeatsCheck(guest));
       if (this.maxSeatsCheck(guest)) {
         const notification = {
           type: "error",
@@ -646,7 +677,7 @@ export default {
         this.$store.dispatch("notification/add", notification, { root: true });
         return;
       }
-      console.log("isItMax", this.maxSeatsCheck(guest));
+      // console.log("isItMax", this.maxSeatsCheck(guest));
       if (guest.note_intolleranze != "") {
         const payload = {
           tableId: this.tableId,
