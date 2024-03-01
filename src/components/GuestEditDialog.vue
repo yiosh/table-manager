@@ -372,6 +372,23 @@ export default {
     },
     save() {
       let guest = Object.assign({}, this.editedItem);
+
+      // CHECK IF THERE IS ATLEAST ONE GUEST
+      const sumPeople =
+        Number(guest.baby) +
+        Number(guest.chairs_only) +
+        Number(guest.high_chair) +
+        Number(guest.peoples);
+
+      if (sumPeople < 1) {
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message: "È necessario che almeno un ospite sia aggiunto al tavolo",
+        };
+        this.$store.dispatch("notification/add", notification, { root: true });
+        return;
+      }
       if (this.maxSeatsCheck(guest)) {
         const notification = {
           type: "error",
@@ -382,10 +399,7 @@ export default {
         this.$store.dispatch("notification/add", notification, { root: true });
         return;
       }
-      console.log("guest", guest);
-      // guest.table_id = this.tableId;
-      console.log("up", guest);
-      // console.log("isItMax", this.maxSeatsCheck(guest));
+
       if (this.maxSeatsCheck(guest)) {
         const notification = {
           type: "error",
@@ -396,7 +410,6 @@ export default {
         this.$store.dispatch("notification/add", notification, { root: true });
         return;
       }
-      // console.log("isItMax", this.maxSeatsCheck(guest));
       if (guest.note_intolleranze != "") {
         const payload = {
           tableId: this.tableId,
