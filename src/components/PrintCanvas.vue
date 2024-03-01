@@ -44,14 +44,14 @@ export default {
         close: "Close",
         print: "Print",
         download_png: "Download PNG",
-        download_jpg: "Download JPG"
+        download_jpg: "Download JPG",
       },
       labels: {
         close: "Chiudi",
         print: "Stampa",
         download_png: "Scarica PNG",
-        download_jpg: "Scarica JPG"
-      }
+        download_jpg: "Scarica JPG",
+      },
     };
   },
   computed: {
@@ -68,11 +68,12 @@ export default {
         url = this.$store.state.layout.mappa;
       }
       return url;
-    }
+    },
   },
   methods: {
     previewCanvas() {
       let dataURL = this.$store.state.stage.toDataURL({ pixelRatio: 1 });
+
       this.src = dataURL;
     },
     downloadURI(uri, name) {
@@ -98,10 +99,18 @@ export default {
           "setTimeout('step2()', 10);}\n" +
           "function step2(){window.print();window.close()}\n" +
           "</scri" +
-          `pt></head><body style="background-image: url(${this.backgroundImageUrl});" onload='step1()'>\n` +
-          "<img src='" +
-          source +
-          "' /></body></html>"
+          `pt></head><body style="background-image: url(${
+            this.backgroundImageUrl
+          }); ${
+            this.$store.state.layout.orientation == 1
+              ? "height: 1100px; width: 800px;"
+              : ""
+          }" onload='step1()'>\n` +
+          `<img src="${source}" ${
+            this.$store.state.layout.orientation == 1
+              ? 'style="height:1100px"'
+              : ""
+          } /></body></html>`
         );
       } else {
         return (
@@ -109,10 +118,16 @@ export default {
           "setTimeout('step2()', 10);}\n" +
           "function step2(){window.print();window.close()}\n" +
           "</scri" +
-          `pt></head><body onload='step1()'>\n` +
-          "<img src='" +
-          source +
-          "' /></body></html>"
+          `pt></head><body ${
+            this.$store.state.layout.orientation == 1
+              ? 'style="height: 1100px; width: 800px;"'
+              : ""
+          } onload='step1()'>\n` +
+          `<img src="${source}" ${
+            this.$store.state.layout.orientation == 1
+              ? 'style="height:1100px"'
+              : ""
+          } /></body></html>`
         );
       }
     },
@@ -121,7 +136,7 @@ export default {
       pwa.document.open();
       pwa.document.write(this.ImagetoPrint(source));
       pwa.document.close();
-    }
+    },
   },
   created() {
     // EventBus.$on("fetch-done", () => {
@@ -148,7 +163,7 @@ export default {
       this.previewCanvas();
       this.dialog = true;
     });
-  }
+  },
 };
 </script>
 
