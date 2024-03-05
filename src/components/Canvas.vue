@@ -262,7 +262,9 @@ export default {
         const group = ev.target.parent.attrs;
         const table = group.table;
 
-        const guests = this.$store.getters["guest/guests"](table.id);
+        const guests = table
+          ? this.$store.getters["guest/guests"](table.id)
+          : [];
 
         if (guests.length > 0) {
           // console.log("ev", ev);

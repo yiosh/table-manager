@@ -67,6 +67,45 @@
                 <td class="border-all">{{ props.item.note_intolleranze }}</td>
               </tr>
             </template>
+            <template v-slot:footer>
+              <!-- table_name: "TOTALE",
+          tot_seats: 0,
+          tot_peoples: 0,
+          tot_baby: 0,
+          tot_chairs_only: 0,
+          tot_high_chair: 0,
+          tot_menu_speciali: 0, -->
+              <td class="border-all">
+                {{ tablesTotal.table_name }}
+              </td>
+              <td class="border-all"></td>
+              <td class="border-all">
+                <strong>{{
+                  info.show_tables_menu == 1
+                    ? tablesTotal.tot_seats
+                    : tablesTotal.tot_seats
+                }}</strong>
+              </td>
+              <td class="border-all">
+                <strong>{{ tablesTotal.tot_peoples }}</strong>
+              </td>
+              <td class="border-all">
+                <strong>{{ tablesTotal.tot_baby }}</strong>
+              </td>
+              <td v-if="info.show_chairs_only != 0" class="border-all">
+                <strong>{{ tablesTotal.tot_chairs_only }}</strong>
+              </td>
+              <td v-if="info.show_high_chair != 0" class="border-all">
+                <strong>{{ tablesTotal.tot_high_chair }}</strong>
+              </td>
+              <template v-if="info.show_tables_menu == 1">
+                <td class="border-all">
+                  <strong>{{ tablesTotal_menu_speciali }}</strong>
+                </td>
+              </template>
+
+              <td class="border-all"></td>
+            </template>
           </v-data-table>
         </v-card-text>
       </v-card>
@@ -165,6 +204,15 @@ export default {
         (v) => typeof v === "number" || "Per favore inserisci un numero",
       ],
       items: [],
+      tablesTotal: {
+        table_name: "TOTALE",
+        tot_seats: 0,
+        tot_peoples: 0,
+        tot_baby: 0,
+        tot_chairs_only: 0,
+        tot_high_chair: 0,
+        tot_menu_speciali: 0,
+      },
     };
   },
   watch: {
@@ -344,7 +392,7 @@ export default {
         {
           placeholder: "table_name",
           text: "Numero tavolo",
-          value: "table_name",
+          value: "table_number",
         },
         {
           placeholder: "nome_cliente",
@@ -524,7 +572,7 @@ export default {
           }
         }
 
-        tables.push({
+        this.tablesTotal = {
           table_name: "TOTALE",
           tot_seats: totSeats,
           tot_peoples: totPeoples,
@@ -532,7 +580,7 @@ export default {
           tot_chairs_only: totChairsOnly,
           tot_high_chair: totHighChair,
           tot_menu_speciali: totMenuSpeciali,
-        });
+        };
         this.items = tables;
       } catch (error) {
         console.log("resumeerror", error);

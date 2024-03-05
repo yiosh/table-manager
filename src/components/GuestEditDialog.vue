@@ -75,7 +75,7 @@
                   </v-toolbar>
                 </v-flex>
 
-                <v-flex xs12 sm6 md3>
+                <v-flex v-if="placeholderLabels.menu1" xs12 sm6 md3>
                   <v-text-field
                     v-model.number="editedItem.menu1"
                     :rules="numberRules"
@@ -83,7 +83,7 @@
                   ></v-text-field>
                 </v-flex>
 
-                <v-flex xs12 sm6 md3>
+                <v-flex v-if="placeholderLabels.menu2" xs12 sm6 md3>
                   <v-text-field
                     v-model.number="editedItem.menu2"
                     :rules="numberRules"
@@ -91,7 +91,7 @@
                   ></v-text-field>
                 </v-flex>
 
-                <v-flex xs12 sm6 md3>
+                <v-flex v-if="placeholderLabels.menu3" xs12 sm6 md3>
                   <v-text-field
                     v-model.number="editedItem.menu3"
                     :rules="numberRules"
@@ -99,7 +99,7 @@
                   ></v-text-field>
                 </v-flex>
 
-                <v-flex xs12 sm6 md3>
+                <v-flex v-if="placeholderLabels.menu4" xs12 sm6 md3>
                   <v-text-field
                     type="number"
                     v-model.number="editedItem.menu4"

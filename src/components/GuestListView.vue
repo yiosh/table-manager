@@ -70,10 +70,10 @@
           </td>
           <td v-if="info.show_high_chair != 0">{{ props.item.high_chair }}</td>
           <template v-if="info.show_tables_menu != 0">
-            <td>{{ props.item.menu1 }}</td>
-            <td>{{ props.item.menu2 }}</td>
-            <td>{{ props.item.menu3 }}</td>
-            <td>{{ props.item.menu4 }}</td>
+            <td v-if="info.menu1">{{ props.item.menu1 }}</td>
+            <td v-if="info.menu2">{{ props.item.menu2 }}</td>
+            <td v-if="info.menu3">{{ props.item.menu3 }}</td>
+            <td v-if="info.menu4">{{ props.item.menu4 }}</td>
           </template>
 
           <td>{{ props.item.note_intolleranze }}</td>
@@ -379,24 +379,36 @@ export default {
         indexAdded++;
       }
       if (this.info.show_tables_menu != 0) {
-        let toAdd = [
-          {
+        let toAdd = [];
+
+        if (this.info.menu1) {
+          toAdd.push({
             placeholder: "noglutine",
             text: this.info.menu1,
             value: "menu1",
-          },
-          {
+          });
+        }
+        if (this.info.menu2) {
+          toAdd.push({
             placeholder: "nolattosio",
             text: this.info.menu2,
             value: "menu2",
-          },
-          { placeholder: "vegano", text: this.info.menu3, value: "menu3" },
-          {
+          });
+        }
+        if (this.info.menu3) {
+          toAdd.push({
+            placeholder: "vegano",
+            text: this.info.menu3,
+            value: "menu3",
+          });
+        }
+        if (this.info.menu4) {
+          toAdd.push({
             placeholder: "vegetariano",
             text: this.info.menu4,
             value: "menu4",
-          },
-        ];
+          });
+        }
         arr = arr.slice(0, indexAdded).concat(toAdd, arr.slice(indexAdded));
       }
       return arr;
