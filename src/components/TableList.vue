@@ -34,10 +34,11 @@
             :headers="headers"
             :items="tables"
             :search="search"
-            :pagination.sync="pagination"
             hide-actions
             :expand="true"
+            disable-initial-sort
           >
+            <!-- :pagination.sync="pagination" -->
             <template slot="headerCell" slot-scope="props">
               <v-tooltip v-if="props.header.value == 'toggle'" bottom>
                 <template v-slot:activator="{ on }">
@@ -158,14 +159,14 @@ export default {
     return {
       pagination: {
         rowsPerPage: -1,
-        sortBy: "text",
+        // sortBy: "text",
       },
 
       expanded: [],
       search: "",
       pagination: {
-        sortBy: "id",
-        descending: true,
+        // sortBy: "id",
+        // descending: true,
         rowsPerPage: -1,
       },
       nome_tavolo_cliente: null,
