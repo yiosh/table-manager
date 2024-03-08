@@ -380,12 +380,13 @@ export const actions = {
     TMService.updateTable(payload)
       .then((response) => {
         if (response.data.esito) {
-          commit("UPDATE_TABLE", payload);
+          // commit("UPDATE_TABLE", payload);
 
           const notification = {
             type: "success",
             message: response.data.info_txt,
           };
+          dispatch("getTables", rootState.layout.id);
           dispatch("notification/add", notification, { root: true });
           EventBus.$emit("data-updated");
           return true;

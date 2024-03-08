@@ -379,6 +379,7 @@ export default {
       // ) {
       this.$store.dispatch("table/updateTable", updatedItem);
       this.defaultItem = Object.assign({}, updatedItem);
+      this.removeTransform();
       // this.$store.state.stage.draw();
       // }
       this.dialog = false;
@@ -394,6 +395,17 @@ export default {
         this.$store.dispatch("table/deleteTable", item);
       }
       this.dialog = false;
+    },
+    removeTransform() {
+      const { stage } = this.$store.state;
+      // if click on empty area - remove all transformers
+      if (this.$store.state.selectedGroup != null) {
+        this.$store.dispatch("selectGroup", null);
+        stage.find("Transformer").destroy();
+        stage.draw();
+        EventBus.$emit("table-unselect");
+        return;
+      }
     },
   },
   mounted() {

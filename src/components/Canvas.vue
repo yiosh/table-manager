@@ -227,6 +227,9 @@ export default {
 
       return url;
     },
+    selectedGroup() {
+      return this.$store.state.selectedGroup;
+    },
     ...mapGetters({
       guestTotalsV2: "guest/guestTotalsV2",
       tableGroups: "table/getGroups",
@@ -346,12 +349,14 @@ export default {
       let { table, x, y } = e.target.attrs;
       let tableId = table.id;
       let layoutId = this.$store.state.layout.id;
+      let endpoint =
+        location.hostname !== "localhost" ? "tables-v3" : "tables-dev";
 
       try {
         const response = await axios.get(
           `https://${
             this.hostname
-          }/fl_api/tables-v3/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
+          }/fl_api/${endpoint}/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
         );
         console.log(response);
       } catch (error) {
@@ -391,8 +396,9 @@ export default {
       const { stage } = this.$store.state;
       // if click on empty area - remove all transformers
       if (e.target === stage) {
-        if (this.$store.state.selectedGroup != null) {
+        if (this.selectedGroup != null) {
           this.$store.dispatch("selectGroup", null);
+          // this.selectedTable = null;
           stage.find("Transformer").destroy();
           stage.draw();
           EventBus.$emit("table-unselect");
@@ -441,6 +447,11 @@ export default {
     },
   },
   watch: {
+    selectedGroup() {
+      if (this.selectedGroup == null) {
+        this.selectedTable = null;
+      }
+    },
     orientation() {
       if (this.orientation == 1) {
         this.backgroundConfig.height = 1200;

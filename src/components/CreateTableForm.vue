@@ -806,11 +806,51 @@ export default {
         payload.details = details;
       }
       this.$store.dispatch("table/addTable", payload);
+      this.removeTransform();
       this.dialog = false;
+    },
+    removeTransform() {
+      const { stage } = this.$store.state;
+      // if click on empty area - remove all transformers
+      if (this.$store.state.selectedGroup != null) {
+        this.$store.dispatch("selectGroup", null);
+        stage.find("Transformer").destroy();
+        stage.draw();
+        EventBus.$emit("table-unselect");
+        return;
+      }
     },
   },
 
   created() {
+    EventBus.$on("duplicate-table", (id) => {
+      let tablesFetched = this.table.tablesFetched;
+      let tableGuests = [];
+      let payload = tablesFetched.find((t) => t.id == id);
+      if (payload) {
+        this.createTable(
+          payload.table_name,
+          Number(payload.table_number) + 1,
+          payload.nome_cliente,
+          Number(payload.size),
+          Number(payload.scale_x),
+          Number(payload.scale_y),
+          tableTypeParser(payload.type_id),
+          payload.id,
+          Number(payload.x) + 5,
+          Number(payload.y),
+          Number(payload.angolare),
+          true,
+          tableGuests,
+          `#${payload.border_color}`,
+          `#${payload.background_color}`,
+          payload.border_type,
+          payload.max_seats,
+          payload.note_tavolo
+        );
+      }
+    });
+
     EventBus.$on("fetch-done", () => {
       let tablesFetched = this.table.tablesFetched;
       let tablesFetchedLength = tablesFetched.length;
