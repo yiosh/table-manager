@@ -304,7 +304,7 @@ export const actions = {
         console.log(error);
       });
   },
-  addTable({ commit, dispatch }, payload) {
+  addTable({ commit, dispatch, rootState }, payload) {
     if (payload.isNew === true) {
       console.log("payload", payload);
       TMService.addTable(payload.details)
@@ -312,6 +312,7 @@ export const actions = {
           console.log("response", response);
           if (response.data.esito) {
             payload.group.table.id = response.data.dati.id;
+            dispatch("getTables", rootState.layout.id);
 
             const notification = {
               type: "success",
@@ -338,17 +339,19 @@ export const actions = {
           dispatch("notification/add", notification, { root: true });
           console.log(error);
         });
+    } else {
+      commit("ADD_TABLE", payload.group);
     }
-    commit("ADD_TABLE", payload.group);
     if (state.counter == state.tablesFetched.length) {
       dispatch("endProgress", null, { root: true });
     }
   },
-  deleteTable({ state, commit, dispatch }, table) {
+  deleteTable({ state, commit, dispatch, rootState }, table) {
     TMService.deleteTable({ layoutId: table.layoutId, tableId: table.id })
       .then((response) => {
         if (response.data.esito) {
-          commit("DELETE_TABLE", table.id);
+          // commit("DELETE_TABLE", table.id);
+          dispatch("getTables", rootState.layout.id);
 
           const notification = {
             type: "success",

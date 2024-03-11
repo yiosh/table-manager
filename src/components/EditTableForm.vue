@@ -393,6 +393,7 @@ export default {
           id: this.editedItem.id,
         };
         this.$store.dispatch("table/deleteTable", item);
+        this.removeTransform();
       }
       this.dialog = false;
     },
