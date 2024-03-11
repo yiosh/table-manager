@@ -100,7 +100,7 @@
               </td>
               <template v-if="info.show_tables_menu == 1">
                 <td class="border-all">
-                  <strong>{{ tablesTotal.menu_speciali }}</strong>
+                  <strong>{{ tablesTotal.tot_menu_speciali }}</strong>
                 </td>
               </template>
 
