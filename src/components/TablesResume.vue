@@ -571,6 +571,9 @@ export default {
             totMenuSpeciali += Number(element.tot_menu_speciali);
           }
         }
+        if (this.info.show_tables_menu == 1) {
+          totSeats += totMenuSpeciali;
+        }
 
         this.tablesTotal = {
           table_name: "TOTALE",
