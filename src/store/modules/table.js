@@ -346,6 +346,52 @@ export const actions = {
       dispatch("endProgress", null, { root: true });
     }
   },
+  duplicateTable({ commit, dispatch, rootState }, payload) {
+    if (payload.isNew === true) {
+      console.log("payload", payload);
+      let form = JSON.parse(JSON.stringify(payload.details));
+      form.scaleX = payload.group.table.tableConfig.scaleX;
+      form.scaleY = payload.group.table.tableConfig.scaleY;
+
+      TMService.duplicateTable(form)
+        .then((response) => {
+          console.log("response", response);
+          if (response.data.esito) {
+            payload.group.table.id = response.data.dati.id;
+            dispatch("getTables", rootState.layout.id);
+
+            const notification = {
+              type: "success",
+              message: response.data.info_txt,
+            };
+            dispatch("notification/add", notification, { root: true });
+            EventBus.$emit("data-updated");
+          } else {
+            const notification = {
+              type: "error",
+              message: response.data.info_txt,
+            };
+            dispatch("notification/add", notification, { root: true });
+            return false;
+          }
+        })
+        .catch(function(error) {
+          const notification = {
+            type: "success",
+            message:
+              "Si è verificato un problema durante l'aggiunta del tavolo: " +
+              error.message,
+          };
+          dispatch("notification/add", notification, { root: true });
+          console.log(error);
+        });
+    } else {
+      commit("ADD_TABLE", payload.group);
+    }
+    if (state.counter == state.tablesFetched.length) {
+      dispatch("endProgress", null, { root: true });
+    }
+  },
   deleteTable({ state, commit, dispatch, rootState }, table) {
     TMService.deleteTable({ layoutId: table.layoutId, tableId: table.id })
       .then((response) => {

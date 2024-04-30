@@ -73,6 +73,40 @@ export default {
       `${endpoint}insert_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}&max_seats=${maxSeats}&note_tavolo=${noteCliente}`
     );
   },
+  duplicateTable({
+    layoutId,
+    typeId,
+    tableName,
+    tableNumber,
+    tableGroup,
+    size,
+    x,
+    y,
+    angolare,
+    nomeCliente,
+    borderColor,
+    backgroundColor,
+    borderType,
+    maxSeats,
+    noteCliente,
+    scaleX,
+    scaleY,
+  }) {
+    console.log("back", backgroundColor, "border", borderColor);
+    borderColor = borderColor.replace("#", "");
+    backgroundColor = backgroundColor.replace("#", "");
+
+    let params = `duplicate_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}&max_seats=${maxSeats}&note_tavolo=${noteCliente}`;
+
+    if (scaleX) {
+      params += `&scale_x=${scaleX}`;
+    }
+    if (scaleY) {
+      params += `&scale_y=${scaleY}`;
+    }
+
+    return apiClient.get(`${endpoint}${params}`);
+  },
   updateTable({
     layoutId,
     id,
