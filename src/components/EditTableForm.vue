@@ -385,9 +385,9 @@ export default {
       this.dialog = false;
     },
     remove() {
-      let answer = confirm("You sure you want to remove this table?");
+      let answer = confirm("Sei sicuro di voler rimuovere questo tavolo?");
       console.log("Confirm", answer);
-      if (confirm) {
+      if (answer) {
         let item = {
           layoutId: this.$store.state.layout.id,
           id: this.editedItem.id,
