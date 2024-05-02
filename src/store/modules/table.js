@@ -19,6 +19,9 @@ export const state = {
 };
 
 export const mutations = {
+  UPDATE_GROUPS(state, payload) {
+    state.groups = payload;
+  },
   GET_TABLES(state, payload) {
     state.groups = [];
     state.tablesFetched = [];

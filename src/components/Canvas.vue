@@ -10,7 +10,7 @@
     <Toolbar></Toolbar>
     <v-stage
       :style="{ backgroundImage: `url(${stageBackground})` }"
-      @click="stageClick"
+      @click.self="stageClick"
       ref="stage"
       :config="stageConfig"
     >
@@ -19,13 +19,14 @@
           v-if="imageSrc"
           ref="background"
           :config="backgroundConfig"
-          @click="stageClick"
+          @click.self="stageClick"
         ></v-rect>
+        <!-- @click="stageClick" -->
         <v-group
           :ref="group.name"
           @click="tableSelect(group.name)"
           @dragend="moveTable"
-          @dragstart="handleMouseOut"
+          @dragstart="handleDragStart"
           @mousemove="handleMouseMove"
           @mouseout="handleMouseOut"
           v-for="group in tableGroups"
@@ -120,7 +121,7 @@
 import axios from "axios";
 import Toolbar from "./Toolbar";
 import { EventBus } from "../event-bus.js";
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 
 export default {
   name: "Canvas",
@@ -186,6 +187,8 @@ export default {
       x: 10,
       y: 10,
     },
+    groupsBackup: null,
+    tablesBackup: null,
   }),
   computed: {
     info() {
@@ -233,14 +236,23 @@ export default {
     ...mapGetters({
       guestTotalsV2: "guest/guestTotalsV2",
       tableGroups: "table/getGroups",
+      tablesFetched: "table/getTables",
       stageConfig: "getStageConfig",
       orientation: "getOrientation",
       hostname: "getHostname",
       printTitle: "getPrintTitle",
       loading: "getLoading",
     }),
+    ...mapState("table", {
+      groups: (state) => state.groups,
+    }),
   },
   methods: {
+    handleDragStart() {
+      this.tooltipConfig.text = null;
+      this.groupsBackup = JSON.parse(JSON.stringify(this.tableGroups));
+      this.tablesBackup = JSON.parse(JSON.stringify(this.tablesFetched));
+    },
     handleMouseOut() {
       this.tooltipConfig.text = null;
     },
@@ -346,9 +358,38 @@ export default {
       EventBus.$emit("guest-list-select");
     },
     async moveTable(e) {
-      let { table, x, y } = e.target.attrs;
-      let tableId = table.id;
+      // dispatch("getTables", rootState.layout.id);
+      const stageWidth = this.stageConfig.width;
+      const stageHeight = this.stageConfig.height;
       let layoutId = this.$store.state.layout.id;
+
+      let { table, x, y } = e.target.attrs;
+      if (x < 0 || x > stageWidth) {
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message: "Impossibile spostare il tavolo fuori dai limiti",
+        };
+        this.$store.dispatch("notification/add", notification, { root: true });
+        this.$store.commit("table/UPDATE_GROUPS", []);
+        EventBus.$emit("fetch-done");
+        return;
+      }
+
+      if (y < 0 || y > stageHeight) {
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message: "Impossibile spostare il tavolo fuori dai limiti",
+        };
+        this.$store.dispatch("notification/add", notification, { root: true });
+        this.$store.commit("table/UPDATE_GROUPS", []);
+
+        EventBus.$emit("fetch-done");
+        return;
+      }
+      let tableId = table.id;
+
       let endpoint =
         location.hostname !== "localhost" ? "tables-v3" : "tables-dev";
 
@@ -394,8 +435,9 @@ export default {
     },
     stageClick(e) {
       const { stage } = this.$store.state;
+      console.log("stageClick", e);
       // if click on empty area - remove all transformers
-      if (e.target === stage) {
+      if (e.target === stage || e.target.index == 0) {
         if (this.selectedGroup != null) {
           this.$store.dispatch("selectGroup", null);
           // this.selectedTable = null;
