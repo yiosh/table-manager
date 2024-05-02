@@ -19,6 +19,11 @@ export const state = {
 };
 
 export const mutations = {
+  UPDATE_TABLE(state, payload) {
+    let tableIndex = state.tablesFetched.findIndex((t) => t.id == payload.id);
+    state.tablesFetched[tableIndex].x = payload.payload.x;
+    state.tablesFetched[tableIndex].y = payload.payload.y;
+  },
   UPDATE_GROUPS(state, payload) {
     state.groups = payload;
   },

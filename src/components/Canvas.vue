@@ -399,6 +399,8 @@ export default {
             this.hostname
           }/fl_api/${endpoint}/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
         );
+        this.$store.dispatch("table/getTables", layoutId);
+
         console.log(response);
       } catch (error) {
         console.log(error);
