@@ -34,16 +34,30 @@
             :headers="headers"
             :items="tables"
             :search="search"
-            :pagination.sync="pagination"
             hide-actions
             :expand="true"
+            disable-initial-sort
           >
+            <!-- :pagination.sync="pagination" -->
+            <template slot="headerCell" slot-scope="props">
+              <v-tooltip v-if="props.header.value == 'toggle'" bottom>
+                <template v-slot:activator="{ on }">
+                  <v-icon v-on="on" @click="toggleAll">{{
+                    toggled ? "expand_less" : "expand_more"
+                  }}</v-icon>
+                </template>
+                <span>
+                  {{ toggled ? "Chiudi" : "Apri" }}
+                </span>
+              </v-tooltip>
+              <span v-else>{{ props.header.text }}</span>
+            </template>
             <template v-slot:items="props">
-              <tr>
-                <td>
+              <tr class="grey lighten-4">
+                <td class="border-bottom-grey">
                   <div>{{ props.item.text }}</div>
                 </td>
-                <td>
+                <td class="border-bottom-grey">
                   <v-text-field
                     id="nometavolocliente"
                     light
@@ -60,7 +74,7 @@
                     "
                   ></v-text-field>
                 </td>
-                <td>
+                <td class="border-bottom-grey">
                   <v-text-field
                     id="notetavolo"
                     ref="notefield"
@@ -83,7 +97,10 @@
                     </template>
                   </v-text-field>
                 </td>
-                <td>
+                <td
+                  v-if="Number(info.numero_alternativo != 0)"
+                  class="border-bottom-grey"
+                >
                   <v-text-field
                     id="numeroalternativo"
                     light
@@ -102,16 +119,20 @@
                 </td>
 
                 <td
+                  :ref="`expand-${props.item.id}`"
                   style="cursor: pointer;"
-                  class="text-xs-right"
+                  class="text-xs-right border-bottom-grey"
                   @click="props.expanded = !props.expanded"
                 >
-                  <v-icon>expand_more</v-icon>
+                  <v-icon>{{
+                    props.expanded ? "expand_less" : "expand_more"
+                  }}</v-icon>
                 </td>
               </tr>
             </template>
             <template v-slot:expand="props">
               <GuestListView
+                :table="props.item"
                 :tableList="tableList"
                 :tableId="props.item.value"
               />
@@ -138,40 +159,14 @@ export default {
     return {
       pagination: {
         rowsPerPage: -1,
-        sortBy: "text",
+        // sortBy: "text",
       },
-      headers: [
-        {
-          text: "Nome tavolo",
-          value: "text",
-        },
-        {
-          text: "Nome tavolo cliente",
-          value: "nome_cliente",
-        },
-        {
-          text: "Note tavolo",
 
-          value: "note_tavolo",
-        },
-        {
-          text: "Numero alternativo",
-
-          value: "numero_alternativo",
-        },
-        {
-          text: "",
-          align: "end",
-
-          sortable: false,
-          value: "toggle",
-        },
-      ],
       expanded: [],
       search: "",
       pagination: {
-        sortBy: "id",
-        descending: true,
+        // sortBy: "id",
+        // descending: true,
         rowsPerPage: -1,
       },
       nome_tavolo_cliente: null,
@@ -251,6 +246,7 @@ export default {
       numberRules2: [
         (v) => typeof v === "number" || "Per favore inserisci un numero",
       ],
+      toggled: false,
     };
   },
   watch: {
@@ -334,88 +330,120 @@ export default {
     info() {
       return this.$store.getters.getInfo;
     },
+    // headers() {
+    //   if (this.info.show_tables_menu == 1) {
+    //     return [
+    //       { placeholder: "surname", text: "Cognome", value: "cognome" },
+    //       { placeholder: "name", text: "Nome", value: "nome" },
+    //       {
+    //         placeholder: "adults",
+    //         text: this.info.peoples_label,
+    //         value: "peoples",
+    //       },
+    //       { placeholder: "child", text: this.info.baby_label, value: "baby" },
+    //       {
+    //         placeholder: "chairs",
+    //         text: this.info.chairs_only_label,
+    //         value: "chairs_only",
+    //       },
+    //       {
+    //         placeholder: "highchairs",
+    //         text: this.info.high_chair_label,
+    //         value: "high_chair",
+    //       },
+    //       {
+    //         placeholder: "noglutine",
+    //         text: "No glutine",
+    //         value: "menu1",
+    //       },
+    //       {
+    //         placeholder: "nolattosio",
+    //         text: "No lattosio",
+    //         value: "menu2",
+    //       },
+    //       { placeholder: "vegano", text: "Vegano", value: "menu3" },
+    //       {
+    //         placeholder: "vegetariano",
+    //         text: "Vegetariano",
+    //         value: "menu4",
+    //       },
+    //       {
+    //         placeholder: "note",
+    //         text: "Nota",
+    //         value: "note_intolleranze",
+    //       },
+    //       {
+    //         placeholder: "actions",
+    //         text: "Azioni",
+    //         value: "nome",
+    //         sortable: false,
+    //       },
+    //     ];
+    //   } else {
+    //     return [
+    //       { placeholder: "surname", text: "Cognome", value: "cognome" },
+    //       { placeholder: "name", text: "Nome", value: "nome" },
+    //       {
+    //         placeholder: "adults",
+    //         text: this.info.peoples_label,
+    //         value: "peoples",
+    //       },
+    //       { placeholder: "child", text: this.info.baby_label, value: "baby" },
+    //       {
+    //         placeholder: "chairs",
+    //         text: this.info.chairs_only_label,
+    //         value: "chairs_only",
+    //       },
+    //       {
+    //         placeholder: "highchairs",
+    //         text: this.info.high_chair_label,
+    //         value: "high_chair",
+    //       },
+    //       {
+    //         placeholder: "note",
+    //         text: "Nota",
+    //         value: "note_intolleranze",
+    //       },
+    //       {
+    //         placeholder: "actions",
+    //         text: "Azioni",
+    //         value: "nome",
+    //         sortable: false,
+    //       },
+    //     ];
+    //   }
+    // },
     headers() {
-      if (this.info.show_tables_menu == 1) {
-        return [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
-          {
-            placeholder: "adults",
-            text: this.info.peoples_label,
-            value: "peoples",
-          },
-          { placeholder: "child", text: this.info.baby_label, value: "baby" },
-          {
-            placeholder: "chairs",
-            text: this.info.chairs_only_label,
-            value: "chairs_only",
-          },
-          {
-            placeholder: "highchairs",
-            text: this.info.high_chair_label,
-            value: "high_chair",
-          },
-          {
-            placeholder: "noglutine",
-            text: "No glutine",
-            value: "menu1",
-          },
-          {
-            placeholder: "nolattosio",
-            text: "No lattosio",
-            value: "menu2",
-          },
-          { placeholder: "vegano", text: "Vegano", value: "menu3" },
-          {
-            placeholder: "vegetariano",
-            text: "Vegetariano",
-            value: "menu4",
-          },
-          {
-            placeholder: "note",
-            text: "Nota",
-            value: "note_intolleranze",
-          },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
-          },
-        ];
-      } else {
-        return [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
-          {
-            placeholder: "adults",
-            text: this.info.peoples_label,
-            value: "peoples",
-          },
-          { placeholder: "child", text: this.info.baby_label, value: "baby" },
-          {
-            placeholder: "chairs",
-            text: this.info.chairs_only_label,
-            value: "chairs_only",
-          },
-          {
-            placeholder: "highchairs",
-            text: this.info.high_chair_label,
-            value: "high_chair",
-          },
-          {
-            placeholder: "note",
-            text: "Nota",
-            value: "note_intolleranze",
-          },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
-          },
-        ];
+      let headers = [
+        {
+          text: "Numero tavolo",
+          value: "text",
+        },
+        {
+          text: "Nome tavolo",
+          value: "nome_cliente",
+        },
+        {
+          text: "Note tavolo",
+
+          value: "note_tavolo",
+        },
+        {
+          text: "",
+          align: "end",
+
+          sortable: false,
+          value: "toggle",
+        },
+      ];
+      if (this.info.numero_alternativo != 0) {
+        headers.splice(3, 0, {
+          text: "Numero alternativo",
+
+          value: "numero_alternativo",
+        });
       }
+      return headers;
     },
     numberOfGuests() {
       const guests = this.guests(this.tableId);
@@ -432,6 +460,15 @@ export default {
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
   methods: {
+    toggleAll() {
+      console.log("toggled", this.tables, this.toggled);
+      for (let index = 0; index < this.tables.length; index++) {
+        const element = this.tables[index];
+
+        this.$refs[`expand-${element.id}`].click();
+      }
+      this.toggled = !this.toggled;
+    },
     printElm() {
       // Get HTML to print from element
       const prtHtml = document.getElementById("print").innerHTML;
@@ -510,6 +547,7 @@ export default {
       // ) {
       this.$store.dispatch("table/updateClientNote", updatedItem);
       // this.defaultItem = Object.assign({}, updatedItem);
+
       this.$store.state.stage.draw();
     },
     updateNumberoAlternativo(string, table) {
@@ -543,6 +581,7 @@ export default {
       // ) {
       this.$store.dispatch("table/updateClientName", updatedItem);
       // this.defaultItem = Object.assign({}, updatedItem);
+
       this.$store.state.stage.draw();
     },
     onInput(event) {
@@ -723,6 +762,12 @@ export default {
 </script>
 
 <style>
+th[aria-label=": Not sorted."] {
+  text-align: end;
+}
+.border-bottom-grey {
+  border-bottom: 1px solid rgb(161, 161, 161);
+}
 @media print {
   .v-btn,
   .v-icon {

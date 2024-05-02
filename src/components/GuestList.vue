@@ -16,6 +16,7 @@
             ref="cognomefield"
             hide-details
             solo
+            :readonly="info.block_guests == 1"
             v-model="nome_tavolo_cliente"
             @change="updateTableName"
             label="Nome tavolo cliente"
@@ -27,6 +28,7 @@
             hide-details
             solo
             light
+            :readonly="info.block_guests == 1"
             v-model="note_tavolo_cliente"
             @change="updateTableNote"
             placeholder="Note tavolo"
@@ -46,6 +48,7 @@
             <v-spacer></v-spacer>
             <v-dialog v-model="guestDialog" max-width="500px">
               <v-btn
+                v-if="info.block_guests == 0"
                 slot="activator"
                 @click="editedItem.table_id = Number(tableId)"
                 color="primary"
@@ -94,7 +97,7 @@
                             type="number"
                           ></v-text-field>
                         </v-flex>
-                        <v-flex xs12 sm6 md3>
+                        <v-flex v-if="info.show_chairs_only == 1" xs12 sm6 md3>
                           <v-text-field
                             v-model.number="editedItem.chairs_only"
                             :rules="numberRules"
@@ -102,7 +105,7 @@
                             type="number"
                           ></v-text-field>
                         </v-flex>
-                        <v-flex xs12 sm6 md3>
+                        <v-flex v-if="info.show_high_chair == 1" xs12 sm6 md3>
                           <v-text-field
                             v-model.number="editedItem.high_chair"
                             :rules="numberRules"
@@ -119,7 +122,7 @@
                             </v-toolbar>
                           </v-flex>
 
-                          <v-flex xs12 sm6 md3>
+                          <v-flex v-if="placeholderLabels.menu1" xs12 sm6 md3>
                             <v-text-field
                               v-model.number="editedItem.menu1"
                               :rules="numberRules"
@@ -127,7 +130,7 @@
                             ></v-text-field>
                           </v-flex>
 
-                          <v-flex xs12 sm6 md3>
+                          <v-flex v-if="placeholderLabels.menu2" xs12 sm6 md3>
                             <v-text-field
                               v-model.number="editedItem.menu2"
                               :rules="numberRules"
@@ -135,7 +138,7 @@
                             ></v-text-field>
                           </v-flex>
 
-                          <v-flex xs12 sm6 md3>
+                          <v-flex v-if="placeholderLabels.menu3" xs12 sm6 md3>
                             <v-text-field
                               v-model.number="editedItem.menu3"
                               :rules="numberRules"
@@ -143,7 +146,7 @@
                             ></v-text-field>
                           </v-flex>
 
-                          <v-flex xs12 sm6 md3>
+                          <v-flex v-if="placeholderLabels.menu4" xs12 sm6 md3>
                             <v-text-field
                               v-model.number="editedItem.menu4"
                               :rules="numberRules2"
@@ -155,6 +158,7 @@
                         <v-flex xs12>
                           <v-text-field
                             v-model="editedItem.note_intolleranze"
+                            :placeholder="info.note_placeholder"
                             :label="labels.note"
                           ></v-text-field>
                         </v-flex>
@@ -218,22 +222,35 @@
               <td>{{ props.item.nome }}</td>
               <td>{{ props.item.peoples }}</td>
               <td>{{ props.item.baby }}</td>
-              <td>{{ props.item.chairs_only }}</td>
-              <td>{{ props.item.high_chair }}</td>
+              <td v-if="info.show_chairs_only != 0">
+                {{ props.item.chairs_only }}
+              </td>
+              <td v-if="info.show_high_chair != 0">
+                {{ props.item.high_chair }}
+              </td>
               <template v-if="info.show_tables_menu == 1">
-                <td>{{ props.item.menu1 }}</td>
-                <td>{{ props.item.menu2 }}</td>
-                <td>{{ props.item.menu3 }}</td>
-                <td>{{ props.item.menu4 }}</td>
+                <td v-if="info.menu1">{{ props.item.menu1 }}</td>
+                <td v-if="info.menu2">{{ props.item.menu2 }}</td>
+                <td v-if="info.menu3">{{ props.item.menu3 }}</td>
+                <td v-if="info.menu4">{{ props.item.menu4 }}</td>
               </template>
 
               <td>{{ props.item.note_intolleranze }}</td>
 
               <td class="d-flex">
-                <v-icon small class="mr-2" @click="editItem(props.item)"
+                <v-icon
+                  v-if="info.block_guests == 0"
+                  small
+                  class="mr-2"
+                  @click="editItem(props.item)"
                   >edit</v-icon
                 >
-                <v-icon small @click="deleteGuest(props.item)">delete</v-icon>
+                <v-icon
+                  v-if="info.block_guests == 0"
+                  small
+                  @click="deleteGuest(props.item)"
+                  >delete</v-icon
+                >
               </td>
             </template>
           </v-data-table>
@@ -387,88 +404,91 @@ export default {
       return this.$store.getters.getInfo;
     },
     headers() {
-      if (this.info.show_tables_menu == 1) {
-        return [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
-          {
-            placeholder: "adults",
-            text: this.info.peoples_label,
-            value: "peoples",
-          },
-          { placeholder: "child", text: this.info.baby_label, value: "baby" },
-          {
-            placeholder: "chairs",
-            text: this.info.chairs_only_label,
-            value: "chairs_only",
-          },
-          {
-            placeholder: "highchairs",
-            text: this.info.high_chair_label,
-            value: "high_chair",
-          },
-          {
-            placeholder: "noglutine",
-            text: "No glutine",
-            value: "menu1",
-          },
-          {
-            placeholder: "nolattosio",
-            text: "No lattosio",
-            value: "menu2",
-          },
-          { placeholder: "vegano", text: "Vegano", value: "menu3" },
-          {
-            placeholder: "vegetariano",
-            text: "Vegetariano",
-            value: "menu4",
-          },
-          {
-            placeholder: "note",
-            text: "Nota",
-            value: "note_intolleranze",
-          },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
-          },
-        ];
-      } else {
-        return [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
-          {
-            placeholder: "adults",
-            text: this.info.peoples_label,
-            value: "peoples",
-          },
-          { placeholder: "child", text: this.info.baby_label, value: "baby" },
-          {
-            placeholder: "chairs",
-            text: this.info.chairs_only_label,
-            value: "chairs_only",
-          },
-          {
-            placeholder: "highchairs",
-            text: this.info.high_chair_label,
-            value: "high_chair",
-          },
+      let indexAdded = 4;
+      let arr = [
+        { placeholder: "surname", text: "Cognome", value: "cognome" },
+        { placeholder: "name", text: "Nome", value: "nome" },
+        {
+          placeholder: "adults",
+          text: this.info.peoples_label,
+          value: "peoples",
+        },
+        { placeholder: "child", text: this.info.baby_label, value: "baby" },
 
-          {
-            placeholder: "note",
-            text: "Nota",
-            value: "note_intolleranze",
-          },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
-          },
-        ];
+        {
+          placeholder: "note",
+          text: "Nota",
+          value: "note_intolleranze",
+        },
+        {
+          placeholder: "actions",
+          text: "Azioni",
+          value: "nome",
+          sortable: false,
+        },
+      ];
+
+      if (this.info.show_chairs_only != 0) {
+        arr = arr.slice(0, indexAdded).concat(
+          [
+            {
+              placeholder: "chairs",
+              text: this.info.chairs_only_label,
+              value: "chairs_only",
+            },
+          ],
+          arr.slice(indexAdded)
+        );
+        indexAdded++;
       }
+
+      if (this.info.show_high_chair != 0) {
+        arr = arr.slice(0, indexAdded).concat(
+          [
+            {
+              placeholder: "highchairs",
+              text: this.info.high_chair_label,
+              value: "high_chair",
+            },
+          ],
+          arr.slice(indexAdded)
+        );
+        indexAdded++;
+      }
+      if (this.info.show_tables_menu == 1) {
+        let toAdd = [];
+
+        if (this.info.menu1) {
+          toAdd.push({
+            placeholder: "noglutine",
+            text: this.info.menu1,
+            value: "menu1",
+          });
+        }
+        if (this.info.menu2) {
+          toAdd.push({
+            placeholder: "nolattosio",
+            text: this.info.menu2,
+            value: "menu2",
+          });
+        }
+        if (this.info.menu3) {
+          toAdd.push({
+            placeholder: "vegano",
+            text: this.info.menu3,
+            value: "menu3",
+          });
+        }
+        if (this.info.menu4) {
+          toAdd.push({
+            placeholder: "vegetariano",
+            text: this.info.menu4,
+            value: "menu4",
+          });
+        }
+        arr = arr.slice(0, indexAdded).concat(toAdd, arr.slice(indexAdded));
+      }
+      return arr;
     },
     numberOfGuests() {
       const guests = this.guests(this.tableId);
@@ -482,7 +502,9 @@ export default {
       });
       return total;
     },
-
+    guestsFromTable() {
+      return this.guests(this.tableId);
+    },
     ...mapState(["guest"]),
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
@@ -547,31 +569,41 @@ export default {
       }
       let totalPasti = 0;
       let totalPeople = 0;
+      let maxReached = false;
       for (const guest of guests) {
-        totalPeople += Number(guest.baby);
-        totalPeople += Number(guest.chairs_only);
-        totalPeople += Number(guest.high_chair);
-        totalPeople += Number(guest.peoples);
+        const sumPeople =
+          Number(guest.baby) +
+          Number(guest.chairs_only) +
+          Number(guest.high_chair) +
+          Number(guest.peoples);
+        totalPeople += sumPeople;
+        if (sumPeople > Number(this.info.max_seats_each_row)) {
+          maxReached = true;
+        }
 
-        if (this.placeholderLabels.menu1) {
-          totalPasti += Number(guest.menu1);
-          totalPasti += Number(guest.menu2);
-          totalPasti += Number(guest.menu3);
-          totalPasti += Number(guest.menu4);
+        if (this.info.show_tables_menu == 1) {
+          const sumMenus =
+            Number(guest.menu1) +
+            Number(guest.menu2) +
+            Number(guest.menu3) +
+            Number(guest.menu4);
+          totalPasti += sumMenus;
+          if (sumMenus > Number(this.info.max_seats_each_row)) {
+            maxReached = true;
+          }
         }
       }
-      if (this.placeholderLabels.menu1) {
-        console.log("w", totalPasti, totalPeople);
-        if (totalPeople > maxSeats || totalPasti > maxSeats) {
-          console.log("went too far", totalPasti, totalPeople);
-          return true;
-        } else {
-          console.log("ok", totalPasti, totalPeople);
-          return false;
+      if (this.info.show_tables_menu == 1) {
+        if (totalPasti > maxSeats) {
+          maxReached = true;
         }
       }
 
       if (totalPeople > maxSeats) {
+        maxReached = true;
+      }
+
+      if (maxReached) {
         return true;
       } else {
         return false;
@@ -583,7 +615,6 @@ export default {
     editItem(item) {
       console.log("item", item);
       this.editForm = true;
-      console.log("item", item);
       item.peoples = Number(item.peoples);
       item.baby = Number(item.baby);
       item.chairs_only = Number(item.chairs_only);
@@ -623,10 +654,23 @@ export default {
     },
     save() {
       let guest = Object.assign({}, this.editedItem);
-      console.log("guest", guest);
-      // guest.table_id = this.editedItem.table_id;
-      console.log("up", guest);
-      console.log("isItMax", this.maxSeatsCheck(guest));
+
+      // CHECK IF THERE IS ATLEAST ONE GUEST
+      const sumPeople =
+        Number(guest.baby) +
+        Number(guest.chairs_only) +
+        Number(guest.high_chair) +
+        Number(guest.peoples);
+
+      if (sumPeople < 1) {
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message: "È necessario che almeno un ospite sia aggiunto al tavolo",
+        };
+        this.$store.dispatch("notification/add", notification, { root: true });
+        return;
+      }
       if (this.maxSeatsCheck(guest)) {
         const notification = {
           type: "error",
@@ -637,7 +681,6 @@ export default {
         this.$store.dispatch("notification/add", notification, { root: true });
         return;
       }
-      console.log("isItMax", this.maxSeatsCheck(guest));
       if (guest.note_intolleranze != "") {
         const payload = {
           tableId: this.tableId,
@@ -725,6 +768,15 @@ export default {
 
       this.tableNumber = table.textConfig.number;
       this.clientName = table.textConfig.nomeCliente;
+    });
+
+    EventBus.$on("update-table-fields", (payload) => {
+      if (payload.nomeCliente) {
+        v.nome_tavolo_cliente = payload.nomeCliente;
+      }
+      if (payload.noteCliente) {
+        v.note_tavolo_cliente = payload.noteCliente;
+      }
     });
 
     EventBus.$on("guest-list-select", () => {

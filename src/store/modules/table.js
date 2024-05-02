@@ -19,6 +19,9 @@ export const state = {
 };
 
 export const mutations = {
+  UPDATE_GROUPS(state, payload) {
+    state.groups = payload;
+  },
   GET_TABLES(state, payload) {
     state.groups = [];
     state.tablesFetched = [];
@@ -54,7 +57,12 @@ export const mutations = {
     const groupToEdit = _find(state.groups, (group) => {
       return group.table.id == table.id;
     });
-    console.log("groupToEdit", table);
+    const tableFound = _find(state.tablesFetched, (t) => {
+      return t.id == table.id;
+    });
+    console.log("groupToEditTable", table);
+    console.log("groupToEdit", groupToEdit);
+
     if (groupToEdit) {
       groupToEdit.nomeClienteText.nomeCliente = table.nomeCliente;
       groupToEdit.nomeClienteText.text = table.nomeCliente;
@@ -62,19 +70,30 @@ export const mutations = {
       tableToEdit.textConfig.nomeCliente = table.nomeCliente;
       tableToEdit.textConfig.noteCliente = table.noteCliente;
     }
+    if (tableFound) {
+      tableFound.nome_cliente = table.nomeCliente;
+    }
     table.rootState.stage.draw();
   },
   UPDATE_TABLE_CLIENT_NOTE(state, table) {
     const groupToEdit = _find(state.groups, (group) => {
       return group.table.id == table.id;
     });
-    console.log("groupToEdit", groupToEdit, table);
+    const tableFound = _find(state.tablesFetched, (t) => {
+      return t.id == table.id;
+    });
+    console.log("groupToEdit", groupToEdit);
+    console.log("tableFound", tableFound);
+
     // if (groupToEdit) {
     //   groupToEdit.noteClienteText.noteCliente = groupToEdit.noteCliente;
     //   groupToEdit.noteClienteText.text = groupToEdit.noteCliente;
     //   const tableToEdit = groupToEdit.table;
     //   tableToEdit.textConfig.noteCliente = groupToEdit.noteCliente;
     // }
+    if (tableFound) {
+      tableFound.note_tavolo = table.noteCliente;
+    }
     table.rootState.stage.draw();
   },
   UPDATE_NUMERO_ALTERNATIVO(state, table) {
@@ -288,7 +307,7 @@ export const actions = {
         console.log(error);
       });
   },
-  addTable({ commit, dispatch }, payload) {
+  addTable({ commit, dispatch, rootState }, payload) {
     if (payload.isNew === true) {
       console.log("payload", payload);
       TMService.addTable(payload.details)
@@ -296,6 +315,7 @@ export const actions = {
           console.log("response", response);
           if (response.data.esito) {
             payload.group.table.id = response.data.dati.id;
+            dispatch("getTables", rootState.layout.id);
 
             const notification = {
               type: "success",
@@ -322,17 +342,65 @@ export const actions = {
           dispatch("notification/add", notification, { root: true });
           console.log(error);
         });
+    } else {
+      commit("ADD_TABLE", payload.group);
     }
-    commit("ADD_TABLE", payload.group);
     if (state.counter == state.tablesFetched.length) {
       dispatch("endProgress", null, { root: true });
     }
   },
-  deleteTable({ state, commit, dispatch }, table) {
+  duplicateTable({ commit, dispatch, rootState }, payload) {
+    if (payload.isNew === true) {
+      console.log("payload", payload);
+      let form = JSON.parse(JSON.stringify(payload.details));
+      form.scaleX = payload.group.table.tableConfig.scaleX;
+      form.scaleY = payload.group.table.tableConfig.scaleY;
+
+      TMService.duplicateTable(form)
+        .then((response) => {
+          console.log("response", response);
+          if (response.data.esito) {
+            payload.group.table.id = response.data.dati.id;
+            dispatch("getTables", rootState.layout.id);
+
+            const notification = {
+              type: "success",
+              message: response.data.info_txt,
+            };
+            dispatch("notification/add", notification, { root: true });
+            EventBus.$emit("data-updated");
+          } else {
+            const notification = {
+              type: "error",
+              message: response.data.info_txt,
+            };
+            dispatch("notification/add", notification, { root: true });
+            return false;
+          }
+        })
+        .catch(function(error) {
+          const notification = {
+            type: "success",
+            message:
+              "Si è verificato un problema durante l'aggiunta del tavolo: " +
+              error.message,
+          };
+          dispatch("notification/add", notification, { root: true });
+          console.log(error);
+        });
+    } else {
+      commit("ADD_TABLE", payload.group);
+    }
+    if (state.counter == state.tablesFetched.length) {
+      dispatch("endProgress", null, { root: true });
+    }
+  },
+  deleteTable({ state, commit, dispatch, rootState }, table) {
     TMService.deleteTable({ layoutId: table.layoutId, tableId: table.id })
       .then((response) => {
         if (response.data.esito) {
-          commit("DELETE_TABLE", table.id);
+          // commit("DELETE_TABLE", table.id);
+          dispatch("getTables", rootState.layout.id);
 
           const notification = {
             type: "success",
@@ -364,12 +432,13 @@ export const actions = {
     TMService.updateTable(payload)
       .then((response) => {
         if (response.data.esito) {
-          commit("UPDATE_TABLE", payload);
+          // commit("UPDATE_TABLE", payload);
 
           const notification = {
             type: "success",
             message: response.data.info_txt,
           };
+          dispatch("getTables", rootState.layout.id);
           dispatch("notification/add", notification, { root: true });
           EventBus.$emit("data-updated");
           return true;
@@ -438,6 +507,8 @@ export const actions = {
   updateClientNote({ commit, dispatch, rootState }, payload) {
     TMService.updateClientNote(payload)
       .then((response) => {
+        console.log("workup", response);
+
         if (response.data.esito) {
           payload.rootState = rootState;
           commit("UPDATE_TABLE_CLIENT_NOTE", payload);

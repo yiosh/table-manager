@@ -73,6 +73,40 @@ export default {
       `${endpoint}insert_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}&max_seats=${maxSeats}&note_tavolo=${noteCliente}`
     );
   },
+  duplicateTable({
+    layoutId,
+    typeId,
+    tableName,
+    tableNumber,
+    tableGroup,
+    size,
+    x,
+    y,
+    angolare,
+    nomeCliente,
+    borderColor,
+    backgroundColor,
+    borderType,
+    maxSeats,
+    noteCliente,
+    scaleX,
+    scaleY,
+  }) {
+    console.log("back", backgroundColor, "border", borderColor);
+    borderColor = borderColor.replace("#", "");
+    backgroundColor = backgroundColor.replace("#", "");
+
+    let params = `duplicate_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}&max_seats=${maxSeats}&note_tavolo=${noteCliente}`;
+
+    if (scaleX) {
+      params += `&scale_x=${scaleX}`;
+    }
+    if (scaleY) {
+      params += `&scale_y=${scaleY}`;
+    }
+
+    return apiClient.get(`${endpoint}${params}`);
+  },
   updateTable({
     layoutId,
     id,
@@ -197,12 +231,16 @@ export default {
     return apiClient.get(`${endpoint}get_guests&token=1&layout_id=${layoutId}`);
   },
   addGuest(layoutId, tableId, guest) {
-    let menus = "";
-    if (guest.menu1) {
-      menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
-        guest.menu3
-      }&menu4=${guest.menu4}`;
-    }
+    // let menus = "";
+
+    // if (guest.menu1) {
+    //   menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
+    //     guest.menu3
+    //   }&menu4=${guest.menu4}`;
+    // }
+    let menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
+      guest.menu3
+    }&menu4=${guest.menu4}`;
     return apiClient.get(
       `${endpoint}insert_guest&token=1&layout_id=${layoutId}&guest_type=${
         guest.guest_type
@@ -217,12 +255,21 @@ export default {
   },
   updateGuest(guest) {
     console.log("guest", guest);
-    let menus = "";
-    if (guest.menu1) {
-      menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
-        guest.menu3
-      }&menu4=${guest.menu4}`;
-    }
+    let menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
+      guest.menu3
+    }&menu4=${guest.menu4}`;
+    // if (guest.menu1) {
+    //   menus = `&menu1=${guest.menu1}`;
+    // }
+    // if (guest.menu2) {
+    //   menus = `&menu2=${guest.menu2}`;
+    // }
+    // if (guest.menu3) {
+    //   menus = `&menu3=${guest.menu3}`;
+    // }
+    // if (guest.menu4) {
+    //   menus = `&menu4=${guest.menu4}`;
+    // }
     return apiClient.get(
       `${endpoint}update_guest&token=1&guest_id=${guest.id}&guest_type=${
         guest.guest_type

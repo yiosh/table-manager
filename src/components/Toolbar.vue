@@ -18,6 +18,18 @@
         <i class="far fa-edit icon-margin"></i>
         {{ labels.edit }} {{ labels.table }}
       </v-btn>
+
+      <v-divider v-if="selectedGroup != null" vertical></v-divider>
+
+      <v-btn
+        v-if="selectedGroup != null && blockBoard != 1"
+        flat
+        ref="duplicate-table"
+        @click="handleClick('duplicate-table')"
+      >
+        <i class="far fa-clone icon-margin"></i>
+        Duplica {{ labels.table }}
+      </v-btn>
     </v-toolbar>
     <CreateTableForm></CreateTableForm>
     <EditTableForm></EditTableForm>
@@ -76,6 +88,11 @@ export default {
               root: true,
             });
           }
+          break;
+
+        case "duplicate-table":
+          console.log("yes");
+          EventBus.$emit("duplicate-table", this.selectedGroup.attrs.table.id);
           break;
       }
     },

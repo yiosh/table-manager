@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card :elevation="0" flat>
     <v-card-text class="px-0">
       <v-toolbar flat color="white" class="hidden-print-only">
         <!-- <v-text-field
@@ -39,6 +39,7 @@
         <v-spacer></v-spacer>
 
         <GuestEditDialog
+          :table="table"
           :labels="labels"
           :tableList="tableList"
           :guestEditDialog="guestEditDialog"
@@ -64,22 +65,33 @@
           <td>{{ props.item.nome }}</td>
           <td>{{ props.item.peoples }}</td>
           <td>{{ props.item.baby }}</td>
-          <td>{{ props.item.chairs_only }}</td>
-          <td>{{ props.item.high_chair }}</td>
-          <template v-if="info.show_tables_menu == 1">
-            <td>{{ props.item.menu1 }}</td>
-            <td>{{ props.item.menu2 }}</td>
-            <td>{{ props.item.menu3 }}</td>
-            <td>{{ props.item.menu4 }}</td>
+          <td v-if="info.show_chairs_only != 0">
+            {{ props.item.chairs_only }}
+          </td>
+          <td v-if="info.show_high_chair != 0">{{ props.item.high_chair }}</td>
+          <template v-if="info.show_tables_menu != 0">
+            <td v-if="info.menu1">{{ props.item.menu1 }}</td>
+            <td v-if="info.menu2">{{ props.item.menu2 }}</td>
+            <td v-if="info.menu3">{{ props.item.menu3 }}</td>
+            <td v-if="info.menu4">{{ props.item.menu4 }}</td>
           </template>
 
           <td>{{ props.item.note_intolleranze }}</td>
 
           <td class="d-flex">
-            <v-icon small class="mr-2" @click="editItem(props.item)"
+            <v-icon
+              v-if="info.block_guests == 0"
+              small
+              class="mr-2"
+              @click="editItem(props.item)"
               >edit</v-icon
             >
-            <v-icon small @click="deleteGuest(props.item)">delete</v-icon>
+            <v-icon
+              v-if="info.block_guests == 0"
+              small
+              @click="deleteGuest(props.item)"
+              >delete</v-icon
+            >
           </td>
         </template>
       </v-data-table>
@@ -95,6 +107,7 @@ export default {
   props: {
     tableId: Number,
     tableList: Array,
+    table: Object,
   },
   components: {
     GuestEditDialog,
@@ -116,28 +129,28 @@ export default {
     clientName: "",
     dialog: false,
     valid: true,
-    labels: {
-      list_of_guests: "Elenco degli ospiti",
-      create_new_guest: "Aggiungi ospiti",
-      surname: "Cognome",
-      name: "Nome",
-      adults: "Adulti",
-      child: "Bambino",
-      chairs: "Sedie",
-      high_chairs: "Seggioloni",
-      menu1: "Celiachia",
-      menu2: "No lattosio",
-      menu3: "Vegano",
-      menu4: "Vegetariano",
-      note: "Nota",
-      guest_type: "Tipo di ospite",
-      save_and_continue: "Salva e continua",
-      save: "Salva",
-      close: "Chiudi",
-      there_are_no_guests_at_this_table: "Non ci sono ospiti a questo tavolo",
-      edit_guest: "Modifica ospite",
-      delete_guest_confirm: "Sei sicuro di voler cancellare l'ospite ",
-    },
+    // labels: {
+    //   list_of_guests: "Elenco degli ospiti",
+    //   create_new_guest: "Aggiungi ospiti",
+    //   surname: "Cognome",
+    //   name: "Nome",
+    //   adults: "Adulti",
+    //   child: "Bambino",
+    //   chairs: "Sedie",
+    //   high_chairs: "Seggioloni",
+    //   menu1: "Celiachia",
+    //   menu2: "No lattosio",
+    //   menu3: "Vegano",
+    //   menu4: "Vegetariano",
+    //   note: "Nota",
+    //   guest_type: "Tipo di ospite",
+    //   save_and_continue: "Salva e continua",
+    //   save: "Salva",
+    //   close: "Chiudi",
+    //   there_are_no_guests_at_this_table: "Non ci sono ospiti a questo tavolo",
+    //   edit_guest: "Modifica ospite",
+    //   delete_guest_confirm: "Sei sicuro di voler cancellare l'ospite ",
+    // },
     editedIndex: -1,
     editedItem: {
       id: null,
@@ -182,6 +195,42 @@ export default {
     guestEditDialog: false,
   }),
   computed: {
+    labels() {
+      const labels = {
+        list_of_guests: "Elenco degli ospiti",
+        create_new_guest: "Aggiungi ospiti",
+        surname: "Cognome",
+        name: "Nome",
+        adults: "Adulti",
+        child: "Bambino",
+        chairs: "Sedie",
+        high_chairs: "Seggioloni",
+        menu1: "Celiachia",
+        menu2: "No lattosio",
+        menu3: "Vegano",
+        menu4: "Vegetariano",
+        note: "Nota",
+        guest_type: "Tipo di ospite",
+        save_and_continue: "Salva e continua",
+        save: "Salva",
+        close: "Chiudi",
+        there_are_no_guests_at_this_table: "Non ci sono ospiti a questo tavolo",
+        edit_guest: "Modifica ospite",
+        delete_guest_confirm: "Sei sicuro di voler cancellare l'ospite ",
+      };
+
+      labels.adults = this.info.peoples_label;
+      labels.child = this.info.baby_label;
+      labels.chairs = this.info.chairs_only_label;
+      labels.high_chairs = this.info.high_chair_label;
+
+      labels.menu1 = this.info.menu1;
+      labels.menu2 = this.info.menu2;
+      labels.menu3 = this.info.menu3;
+      labels.menu4 = this.info.menu4;
+
+      return labels;
+    },
     currentTable() {
       const tables = this.$store.getters["table/getTables"];
       return tables.find((t) => t.id == this.tableId);
@@ -192,89 +241,177 @@ export default {
     info() {
       return this.$store.getters.getInfo;
     },
-    headers() {
-      if (this.info.show_tables_menu == 1) {
-        return [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
-          {
-            placeholder: "adults",
-            text: this.info.peoples_label,
-            value: "peoples",
-          },
-          { placeholder: "child", text: this.info.baby_label, value: "baby" },
-          {
-            placeholder: "chairs",
-            text: this.info.chairs_only_label,
-            value: "chairs_only",
-          },
-          {
-            placeholder: "highchairs",
-            text: this.info.high_chair_label,
-            value: "high_chair",
-          },
-          {
-            placeholder: "noglutine",
-            text: "No glutine",
-            value: "menu1",
-          },
-          {
-            placeholder: "nolattosio",
-            text: "No lattosio",
-            value: "menu2",
-          },
-          { placeholder: "vegano", text: "Vegano", value: "menu3" },
-          {
-            placeholder: "vegetariano",
-            text: "Vegetariano",
-            value: "menu4",
-          },
-          {
-            placeholder: "note",
-            text: "Nota",
-            value: "note_intolleranze",
-          },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
-          },
-        ];
-      } else {
-        return [
-          { placeholder: "surname", text: "Cognome", value: "cognome" },
-          { placeholder: "name", text: "Nome", value: "nome" },
-          {
-            placeholder: "adults",
-            text: this.info.peoples_label,
-            value: "peoples",
-          },
-          { placeholder: "child", text: this.info.baby_label, value: "baby" },
-          {
-            placeholder: "chairs",
-            text: this.info.chairs_only_label,
-            value: "chairs_only",
-          },
-          {
-            placeholder: "highchairs",
-            text: this.info.high_chair_label,
-            value: "high_chair",
-          },
+    // headers() {
+    //   if (this.info.show_tables_menu == 1) {
+    //     return [
+    //       { placeholder: "surname", text: "Cognome", value: "cognome" },
+    //       { placeholder: "name", text: "Nome", value: "nome" },
+    //       {
+    //         placeholder: "adults",
+    //         text: this.info.peoples_label,
+    //         value: "peoples",
+    //       },
+    //       { placeholder: "child", text: this.info.baby_label, value: "baby" },
+    //       {
+    //         placeholder: "chairs",
+    //         text: this.info.chairs_only_label,
+    //         value: "chairs_only",
+    //       },
+    //       {
+    //         placeholder: "highchairs",
+    //         text: this.info.high_chair_label,
+    //         value: "high_chair",
+    //       },
+    //       {
+    //         placeholder: "noglutine",
+    //         text: "No glutine",
+    //         value: "menu1",
+    //       },
+    //       {
+    //         placeholder: "nolattosio",
+    //         text: "No lattosio",
+    //         value: "menu2",
+    //       },
+    //       { placeholder: "vegano", text: "Vegano", value: "menu3" },
+    //       {
+    //         placeholder: "vegetariano",
+    //         text: "Vegetariano",
+    //         value: "menu4",
+    //       },
+    //       {
+    //         placeholder: "note",
+    //         text: "Nota",
+    //         value: "note_intolleranze",
+    //       },
+    //       {
+    //         placeholder: "actions",
+    //         text: "Azioni",
+    //         value: "nome",
+    //         sortable: false,
+    //       },
+    //     ];
+    //   } else {
+    //     return [
+    //       { placeholder: "surname", text: "Cognome", value: "cognome" },
+    //       { placeholder: "name", text: "Nome", value: "nome" },
+    //       {
+    //         placeholder: "adults",
+    //         text: this.info.peoples_label,
+    //         value: "peoples",
+    //       },
+    //       { placeholder: "child", text: this.info.baby_label, value: "baby" },
+    //       {
+    //         placeholder: "chairs",
+    //         text: this.info.chairs_only_label,
+    //         value: "chairs_only",
+    //       },
+    //       {
+    //         placeholder: "highchairs",
+    //         text: this.info.high_chair_label,
+    //         value: "high_chair",
+    //       },
 
-          {
-            placeholder: "note",
-            text: "Nota",
-            value: "note_intolleranze",
-          },
-          {
-            placeholder: "actions",
-            text: "Azioni",
-            value: "nome",
-            sortable: false,
-          },
-        ];
+    //       {
+    //         placeholder: "note",
+    //         text: "Nota",
+    //         value: "note_intolleranze",
+    //       },
+    //       {
+    //         placeholder: "actions",
+    //         text: "Azioni",
+    //         value: "nome",
+    //         sortable: false,
+    //       },
+    //     ];
+    //   }
+
+    // },
+    headers() {
+      let indexAdded = 4;
+      let arr = [
+        { placeholder: "surname", text: "Cognome", value: "cognome" },
+        { placeholder: "name", text: "Nome", value: "nome" },
+        {
+          placeholder: "adults",
+          text: this.info.peoples_label,
+          value: "peoples",
+        },
+        { placeholder: "child", text: this.info.baby_label, value: "baby" },
+
+        {
+          placeholder: "note",
+          text: "Nota",
+          value: "note_intolleranze",
+        },
+        {
+          placeholder: "actions",
+          text: "Azioni",
+          value: "nome",
+          sortable: false,
+        },
+      ];
+
+      if (this.info.show_chairs_only != 0) {
+        arr = arr.slice(0, indexAdded).concat(
+          [
+            {
+              placeholder: "chairs",
+              text: this.info.chairs_only_label,
+              value: "chairs_only",
+            },
+          ],
+          arr.slice(indexAdded)
+        );
+        indexAdded++;
       }
+
+      if (this.info.show_high_chair != 0) {
+        arr = arr.slice(0, indexAdded).concat(
+          [
+            {
+              placeholder: "highchairs",
+              text: this.info.high_chair_label,
+              value: "high_chair",
+            },
+          ],
+          arr.slice(indexAdded)
+        );
+        indexAdded++;
+      }
+      if (this.info.show_tables_menu != 0) {
+        let toAdd = [];
+
+        if (this.info.menu1) {
+          toAdd.push({
+            placeholder: "noglutine",
+            text: this.info.menu1,
+            value: "menu1",
+          });
+        }
+        if (this.info.menu2) {
+          toAdd.push({
+            placeholder: "nolattosio",
+            text: this.info.menu2,
+            value: "menu2",
+          });
+        }
+        if (this.info.menu3) {
+          toAdd.push({
+            placeholder: "vegano",
+            text: this.info.menu3,
+            value: "menu3",
+          });
+        }
+        if (this.info.menu4) {
+          toAdd.push({
+            placeholder: "vegetariano",
+            text: this.info.menu4,
+            value: "menu4",
+          });
+        }
+        arr = arr.slice(0, indexAdded).concat(toAdd, arr.slice(indexAdded));
+      }
+      return arr;
     },
     ...mapState(["guest"]),
 
