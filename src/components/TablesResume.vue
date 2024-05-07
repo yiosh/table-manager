@@ -68,13 +68,6 @@
               </tr>
             </template>
             <template v-slot:footer>
-              <!-- table_name: "TOTALE",
-          tot_seats: 0,
-          tot_peoples: 0,
-          tot_baby: 0,
-          tot_chairs_only: 0,
-          tot_high_chair: 0,
-          tot_menu_speciali: 0, -->
               <td class="border-all">
                 {{ tablesTotal.table_name }}
               </td>
@@ -115,31 +108,18 @@
 
 <script>
 import { EventBus } from "../event-bus.js";
-import { mapState, mapGetters } from "vuex";
 import TMService from "@/services/TMService";
 
 export default {
   name: "GuestResume",
-  data: (vue) => {
+  data: () => {
     return {
       pagination: {
         sortBy: "id",
         descending: true,
         rowsPerPage: -1,
       },
-      nome_tavolo_cliente: null,
-      note_tavolo_cliente: null,
-      currentTable: null,
-      saveAndContinue: true,
-      editForm: false,
-      tableId: null,
-      tableName: "",
-      tableNumber: "",
-      maxSeats: "",
-      clientName: "",
       dialog: false,
-      valid: true,
-      guestDialog: false,
       labels: {
         list_of_guests: "Elenco degli ospiti",
         create_new_guest: "Aggiungi ospiti",
@@ -162,47 +142,6 @@ export default {
         edit_guest: "Modifica ospite",
         delete_guest_confirm: "Sei sicuro di voler cancellare l'ospite ",
       },
-      editedIndex: -1,
-      editedItem: {
-        id: null,
-        nome: "",
-        cognome: "",
-        peoples: 0,
-        baby: 0,
-        chairs_only: 0,
-        high_chair: 0,
-        note_intolleranze: "",
-        guest_type: 3,
-        menu1: 0,
-        menu2: 0,
-        menu3: 0,
-        menu4: 0,
-      },
-      defaultItem: {
-        id: null,
-        nome: "",
-        cognome: "",
-        peoples: 0,
-        baby: 0,
-        chairs_only: 0,
-        high_chair: 0,
-        note_intolleranze: "",
-        guest_type: 3,
-        menu1: 0,
-        menu2: 0,
-        menu3: 0,
-        menu4: 0,
-      },
-      numberRules: [
-        (v) => typeof v === "number" || "Per favore inserisci un numero",
-        (v) =>
-          Number(v) <= Number(vue.info.max_seats_each_row) ||
-          "Per favore inserisci un numero minore o uguale a " +
-            vue.info.max_seats_each_row,
-      ],
-      numberRules2: [
-        (v) => typeof v === "number" || "Per favore inserisci un numero",
-      ],
       items: [],
       tablesTotal: {
         table_name: "TOTALE",
@@ -215,52 +154,8 @@ export default {
       },
     };
   },
-  watch: {
-    nome(newValue) {
-      this.editedItem.nome =
-        newValue.charAt(0).toUpperCase() + newValue.slice(1);
-    },
-    cognome(newValue) {
-      this.editedItem.cognome =
-        newValue.charAt(0).toUpperCase() + newValue.slice(1);
-    },
-  },
+
   computed: {
-    nome() {
-      return this.editedItem.nome;
-    },
-    cognome() {
-      return this.editedItem.cognome;
-    },
-    guestListDialog() {
-      return this.$refs.dialog.isActive;
-    },
-    placeholderLabels() {
-      return this.$store.state.labels;
-    },
-    formTitle() {
-      return this.editedIndex === -1
-        ? this.labels.create_new_guest
-        : this.labels.edit_guest;
-    },
-    tableList() {
-      const tables = this.$store.getters["table/getTables"];
-      let options = [];
-      tables.forEach((t) => {
-        if (!t.table_name.includes("HIDDEN")) {
-          options.push({
-            text: `${t.table_name} ${t.table_number}`,
-            value: Number(t.id),
-          });
-        }
-      });
-      return options;
-    },
-    currentGroup() {
-      const groups = this.$store.getters["table/getGroups"];
-      const group = groups.find((g) => g.table.id == this.tableId);
-      return group;
-    },
     layoutId() {
       return this.$store.state.layout.id;
     },
@@ -270,122 +165,6 @@ export default {
     info() {
       return this.$store.getters.getInfo;
     },
-    // headers() {
-    //   if (this.info.show_tables_menu == 1) {
-    //     return [
-    //       // { placeholder: "table_number", text: "N. Tavolo", value: "table_number" },
-    //       {
-    //         placeholder: "table_name",
-    //         text: "Numero tavolo",
-    //         value: "table_name",
-    //       },
-    //       {
-    //         placeholder: "nome_cliente",
-    //         text: "Nome tavolo",
-    //         value: "nome_cliente",
-    //       },
-    //       {
-    //         placeholder: "tot_seats",
-    //         text: "Tot. Posti",
-    //         width: "10%",
-    //         value: "tot_seats",
-    //       },
-    //       {
-    //         placeholder: "tot_peoples",
-    //         text: `Tot. ${this.info.peoples_label}`,
-    //         width: "10%",
-
-    //         value: "tot_peoples",
-    //       },
-    //       {
-    //         placeholder: "tot_baby",
-    //         text: `Tot. ${this.info.baby_label}`,
-    //         width: "10%",
-
-    //         value: "tot_baby",
-    //       },
-    //       {
-    //         placeholder: "tot_chairs_only",
-    //         text: `Tot. ${this.info.chairs_only_label}`,
-    //         width: "10%",
-
-    //         value: "tot_chairs_only",
-    //       },
-    //       {
-    //         placeholder: "tot_high_chair",
-    //         text: `Tot. ${this.info.high_chair_label}`,
-    //         width: "10%",
-
-    //         value: "tot_high_chair",
-    //       },
-    //       {
-    //         placeholder: "tot_menu_speciali",
-    //         text: "Tot. Pasti speciali",
-    //         width: "10%",
-
-    //         value: "tot_menu_speciali",
-    //       },
-    //       {
-    //         placeholder: "note_intolleranze",
-    //         text: "Note",
-    //         value: "note_intolleranze",
-    //       },
-    //     ];
-    //   } else {
-    //     return [
-    //       {
-    //         placeholder: "table_name",
-    //         text: "Numbero tavolo",
-    //         value: "table_name",
-    //       },
-    //       {
-    //         placeholder: "nome_cliente",
-    //         text: "Nome tavolo",
-    //         value: "nome_cliente",
-    //       },
-    //       {
-    //         placeholder: "tot_seats",
-    //         width: "10%",
-
-    //         text: "Tot. Posti",
-    //         value: "tot_seats",
-    //       },
-    //       {
-    //         placeholder: "tot_peoples",
-    //         text: `Tot. ${this.info.peoples_label}`,
-    //         width: "10%",
-
-    //         value: "tot_peoples",
-    //       },
-    //       {
-    //         placeholder: "tot_baby",
-    //         text: `Tot. ${this.info.baby_label}`,
-    //         width: "10%",
-
-    //         value: "tot_baby",
-    //       },
-    //       {
-    //         placeholder: "tot_chairs_only",
-    //         text: `Tot. ${this.info.chairs_only_label}`,
-    //         width: "10%",
-
-    //         value: "tot_chairs_only",
-    //       },
-    //       {
-    //         placeholder: "tot_high_chair",
-    //         text: `Tot. ${this.info.high_chair_label}`,
-    //         width: "10%",
-
-    //         value: "tot_high_chair",
-    //       },
-    //       {
-    //         placeholder: "note_intolleranze",
-    //         text: "Note",
-    //         value: "note_intolleranze",
-    //       },
-    //     ];
-    //   }
-    // },
     headers() {
       let indexAdded = 5;
       let arr = [
@@ -461,21 +240,6 @@ export default {
       }
       return arr;
     },
-    numberOfGuests() {
-      const guests = this.guests(this.tableId);
-      let total = 0;
-
-      guests.forEach((g) => {
-        total += Number(g.peoples);
-        total += Number(g.baby);
-        total += Number(g.chairs_only);
-        total += Number(g.high_chair);
-      });
-      return total;
-    },
-
-    ...mapState(["guest"]),
-    ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
   methods: {
     printDialogContent() {
@@ -536,7 +300,6 @@ export default {
     async getResume() {
       try {
         const response = await TMService.getResume(this.layoutId);
-        // console.log("response", response);
         let tables = response.data.dati;
         tables = tables.filter((t) => {
           if (!t.table_name.includes("HIDDEN")) {
@@ -589,188 +352,9 @@ export default {
         console.log("resumeerror", error);
       }
     },
-    onInput(event) {
-      // Prevent the default input event from being triggered,
-      // which would cause the input value to be updated before the watch function is called.
-      event.preventDefault();
-    },
-    updateTableName(string) {
-      let updatedItem = {
-        id: this.tableId,
-        nomeCliente: string,
-        layoutId: this.layoutId,
-      };
 
-      console.log("updatedItem", updatedItem);
-
-      // if (
-      //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
-      // ) {
-      this.$store.dispatch("table/updateClientName", updatedItem);
-      // this.defaultItem = Object.assign({}, updatedItem);
-      this.$store.state.stage.draw();
-    },
-    updateTableNote(string) {
-      let updatedItem = {
-        id: this.tableId,
-        noteCliente: string,
-        layoutId: this.layoutId,
-      };
-
-      console.log("updatedItem", updatedItem);
-
-      // if (
-      //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
-      // ) {
-      this.$store.dispatch("table/updateClientNote", updatedItem);
-      // this.defaultItem = Object.assign({}, updatedItem);
-      this.$store.state.stage.draw();
-    },
-    changeTable(id) {
-      let guest = Object.assign(this.editedItem);
-      guest.table_id = id;
-      // this.$store.dispatch("guest/updateGuest", guest);
-    },
-    // totalpastiCheck(guest) {
-    //   const maxSeats = Number(this.maxSeats);
-    // },
-    maxSeatsCheck(newGuest) {
-      if (Number(this.tableId) != Number(newGuest.table_id)) {
-        return false;
-      }
-      console.log("guest", newGuest);
-      const maxSeats = Number(this.maxSeats);
-      let guests = JSON.parse(JSON.stringify(this.guests(this.tableId)));
-      const index = guests.findIndex((guest) => guest.id === newGuest.id);
-      if (index !== -1) {
-        guests[index] = Object.assign({}, newGuest);
-      } else {
-        guests.push(newGuest);
-      }
-      let totalPasti = 0;
-      let totalPeople = 0;
-      for (const guest of guests) {
-        totalPeople += Number(guest.baby);
-        totalPeople += Number(guest.chairs_only);
-        totalPeople += Number(guest.high_chair);
-        totalPeople += Number(guest.peoples);
-
-        if (this.placeholderLabels.menu1) {
-          totalPasti += Number(guest.menu1);
-          totalPasti += Number(guest.menu2);
-          totalPasti += Number(guest.menu3);
-          totalPasti += Number(guest.menu4);
-        }
-      }
-      if (this.placeholderLabels.menu1) {
-        console.log("w", totalPasti, totalPeople);
-        if (totalPeople > maxSeats || totalPasti > maxSeats) {
-          console.log("went too far", totalPasti, totalPeople);
-          return true;
-        } else {
-          console.log("ok", totalPasti, totalPeople);
-          return false;
-        }
-      }
-
-      if (totalPeople > maxSeats) {
-        return true;
-      } else {
-        return false;
-      }
-    },
     closeDialog() {
       this.dialog = false;
-    },
-    editItem(item) {
-      console.log("item", item);
-      this.editForm = true;
-      console.log("item", item);
-      item.peoples = Number(item.peoples);
-      item.baby = Number(item.baby);
-      item.chairs_only = Number(item.chairs_only);
-      item.high_chair = Number(item.high_chair);
-      item.guest_type = Number(item.guest_type);
-      item.menu1 = Number(item.menu1);
-      item.menu2 = Number(item.menu2);
-      item.menu3 = Number(item.menu3);
-      item.menu4 = Number(item.menu4);
-      item.table_id = Number(item.table_id);
-
-      this.editedIndex = this.guest.guests.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      // this.editedItem.nome_cliente = this.guest.
-      // nome_tavolo_cliente = this.currentTable = Number(item.table_id);
-      this.guestDialog = true;
-    },
-    deleteGuest(guest) {
-      confirm(
-        `${this.labels.delete_guest_confirm} ${guest.nome} ${guest.cognome}?`
-      ) &&
-        // Delete Guest
-        this.$store.dispatch("guest/deleteGuest", guest);
-    },
-    close() {
-      if (this.editForm) {
-        this.editForm = false;
-        setTimeout(() => {
-          this.editedItem = Object.assign({}, this.defaultItem);
-          this.editedIndex = -1;
-        }, 300);
-      }
-
-      if (this.guestDialog) {
-        this.guestDialog = false;
-      }
-    },
-    save() {
-      let guest = Object.assign({}, this.editedItem);
-      console.log("guest", guest);
-      // guest.table_id = this.editedItem.table_id;
-      console.log("up", guest);
-      console.log("isItMax", this.maxSeatsCheck(guest));
-      if (this.maxSeatsCheck(guest)) {
-        const notification = {
-          type: "error",
-          multiLine: true,
-          message:
-            "Hai inserito più ospiti o pasti, di quelli consentiti da questo tavolo",
-        };
-        this.$store.dispatch("notification/add", notification, { root: true });
-        return;
-      }
-      console.log("isItMax", this.maxSeatsCheck(guest));
-      if (guest.note_intolleranze != "") {
-        const payload = {
-          tableId: this.tableId,
-          state: true,
-        };
-        this.$store.dispatch("table/handleAsterisc", payload);
-      }
-      if (this.editedIndex > -1) {
-        // Update existing guest
-        this.$store.dispatch("guest/updateGuest", guest);
-        this.$store.dispatch("table/getTables", this.layoutId, {
-          root: true,
-        });
-        this.close();
-      } else {
-        // Create a New Guest
-
-        const tableId = this.editedItem.table_id;
-        this.$store.dispatch("guest/addGuest", { tableId, guest });
-        document.getElementById("cognomefield").focus();
-      }
-      if (!this.saveAndContinue) {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.close();
-      } else {
-        const tId = this.editedItem.table_id;
-
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedItem.table_id = tId;
-      }
-      //
     },
   },
   created() {

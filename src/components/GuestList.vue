@@ -177,7 +177,6 @@
                             item-value="value"
                             v-model.number="editedItem.table_id"
                             :items="tableList"
-                            @change="changeTable"
                             label="Associa al tavolo"
                           ></v-select>
                         </v-flex>
@@ -360,6 +359,21 @@ export default {
       this.editedItem.cognome =
         newValue.charAt(0).toUpperCase() + newValue.slice(1);
     },
+    "editedItem.table_id"(newId, oldId) {
+      if (this.maxSeatsCheck(this.editedItem, newId)) {
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message:
+            "Non ci sono abbastanza posti su quel tavolo per spostare lì questo ospite",
+        };
+        this.$store.dispatch("notification/add", notification, { root: true });
+        console.log("tableIds", oldId, newId);
+        setTimeout(() => {
+          this.editedItem.table_id = oldId;
+        }, 500);
+      }
+    },
   },
   computed: {
     nome() {
@@ -367,9 +381,6 @@ export default {
     },
     cognome() {
       return this.editedItem.cognome;
-    },
-    guestListDialog() {
-      return this.$refs.dialog.isActive;
     },
     placeholderLabels() {
       return this.$store.state.labels;
@@ -523,11 +534,7 @@ export default {
 
       console.log("updatedItem", updatedItem);
 
-      // if (
-      //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
-      // ) {
       this.$store.dispatch("table/updateClientName", updatedItem);
-      // this.defaultItem = Object.assign({}, updatedItem);
       this.$store.state.stage.draw();
     },
     updateTableNote(string) {
@@ -539,28 +546,19 @@ export default {
 
       console.log("updatedItem", updatedItem);
 
-      // if (
-      //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
-      // ) {
       this.$store.dispatch("table/updateClientNote", updatedItem);
-      // this.defaultItem = Object.assign({}, updatedItem);
       this.$store.state.stage.draw();
     },
-    changeTable(id) {
-      let guest = Object.assign(this.editedItem);
-      guest.table_id = id;
-      // this.$store.dispatch("guest/updateGuest", guest);
-    },
-    // totalpastiCheck(guest) {
-    //   const maxSeats = Number(this.maxSeats);
-    // },
-    maxSeatsCheck(newGuest) {
-      if (Number(this.tableId) != Number(newGuest.table_id)) {
-        return false;
+    maxSeatsCheck(newGuest, tableId = null) {
+      tableId = tableId ? tableId : this.tableId;
+      if (tableId == null) {
+        if (Number(tableId) != Number(newGuest.table_id)) {
+          return false;
+        }
       }
       console.log("guest", newGuest);
       const maxSeats = Number(this.maxSeats);
-      let guests = JSON.parse(JSON.stringify(this.guests(this.tableId)));
+      let guests = JSON.parse(JSON.stringify(this.guests(tableId)));
       const index = guests.findIndex((guest) => guest.id === newGuest.id);
       if (index !== -1) {
         guests[index] = Object.assign({}, newGuest);
@@ -628,8 +626,6 @@ export default {
 
       this.editedIndex = this.guest.guests.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      // this.editedItem.nome_cliente = this.guest.
-      // nome_tavolo_cliente = this.currentTable = Number(item.table_id);
       this.guestDialog = true;
     },
     deleteGuest(guest) {
@@ -715,42 +711,6 @@ export default {
     },
   },
   created() {
-    EventBus.$on("fetch-done", () => {
-      // const translatedLabels = this.$store.state.translatedLabels;
-      // const labels = this.labels;
-      // for (const translatedLabel of translatedLabels) {
-      //   if (
-      //     translatedLabel.placeholder === "surname" ||
-      //     translatedLabel.placeholder === "name" ||
-      //     translatedLabel.placeholder === "adults" ||
-      //     translatedLabel.placeholder === "child" ||
-      //     translatedLabel.placeholder === "chairs" ||
-      //     translatedLabel.placeholder === "high_chairs" ||
-      //     translatedLabel.placeholder === "actions"
-      //   ) {
-      //     for (const header of labels.headers) {
-      //       if (translatedLabel.placeholder === header.placeholder) {
-      //         header.text = translatedLabel.content;
-      //       }
-      //     }
-      //   }
-      //   for (const label in labels) {
-      //     if (translatedLabel.placeholder === label) {
-      //       labels[label] = translatedLabel.content;
-      //     }
-      //   }
-      // }
-      // if (this.$store.state.labels.menu1) {
-      //   for (let index = 1; index <= 4; index++) {
-      //     const menu = "menu" + index;
-      //     this.labels.headers.splice(5 + index, 0, {
-      //       placeholder: menu,
-      //       text: this.placeholderLabels[menu],
-      //       value: menu
-      //     });
-      //   }
-      // }
-    });
     let v = this;
 
     // On table select grab the table's id and other data
@@ -783,7 +743,6 @@ export default {
       console.log("wtf");
       if (this.$store.state.selectedGroup != null) {
         this.dialog = true;
-        // console.log("vm", this);
       } else {
         const notification = {
           type: "warning",
