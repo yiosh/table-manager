@@ -46,6 +46,13 @@
         <v-card-text>
           <v-toolbar flat color="white">
             <v-spacer></v-spacer>
+            <MigrationDialog
+              :tableId="tableId"
+              :layout="layout"
+              :tableNumber="tableNumber"
+              :maxSeats="maxSeats"
+              :numberOfGuests="numberOfGuests"
+            />
             <v-dialog v-model="guestDialog" max-width="500px">
               <v-btn
                 v-if="info.block_guests == 0"
@@ -262,9 +269,13 @@
 <script>
 import { EventBus } from "../event-bus.js";
 import { mapState, mapGetters } from "vuex";
+import MigrationDialog from "./MigrationDialog";
 
 export default {
   name: "GuestList",
+  components: {
+    MigrationDialog,
+  },
   data: (vue) => {
     return {
       pagination: {
@@ -408,9 +419,10 @@ export default {
       const group = groups.find((g) => g.table.id == this.tableId);
       return group;
     },
-    layoutId() {
-      return this.$store.state.layout.id;
+    layout() {
+      return this.$store.state.layout;
     },
+
     info() {
       return this.$store.getters.getInfo;
     },
@@ -529,7 +541,7 @@ export default {
       let updatedItem = {
         id: this.tableId,
         nomeCliente: string,
-        layoutId: this.layoutId,
+        layoutId: this.layout.id,
       };
 
       console.log("updatedItem", updatedItem);
@@ -541,7 +553,7 @@ export default {
       let updatedItem = {
         id: this.tableId,
         noteCliente: string,
-        layoutId: this.layoutId,
+        layoutId: this.layout.id,
       };
 
       console.log("updatedItem", updatedItem);
@@ -687,7 +699,7 @@ export default {
       if (this.editedIndex > -1) {
         // Update existing guest
         this.$store.dispatch("guest/updateGuest", guest);
-        this.$store.dispatch("table/getTables", this.layoutId, {
+        this.$store.dispatch("table/getTables", this.layout.id, {
           root: true,
         });
         this.close();

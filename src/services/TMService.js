@@ -14,6 +14,10 @@ let endpoint =
   location.hostname !== "localhost"
     ? "/fl_api/tables-v3/?"
     : "/fl_api/tables-dev/?";
+let simpleEndpoint =
+  location.hostname !== "localhost"
+    ? "/fl_api/tables-v3/"
+    : "/fl_api/tables-dev/";
 
 const apiClient = axios.create({
   baseURL,
@@ -289,5 +293,13 @@ export default {
     return apiClient.get(
       `${endpoint}get_tables_report&token=1&board_id=${boardId}`
     );
+  },
+  getOtherTables({ eventoId, layoutId, tableId, tableNumber }) {
+    return apiClient.get(
+      `${endpoint}get_tables_from_other&token=1&evento_id=%{${eventoId}}%&layout_id=${layoutId}&table_id=${tableId}&table_number=${tableNumber}`
+    );
+  },
+  copyGuests(params) {
+    return apiClient.get(`${simpleEndpoint}?copy_guests_from_table${params}`);
   },
 };

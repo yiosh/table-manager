@@ -247,6 +247,23 @@ export const actions = {
         dispatch("notification/add", notification, { root: true });
       });
   },
+  getOtherTables({ dispatch }, payload) {
+    TMService.getOtherTables(payload)
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => {
+        // handle error
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message:
+            "Si è verificato un problema durante il recupero dei tavoli: " +
+            error.message,
+        };
+        dispatch("notification/add", notification, { root: true });
+      });
+  },
   fetchTableTypes({ commit, dispatch }) {
     TMService.fetchTableTypes()
       .then((response) => {
