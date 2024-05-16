@@ -28,6 +28,35 @@ const apiClient = axios.create({
   },
 });
 
+// apiClient.defaults.headers.common["wtf"] = `Bearer f769c987`;
+
+apiClient.interceptors.response.use(
+  (response) => {
+    // // console.log("reeessss", response);
+    // if (response.data) {
+    //   console.log("response.data", typeof response.data);
+    // }
+    // if (response.data && response.data.includes("!DOCTYPE")) {
+    //   window.location = "/login";
+    // }
+
+    return response;
+  },
+  (error) => {
+    console.log("errrrrror", error);
+    // const status = error.response.status || 500;
+    // const isEmpty =
+    //   !error.response.data || Object.keys(error.response.data).length === 0;
+
+    // if (isEmpty && status !== 401) {
+    //   // Not empty response for Unauthorized (401)
+    //   window.location = "/login"; // Replace with your login route
+    // }
+
+    // return Promise.reject(error);
+  }
+);
+
 const CDNClient = axios.create({
   baseURL: "https://mysql.condivision.cloud",
   withCredentials: false,

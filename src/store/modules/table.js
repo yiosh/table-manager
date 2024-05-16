@@ -258,7 +258,7 @@ export const actions = {
           type: "error",
           multiLine: true,
           message:
-            "Si è verificato un problema durante il recupero dei tavoli: " +
+            "Si è verificato un problema durante il recupero dei altri tavoli: " +
             error.message,
         };
         dispatch("notification/add", notification, { root: true });

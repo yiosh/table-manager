@@ -213,7 +213,7 @@ export default {
           type: "error",
           multiLine: true,
           message:
-            "Si è verificato un problema durante il recupero dei tavoli: " +
+            "Si è verificato un problema durante il import dei ospiti: " +
             error.message,
         };
         this.$store.dispatch("notification/add", notification, { root: true });
@@ -253,7 +253,7 @@ export default {
           type: "error",
           multiLine: true,
           message:
-            "Si è verificato un problema durante il recupero dei tavoli: " +
+            "Si è verificato un problema durante il recupero dei altri tavoli: " +
             error.message,
         };
         this.$store.dispatch("notification/add", notification, { root: true });
