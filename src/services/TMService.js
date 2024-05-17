@@ -36,9 +36,10 @@ apiClient.interceptors.response.use(
     // if (response.data) {
     //   console.log("response.data", typeof response.data);
     // }
-    // if (response.data && response.data.includes("!DOCTYPE")) {
-    //   window.location = "/login";
-    // }
+    if (response.data && response.data.status == 401) {
+      alert(response.data.message);
+      window.location = "/login.php";
+    }
 
     return response;
   },
