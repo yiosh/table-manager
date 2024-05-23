@@ -476,7 +476,7 @@ export default {
       let guestCounters = {
         name: guestCounterName,
         text: "",
-        fontSize: 11,
+        fontSize: 13,
         fontFamily: "Poppins",
         // fontStyle: "bold",
         fill: borderColor,
