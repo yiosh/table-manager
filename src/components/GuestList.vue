@@ -169,7 +169,7 @@
                             :label="labels.note"
                           ></v-text-field>
                         </v-flex>
-                        <!-- <v-flex xs12>
+                        <v-flex v-if="info.show_guest_types == 1" xs12>
                           <v-select
                             item-text="text"
                             item-value="value"
@@ -177,7 +177,8 @@
                             :items="guestTypes"
                             :label="labels.guest_type"
                           ></v-select>
-                        </v-flex> -->
+                        </v-flex>
+
                         <v-flex xs12>
                           <v-select
                             item-text="text"
