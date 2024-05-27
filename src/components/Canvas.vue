@@ -257,20 +257,56 @@ export default {
       this.tooltipConfig.text = null;
     },
     handleMouseMove(ev) {
-      if (ev.evt.x > 600) {
-        this.tooltipGroupConfig.x = ev.evt.layerX - 750;
-        this.tooltipGroupConfig.y = ev.evt.layerY - 100;
-        // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
-        // this.tooltipContainerConfig.y = ev.evt.layerY;
-        this.tooltipConfig.x = 450;
-        this.tooltipConfig.y = 140;
+      console.log("y", ev.evt.y);
+
+      if (this.orientation == 1) {
+        if (ev.evt.x > 900) {
+          this.tooltipGroupConfig.x = ev.evt.layerX - 785;
+          if (ev.evt.y > 600) {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 180;
+          } else {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+          }
+          // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+          // this.tooltipContainerConfig.y = ev.evt.layerY;
+          this.tooltipConfig.x = 450;
+          this.tooltipConfig.y = 140;
+        } else {
+          this.tooltipGroupConfig.x = ev.evt.layerX - 430;
+          if (ev.evt.y > 600) {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 180;
+          } else {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+          }
+          // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+          // this.tooltipContainerConfig.y = ev.evt.layerY;
+          this.tooltipConfig.x = 450;
+          this.tooltipConfig.y = 140;
+        }
       } else {
-        this.tooltipGroupConfig.x = ev.evt.layerX - 400;
-        this.tooltipGroupConfig.y = ev.evt.layerY - 100;
-        // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
-        // this.tooltipContainerConfig.y = ev.evt.layerY;
-        this.tooltipConfig.x = 450;
-        this.tooltipConfig.y = 140;
+        if (ev.evt.x > 700) {
+          this.tooltipGroupConfig.x = ev.evt.layerX - 785;
+          if (ev.evt.y > 600) {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 180;
+          } else {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+          }
+          // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+          // this.tooltipContainerConfig.y = ev.evt.layerY;
+          this.tooltipConfig.x = 450;
+          this.tooltipConfig.y = 140;
+        } else {
+          this.tooltipGroupConfig.x = ev.evt.layerX - 430;
+          if (ev.evt.y > 600) {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 180;
+          } else {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+          }
+          // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+          // this.tooltipContainerConfig.y = ev.evt.layerY;
+          this.tooltipConfig.x = 450;
+          this.tooltipConfig.y = 140;
+        }
       }
       this.tooltipConfig.background = "white";
       if (this.tooltipConfig.text == null) {
