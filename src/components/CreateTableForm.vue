@@ -75,7 +75,11 @@
             <v-layout>
               <v-flex xs12 sm6 class="py-2">
                 <p>{{ labels.type }}</p>
-                <v-btn-toggle v-model="createTableForm.type" mandatory>
+                <v-btn-toggle
+                  v-model="createTableForm.type"
+                  mandatory
+                  @change="handleTableType"
+                >
                   <v-btn
                     v-for="tableType in table.tableTypes"
                     flat
@@ -280,6 +284,9 @@ export default {
         ? 91
         : this.createTableForm.angolare;
     },
+    tableTypes() {
+      return this.table.tableTypes;
+    },
     ...mapState(["table", "guest"]),
     ...mapGetters({
       groupsLength: "table/groupsLength",
@@ -291,8 +298,16 @@ export default {
     max: "validateField",
     model: "validateField",
     currentTableId() {},
+    tableTypes() {
+      this.createTableForm.maxSeats = this.table.tableTypes[0].sedute_max;
+    },
   },
   methods: {
+    handleTableType(payload) {
+      const tableTypeId = tableTypeDeparser(payload);
+      const tableType = this.tableTypes.find((tt) => tt.id == tableTypeId);
+      this.createTableForm.maxSeats = Number(tableType.sedute_max);
+    },
     validateField() {
       this.$refs.createForm.validate();
     },
@@ -1398,5 +1413,6 @@ export default {
       this.dialog = true;
     });
   },
+  mounted() {},
 };
 </script>
