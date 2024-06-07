@@ -442,7 +442,6 @@ export default {
       this.$store.state.stage.draw();
     },
     updateNumberoAlternativo(string) {
-      console.log("yes");
       let updatedItem = {
         id: this.tableId,
         numeroAlternativo: string,

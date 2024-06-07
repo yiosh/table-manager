@@ -91,7 +91,6 @@ export default {
           break;
 
         case "duplicate-table":
-          console.log("yes");
           EventBus.$emit("duplicate-table", this.selectedGroup.attrs.table.id);
           break;
       }

@@ -367,7 +367,6 @@ export default {
     let v = this;
 
     EventBus.$on("table-resume-select", () => {
-      console.log("yes");
       v.dialog = true;
     });
   },

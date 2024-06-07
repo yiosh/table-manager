@@ -257,8 +257,6 @@ export default {
       this.tooltipConfig.text = null;
     },
     handleMouseMove(ev) {
-      console.log("y", ev.evt.y);
-
       if (this.orientation == 1) {
         if (ev.evt.x > 900) {
           this.tooltipGroupConfig.x = ev.evt.layerX - 785;
