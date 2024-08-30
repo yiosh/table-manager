@@ -435,7 +435,7 @@ export const getters = {
       let guestType = guestTypesArray[index - 1];
 
       state.guests.forEach((guest) => {
-        if (guest.guest_type == guestType.id) {
+        if (guest.guest_type == guestType.id && Number(guest.table_id)) {
           if (guest.peoples) {
             adultCounter += parseInt(guest.peoples);
           }
