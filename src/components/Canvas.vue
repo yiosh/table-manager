@@ -10,7 +10,7 @@
     <Toolbar></Toolbar>
     <v-stage
       :style="{ backgroundImage: `url(${stageBackground})` }"
-      @click="stageClick"
+      @click.self="stageClick"
       ref="stage"
       :config="stageConfig"
     >
@@ -19,13 +19,14 @@
           v-if="imageSrc"
           ref="background"
           :config="backgroundConfig"
-          @click="stageClick"
+          @click.self="stageClick"
         ></v-rect>
+        <!-- @click="stageClick" -->
         <v-group
           :ref="group.name"
           @click="tableSelect(group.name)"
           @dragend="moveTable"
-          @dragstart="handleMouseOut"
+          @dragstart="handleDragStart"
           @mousemove="handleMouseMove"
           @mouseout="handleMouseOut"
           v-for="group in tableGroups"
@@ -120,7 +121,7 @@
 import axios from "axios";
 import Toolbar from "./Toolbar";
 import { EventBus } from "../event-bus.js";
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 
 export default {
   name: "Canvas",
@@ -186,13 +187,18 @@ export default {
       x: 10,
       y: 10,
     },
+    groupsBackup: null,
+    tablesBackup: null,
   }),
   computed: {
+    info() {
+      return this.$store.getters.getInfo;
+    },
     backgroundImg() {
       return this.$store.getters.getBackgroundImg;
     },
     blockBoard() {
-      return 0;
+      // return 0;
       return this.$store.getters.getInfo.block_board;
     },
     showTablesCounters() {
@@ -224,65 +230,145 @@ export default {
 
       return url;
     },
+    selectedGroup() {
+      return this.$store.state.selectedGroup;
+    },
     ...mapGetters({
       guestTotalsV2: "guest/guestTotalsV2",
       tableGroups: "table/getGroups",
+      tablesFetched: "table/getTables",
       stageConfig: "getStageConfig",
       orientation: "getOrientation",
       hostname: "getHostname",
       printTitle: "getPrintTitle",
       loading: "getLoading",
     }),
+    ...mapState("table", {
+      groups: (state) => state.groups,
+    }),
   },
   methods: {
+    handleDragStart() {
+      this.tooltipConfig.text = null;
+      this.groupsBackup = JSON.parse(JSON.stringify(this.tableGroups));
+      this.tablesBackup = JSON.parse(JSON.stringify(this.tablesFetched));
+    },
     handleMouseOut() {
       this.tooltipConfig.text = null;
     },
     handleMouseMove(ev) {
-      if (ev.evt.x > 600) {
-        this.tooltipGroupConfig.x = ev.evt.layerX - 750;
-        this.tooltipGroupConfig.y = ev.evt.layerY - 100;
-        // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
-        // this.tooltipContainerConfig.y = ev.evt.layerY;
-        this.tooltipConfig.x = 450;
-        this.tooltipConfig.y = 140;
+      if (this.orientation == 1) {
+        if (ev.evt.x > 900) {
+          this.tooltipGroupConfig.x = ev.evt.layerX - 785;
+          if (ev.evt.y > 600) {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 180;
+          } else {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+          }
+          // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+          // this.tooltipContainerConfig.y = ev.evt.layerY;
+          this.tooltipConfig.x = 450;
+          this.tooltipConfig.y = 140;
+        } else {
+          this.tooltipGroupConfig.x = ev.evt.layerX - 430;
+          if (ev.evt.y > 600) {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 180;
+          } else {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+          }
+          // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+          // this.tooltipContainerConfig.y = ev.evt.layerY;
+          this.tooltipConfig.x = 450;
+          this.tooltipConfig.y = 140;
+        }
       } else {
-        this.tooltipGroupConfig.x = ev.evt.layerX - 400;
-        this.tooltipGroupConfig.y = ev.evt.layerY - 100;
-        // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
-        // this.tooltipContainerConfig.y = ev.evt.layerY;
-        this.tooltipConfig.x = 450;
-        this.tooltipConfig.y = 140;
+        if (ev.evt.x > 700) {
+          this.tooltipGroupConfig.x = ev.evt.layerX - 785;
+          if (ev.evt.y > 600) {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 180;
+          } else {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+          }
+          // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+          // this.tooltipContainerConfig.y = ev.evt.layerY;
+          this.tooltipConfig.x = 450;
+          this.tooltipConfig.y = 140;
+        } else {
+          this.tooltipGroupConfig.x = ev.evt.layerX - 430;
+          if (ev.evt.y > 600) {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 180;
+          } else {
+            this.tooltipGroupConfig.y = ev.evt.layerY - 100;
+          }
+          // this.tooltipContainerConfig.x = ev.evt.layerX - 400;
+          // this.tooltipContainerConfig.y = ev.evt.layerY;
+          this.tooltipConfig.x = 450;
+          this.tooltipConfig.y = 140;
+        }
       }
       this.tooltipConfig.background = "white";
       if (this.tooltipConfig.text == null) {
         const group = ev.target.parent.attrs;
         const table = group.table;
 
-        const guests = this.$store.getters["guest/guests"](table.id);
+        const guests = table
+          ? this.$store.getters["guest/guests"](table.id)
+          : [];
 
         if (guests.length > 0) {
-          console.log("ev", ev);
+          // console.log("ev", ev);
           if (guests.length > 1) {
+            this.tooltipContainerConfig.height = (guests.length + 2) * 18;
+
             this.tooltipConfig.text = "";
             guests.forEach((g) => {
               this.tooltipConfig.text += `${
                 g.cognome && g.cognome != "null"
                   ? g.cognome.replace("null", "")
                   : ""
-              } ${g.nome ? g.nome.replace("null", "") : ""} A:${g.peoples} B:${
-                g.baby
-              } S:${g.chairs_only} A:${g.high_chair}\n`;
+              } ${g.nome ? g.nome.replace("null", "") : ""} ${
+                this.info.peoples_letter ? this.info.peoples_letter : "A"
+              }:${g.peoples} ${
+                this.info.baby_letter ? this.info.baby_letter : "B"
+              }:${g.baby} ${
+                this.info.show_chairs_only != 0
+                  ? this.info.chairs_only_letter
+                    ? this.info.chairs_only_letter
+                    : "S" + ":" + g.chairs_only
+                  : ""
+              } ${
+                this.info.show_high_chair != 0
+                  ? this.info.high_chair_letter
+                    ? this.info.high_chair_letter
+                    : "H" + ":" + g.high_chair
+                  : ""
+              }\n`;
             });
           } else {
             const g = guests[0];
+            this.tooltipContainerConfig.height = (guests.length + 2) * 18;
+
             this.tooltipConfig.text = `${
               g.cognome && g.cognome != "null"
                 ? g.cognome.replace("null", "")
                 : ""
-            } ${g.nome ? g.nome.replace("null", "") : ""} A:${g.peoples} B:${
-              g.baby
-            } S:${g.chairs_only} A:${g.high_chair}`;
+            } ${g.nome ? g.nome.replace("null", "") : ""} ${
+              this.info.peoples_letter ? this.info.peoples_letter : "A"
+            }:${g.peoples} ${
+              this.info.baby_letter ? this.info.baby_letter : "B"
+            }:${g.baby} ${
+              this.info.show_chairs_only != 0
+                ? this.info.chairs_only_letter
+                  ? this.info.chairs_only_letter
+                  : "S" + ":" + g.chairs_only
+                : ""
+            } ${
+              this.info.show_high_chair != 0
+                ? this.info.high_chair_letter
+                  ? this.info.high_chair_letter
+                  : "H" + ":" + g.high_chair
+                : ""
+            }`;
           }
         }
       }
@@ -306,16 +392,49 @@ export default {
       EventBus.$emit("guest-list-select");
     },
     async moveTable(e) {
-      let { table, x, y } = e.target.attrs;
-      let tableId = table.id;
+      // dispatch("getTables", rootState.layout.id);
+      const stageWidth = this.stageConfig.width;
+      const stageHeight = this.stageConfig.height;
       let layoutId = this.$store.state.layout.id;
+
+      let { table, x, y } = e.target.attrs;
+      if (x < 0 || x > stageWidth) {
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message: "Impossibile spostare il tavolo fuori dai limiti",
+        };
+        this.$store.dispatch("notification/add", notification, { root: true });
+        this.$store.commit("table/UPDATE_GROUPS", []);
+        EventBus.$emit("fetch-done");
+        return;
+      }
+
+      if (y < 0 || y > stageHeight) {
+        const notification = {
+          type: "error",
+          multiLine: true,
+          message: "Impossibile spostare il tavolo fuori dai limiti",
+        };
+        this.$store.dispatch("notification/add", notification, { root: true });
+        this.$store.commit("table/UPDATE_GROUPS", []);
+
+        EventBus.$emit("fetch-done");
+        return;
+      }
+      let tableId = table.id;
+
+      let endpoint =
+        location.hostname !== "localhost" ? "tables-v3" : "tables-dev";
 
       try {
         const response = await axios.get(
           `https://${
             this.hostname
-          }/fl_api/tables-v3/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
+          }/fl_api/${endpoint}/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
         );
+        this.$store.dispatch("table/getTables", layoutId);
+
         console.log(response);
       } catch (error) {
         console.log(error);
@@ -352,10 +471,12 @@ export default {
     },
     stageClick(e) {
       const { stage } = this.$store.state;
+      console.log("stageClick", e);
       // if click on empty area - remove all transformers
-      if (e.target === stage) {
-        if (this.$store.state.selectedGroup != null) {
+      if (e.target === stage || e.target.index == 0) {
+        if (this.selectedGroup != null) {
           this.$store.dispatch("selectGroup", null);
+          // this.selectedTable = null;
           stage.find("Transformer").destroy();
           stage.draw();
           EventBus.$emit("table-unselect");
@@ -376,15 +497,17 @@ export default {
         stage.find("Transformer").destroy();
         // create new transformer
         let tr;
-        if (this.blockBoard == "0") {
+        if (this.blockBoard != 1) {
           tr = new window.Konva.Transformer({
             rotateEnabled: true,
             rotationSnaps: [0, 90, 180, 270],
           });
+          // tr.attachTo(stage.find(name)[0]);
         } else {
           tr = new window.Konva.Transformer({
             rotateEnabled: false,
             resizeEnabled: false,
+            borderEnabled: false,
             rotationSnaps: [0, 90, 180, 270],
           });
         }
@@ -402,6 +525,11 @@ export default {
     },
   },
   watch: {
+    selectedGroup() {
+      if (this.selectedGroup == null) {
+        this.selectedTable = null;
+      }
+    },
     orientation() {
       if (this.orientation == 1) {
         this.backgroundConfig.height = 1200;

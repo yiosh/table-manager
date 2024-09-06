@@ -230,6 +230,7 @@ export default {
       backgroundColor: "#ffffff",
       borderType: "intero",
       maxSeats: null,
+      noteCliente: "",
     },
     defaultItem: {
       id: "",
@@ -244,6 +245,7 @@ export default {
       borderColor: "#000000",
       backgroundColor: "#ffffff",
       borderType: "intero",
+      noteCliente: "",
     },
     // tableTypes: [],
     angolareRules: [
@@ -324,6 +326,7 @@ export default {
         backgroundColor: table.tableConfig.fill,
         borderType,
         maxSeats: table.textConfig.maxSeats,
+        noteCliente: table.textConfig.noteCliente,
       };
       this.editedItem = Object.assign({}, item);
       this.defaultItem = Object.assign({}, item);
@@ -366,6 +369,7 @@ export default {
         backgroundColor: backgroundColor.replace("#", ""),
         borderType: this.editedItem.borderType,
         maxSeats: this.editedItem.maxSeats,
+        noteCliente: this.editedItem.noteCliente,
       };
 
       console.log("updatedItem", updatedItem);
@@ -375,21 +379,34 @@ export default {
       // ) {
       this.$store.dispatch("table/updateTable", updatedItem);
       this.defaultItem = Object.assign({}, updatedItem);
+      this.removeTransform();
       // this.$store.state.stage.draw();
       // }
       this.dialog = false;
     },
     remove() {
-      let answer = confirm("You sure you want to remove this table?");
+      let answer = confirm("Sei sicuro di voler rimuovere questo tavolo?");
       console.log("Confirm", answer);
-      if (confirm) {
+      if (answer) {
         let item = {
           layoutId: this.$store.state.layout.id,
           id: this.editedItem.id,
         };
         this.$store.dispatch("table/deleteTable", item);
+        this.removeTransform();
       }
       this.dialog = false;
+    },
+    removeTransform() {
+      const { stage } = this.$store.state;
+      // if click on empty area - remove all transformers
+      if (this.$store.state.selectedGroup != null) {
+        this.$store.dispatch("selectGroup", null);
+        stage.find("Transformer").destroy();
+        stage.draw();
+        EventBus.$emit("table-unselect");
+        return;
+      }
     },
   },
   mounted() {
