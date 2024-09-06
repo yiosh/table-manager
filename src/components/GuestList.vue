@@ -53,7 +53,7 @@
               :maxSeats="maxSeats"
               :numberOfGuests="numberOfGuests"
             />
-            <v-dialog v-model="guestDialog" max-width="500px">
+            <v-dialog v-model="guestDialog" max-width="500px" persistent>
               <v-btn
                 v-if="info.block_guests == 0"
                 slot="activator"
@@ -372,18 +372,24 @@ export default {
         newValue.charAt(0).toUpperCase() + newValue.slice(1);
     },
     "editedItem.table_id"(newId, oldId) {
-      if (this.maxSeatsCheck(this.editedItem, newId)) {
-        const notification = {
-          type: "error",
-          multiLine: true,
-          message:
-            "Non ci sono abbastanza posti su quel tavolo per spostare lì questo ospite",
-        };
-        this.$store.dispatch("notification/add", notification, { root: true });
-        console.log("tableIds", oldId, newId);
-        setTimeout(() => {
-          this.editedItem.table_id = oldId;
-        }, 500);
+      if (newId) {
+        if (this.maxSeatsCheck(this.editedItem, newId)) {
+          const notification = {
+            type: "error",
+            multiLine: true,
+            message:
+              "Non ci sono abbastanza posti su quel tavolo per spostare lì questo ospite",
+          };
+          this.$store.dispatch("notification/add", notification, {
+            root: true,
+          });
+          console.log("tableIds", oldId, newId);
+          if (newId != oldId) {
+            setTimeout(() => {
+              this.editedItem.table_id = oldId;
+            }, 500);
+          }
+        }
       }
     },
   },
@@ -569,7 +575,6 @@ export default {
           return false;
         }
       }
-      console.log("guest", newGuest);
       const maxSeats = Number(this.maxSeats);
       let guests = JSON.parse(JSON.stringify(this.guests(tableId)));
       const index = guests.findIndex((guest) => guest.id === newGuest.id);
