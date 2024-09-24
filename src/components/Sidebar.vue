@@ -5,6 +5,7 @@
       app
       dark
       :mini-variant="mini"
+      :style="{ marginRight: isSmall }"
       class="cnv-sidebar elevation-2"
     >
       <v-toolbar flat class="transparent">
@@ -102,6 +103,9 @@ export default {
         myHost = host;
       }
       return "https://" + myHost + "/set/img/condivision_emblem.png";
+    },
+    isSmall() {
+      return this.$vuetify.breakpoint.mdAndDown ? "6rem" : "1rem";
     },
   },
   methods: {
