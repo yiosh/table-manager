@@ -19,11 +19,7 @@ export default new Vuex.Store({
     guestListDialog: false,
     error: false,
     info: {},
-    hostname:
-      location.hostname == "localhost" ||
-      location.hostname == "demo.condivision.cloud"
-        ? host
-        : location.hostname,
+    hostname: location.hostname == "localhost" ? host : location.hostname,
     selectedGroup: null,
     loading: true,
     labels: {},
