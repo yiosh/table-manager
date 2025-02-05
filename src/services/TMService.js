@@ -125,12 +125,13 @@ export default {
     noteCliente,
     scaleX,
     scaleY,
+    eventoId,
   }) {
     console.log("back", backgroundColor, "border", borderColor);
     borderColor = borderColor.replace("#", "");
     backgroundColor = backgroundColor.replace("#", "");
 
-    let params = `duplicate_table&token=1&layout_id=${layoutId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}&max_seats=${maxSeats}&note_tavolo=${noteCliente}`;
+    let params = `duplicate_table&token=1&layout_id=${layoutId}&evento_id=${eventoId}&type_id=${typeId}&table_name=${tableName}&table_number=${tableNumber}&table_group=${tableGroup}&size=${size}&x=${x}&y=${y}&angolare=${angolare}&nome_cliente=${nomeCliente}&border_type=${borderType}&border_color=${borderColor}&background_color=${backgroundColor}&max_seats=${maxSeats}&note_tavolo=${noteCliente}`;
 
     if (scaleX) {
       params += `&scale_x=${scaleX}`;
@@ -264,19 +265,13 @@ export default {
   getGuests(layoutId) {
     return apiClient.get(`${endpoint}get_guests&token=1&layout_id=${layoutId}`);
   },
-  addGuest(layoutId, tableId, guest) {
-    // let menus = "";
-
-    // if (guest.menu1) {
-    //   menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
-    //     guest.menu3
-    //   }&menu4=${guest.menu4}`;
-    // }
+  addGuest(layoutId, tableId, guest, eventoId) {
     let menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
       guest.menu3
     }&menu4=${guest.menu4}`;
+    console.log("eventoId", eventoId);
     return apiClient.get(
-      `${endpoint}insert_guest&token=1&layout_id=${layoutId}&guest_type=${
+      `${endpoint}insert_guest&token=1&layout_id=${layoutId}&evento_id=${eventoId}&guest_type=${
         guest.guest_type
       }&table_id=${tableId}&cognome=${guest.cognome}&peoples=${
         guest.peoples

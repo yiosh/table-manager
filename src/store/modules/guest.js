@@ -86,7 +86,9 @@ export const actions = {
   },
   addGuest({ commit, dispatch, rootState }, { tableId, guest }) {
     const layoutId = rootState.layout.id;
-    return TMService.addGuest(layoutId, tableId, guest)
+    const eventoId = rootState.layout.evento_id_parsed;
+
+    return TMService.addGuest(layoutId, tableId, guest, eventoId)
       .then((response) => {
         if (response.data.esito) {
           guest.id = response.data.dati.id;

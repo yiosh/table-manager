@@ -17,7 +17,7 @@
           </v-btn>
         </v-toolbar>
         <v-card-text id="table-print">
-          <h3>{{ layout.layout_name }}</h3>
+          <h3>{{ layout.layout_name }} - TAVOLI: {{ items.length }}</h3>
           <v-data-table
             :headers="headers"
             :items="items"

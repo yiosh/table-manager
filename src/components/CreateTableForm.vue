@@ -1317,6 +1317,7 @@ export default {
         borderType,
         backgroundColor,
         maxSeats,
+        eventoId: this.$store.state.layout.evento_id_parsed,
       };
 
       let payload = {

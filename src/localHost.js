@@ -1,1 +1,1 @@
-export const host = "caposperoneresort.condivision.cloud";
+export const host = "fbgroup.condivision.cloud";
