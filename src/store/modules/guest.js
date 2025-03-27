@@ -98,7 +98,9 @@ export const actions = {
 
           const notification = {
             type: "success",
-            message: response.data.info_txt,
+            message: `${
+              response.data.info_txt
+            } Inserito anche in altre tabelle all'interno dell'evento.`,
           };
           dispatch("notification/add", notification, { root: true });
           EventBus.$emit("data-updated");

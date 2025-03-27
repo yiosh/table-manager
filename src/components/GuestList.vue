@@ -52,6 +52,7 @@
               :tableNumber="tableNumber"
               :maxSeats="maxSeats"
               :numberOfGuests="numberOfGuests"
+              @imported="handleImported"
             />
             <v-dialog v-model="guestDialog" max-width="500px" persistent>
               <v-btn
@@ -539,6 +540,14 @@ export default {
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
   methods: {
+    handleImported(payload) {
+      this.nome_tavolo_cliente = payload.nome_cliente;
+      this.updateTableName(payload.nome_cliente);
+      this.note_tavolo_cliente = payload.note_tavolo;
+      this.updateTableNote(payload.note_tavolo);
+
+      console.log("payload", payload);
+    },
     onInput(event) {
       // Prevent the default input event from being triggered,
       // which would cause the input value to be updated before the watch function is called.
@@ -553,7 +562,7 @@ export default {
 
       console.log("updatedItem", updatedItem);
 
-      this.$store.dispatch("table/updateClientName", updatedItem);
+      this.$store.dispatch("table/updateClientName", updatedItem, true);
       this.$store.state.stage.draw();
     },
     updateTableNote(string) {

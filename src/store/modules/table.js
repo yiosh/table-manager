@@ -488,18 +488,25 @@ export const actions = {
         dispatch("notification/add", notification, { root: true });
       });
   },
-  updateClientName({ commit, dispatch, rootState }, payload) {
+  updateClientName(
+    { commit, dispatch, rootState },
+    payload,
+    ignoreNotification = false
+  ) {
     TMService.updateClientName(payload)
       .then((response) => {
         if (response.data.esito) {
           payload.rootState = rootState;
           commit("UPDATE_TABLE_CLIENT_NAME", payload);
 
-          const notification = {
-            type: "success",
-            message: response.data.info_txt,
-          };
-          dispatch("notification/add", notification, { root: true });
+          if (ignoreNotification === false) {
+            const notification = {
+              type: "success",
+              message: response.data.info_txt,
+            };
+
+            dispatch("notification/add", notification, { root: true });
+          }
           EventBus.$emit("data-updated");
           return true;
         } else {
@@ -526,7 +533,11 @@ export const actions = {
         dispatch("notification/add", notification, { root: true });
       });
   },
-  updateClientNote({ commit, dispatch, rootState }, payload) {
+  updateClientNote(
+    { commit, dispatch, rootState },
+    payload,
+    ignoreNotification = false
+  ) {
     TMService.updateClientNote(payload)
       .then((response) => {
         console.log("workup", response);
@@ -535,11 +546,13 @@ export const actions = {
           payload.rootState = rootState;
           commit("UPDATE_TABLE_CLIENT_NOTE", payload);
 
-          const notification = {
-            type: "success",
-            message: response.data.info_txt,
-          };
-          dispatch("notification/add", notification, { root: true });
+          if (ignoreNotification === false) {
+            const notification = {
+              type: "success",
+              message: response.data.info_txt,
+            };
+            dispatch("notification/add", notification, { root: true });
+          }
           EventBus.$emit("data-updated");
           return true;
         } else {

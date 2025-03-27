@@ -73,73 +73,6 @@
               </template>
             </v-list>
           </v-card>
-
-          <!-- <v-expansion-panel focusable>
-            <v-expansion-panel-content
-              v-for="(item, i) in items"
-              :key="`${i}-exp-tbl`"
-            >
-              <template v-slot:header>
-                <div @click="handleExpanded({ item, index: i })">
-                  {{ item.layout_name }} / {{ item.table_name }}
-                  {{ item.table_number }} / Tot. {{ item.tot_ospiti }}
-                </div>
-              </template>
-              <template v-slot:actions>
-                <div @click="handleExpanded({ item, index: i })">
-                  <v-icon>keyboard_arrow_down</v-icon>
-                </div>
-              </template>
-              <v-card>
-                <v-card-title>
-                  <v-spacer></v-spacer>
-                  <div
-                    style="display: flex; flex-direction:column; max-width: 20rem"
-                  >
-                    <v-btn
-                      :disabled="
-                        selectedSeatsCount + numberOfGuests > maxSeats ||
-                          selected.length == 0
-                      "
-                      color="primary"
-                      @click="importSelected"
-                      >Importa Selezionati</v-btn
-                    >
-                    <small v-if="selectedSeatsCount + numberOfGuests > maxSeats"
-                      >Il numero degli invitati selezionati supera il numero
-                      massimo di posti a sedere nel tavolo</small
-                    >
-                  </div>
-                </v-card-title>
-                <v-card-text
-                  ><v-data-table
-                    v-model="selected"
-                    select-all
-                    :headers="guestHeaders"
-                    :items="item.guests"
-                    disable-initial-sort
-                    hide-actions
-                    :pagination.sync="guestPagination"
-                    no-data-text="Non ci sono ospiti"
-                  >
-                    <template v-slot:items="props">
-                      <tr>
-                        <td>
-                          <v-checkbox
-                            v-model="props.selected"
-                            primary
-                            hide-details
-                          ></v-checkbox>
-                        </td>
-                        <td>{{ props.item.nome }} {{ props.item.cognome }}</td>
-                        <td>{{ props.item.tot }}</td>
-                      </tr>
-                    </template>
-                  </v-data-table></v-card-text
-                >
-              </v-card>
-            </v-expansion-panel-content>
-          </v-expansion-panel> -->
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -207,6 +140,7 @@ export default {
           this.$store.dispatch("notification/add", notification, {
             root: true,
           });
+          this.$emit("imported", this.items[0]);
         }
       } catch (error) {
         const notification = {
