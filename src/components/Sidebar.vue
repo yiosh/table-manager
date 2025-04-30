@@ -107,6 +107,9 @@ export default {
     isSmall() {
       return this.$vuetify.breakpoint.mdAndDown ? "6rem" : "1rem";
     },
+    layout() {
+      return this.$store.state.layout;
+    },
   },
   methods: {
     handleDialog(element) {
@@ -163,6 +166,9 @@ export default {
       }
 
       this.items = [{ title: "Stampa Schema", icon: "print", ref: "print" }];
+      if (this.layout.master_layout && Number(this.layout.master_layout) > 0) {
+        return;
+      }
       if (this.$store.state.info.print_guest_needs) {
         this.items.unshift({
           title: "Lista Esigenze Speciali",

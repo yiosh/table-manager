@@ -89,7 +89,20 @@ export default {
       if (!this.$store.state.error) {
         this.$store.dispatch("table/fetchTableTypes", null, { root: true });
         this.$store.dispatch("guest/getGuestTypes");
-        this.$store.dispatch("table/getTables", layoutId, { root: true });
+        // const payload = {
+        //   layoutId,
+        // };
+
+        // if (
+        //   this.layout.master_layout &&
+        //   Number(this.layout.master_layout) > 0
+        // ) {
+        //   payload.masterLayoutId = this.layout.master_layout;
+        // }
+
+        // console.log("layout", this.layout);
+
+        // this.$store.dispatch("table/getTables", payload, { root: true });
       }
     }
     document.addEventListener("dblclick", (event) => {

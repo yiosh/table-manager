@@ -124,7 +124,7 @@ export default new Vuex.Store({
         });
     },
 
-    setLayout({ commit, dispatch }, layoutId) {
+    setLayout({ commit, dispatch, rootState }, layoutId) {
       TMService.fetchLayout(layoutId)
         .then((response) => {
           let info;
@@ -140,7 +140,15 @@ export default new Vuex.Store({
           }
           if (layout) {
             console.log("layout", layout);
-            return commit("SET_LAYOUT", layout);
+            commit("SET_LAYOUT", layout);
+            const payload = {
+              layoutId,
+            };
+
+            if (layout.master_layout && Number(layout.master_layout) > 0) {
+              payload.masterLayoutId = layout.master_layout;
+            }
+            dispatch("table/getTables", payload, { root: true });
           } else {
             const notification = {
               type: "error",

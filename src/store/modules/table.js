@@ -212,28 +212,23 @@ export const actions = {
     commit("HANDLE_ASTERISC", payload);
     rootState.stage.draw();
   },
-  getTables({ commit, dispatch }, layoutId) {
-    TMService.getTables(layoutId)
+  getTables({ commit, dispatch }, payload) {
+    TMService.getTables(payload)
       .then((response) => {
         this.tablesFetched = [];
         // handle success
         console.log("Tables Fetched:", response.data.dati);
         if (response.data.dati.length == 0) {
           dispatch("endProgress", null, { root: true });
-          // const notification = {
-          //   type: "error",
-          //   multiLine: true,
-          //   message: "Non siamo riusciti a trovare alcun tavolo"
-          // };
-          // dispatch("notification/add", notification, { root: true });
+
           return false;
         } else {
           commit("GET_TABLES", response.data.dati);
         }
-        return layoutId;
+        return payload;
       })
-      .then((layoutId) => {
-        dispatch("guest/getGuests", layoutId, { root: true });
+      .then((payload) => {
+        dispatch("guest/getGuests", payload, { root: true });
       })
       .catch((error) => {
         // handle error
@@ -286,8 +281,8 @@ export const actions = {
         dispatch("notification/add", notification, { root: true });
       });
   },
-  getResume({ commit, dispatch }, boardId) {
-    TMService.getResume(boardId)
+  getResume({ commit, dispatch }, payload) {
+    TMService.getResume(payload)
       .then((response) => {
         // handle success
 
@@ -337,7 +332,17 @@ export const actions = {
           console.log("response", response);
           if (response.data.esito) {
             payload.group.table.id = response.data.dati.id;
-            dispatch("getTables", rootState.layout.id);
+            const newPayload = {
+              layoutId: rootState.layout.id,
+            };
+
+            if (
+              rootState.layout.master_layout &&
+              Number(rootState.layout.master_layout) > 0
+            ) {
+              payload.masterLayoutId = rootState.layout.master_layout;
+            }
+            dispatch("getTables", newPayload);
 
             const notification = {
               type: "success",
@@ -383,7 +388,18 @@ export const actions = {
           console.log("response", response);
           if (response.data.esito) {
             payload.group.table.id = response.data.dati.id;
-            dispatch("getTables", rootState.layout.id);
+
+            const newPayload = {
+              layoutId: rootState.layout.id,
+            };
+
+            if (
+              rootState.layout.master_layout &&
+              Number(rootState.layout.master_layout) > 0
+            ) {
+              payload.masterLayoutId = rootState.layout.master_layout;
+            }
+            dispatch("getTables", newPayload);
 
             const notification = {
               type: "success",
@@ -422,7 +438,17 @@ export const actions = {
       .then((response) => {
         if (response.data.esito) {
           // commit("DELETE_TABLE", table.id);
-          dispatch("getTables", rootState.layout.id);
+          const newPayload = {
+            layoutId: rootState.layout.id,
+          };
+
+          if (
+            rootState.layout.master_layout &&
+            Number(rootState.layout.master_layout) > 0
+          ) {
+            payload.masterLayoutId = rootState.layout.master_layout;
+          }
+          dispatch("getTables", newPayload);
 
           const notification = {
             type: "success",
@@ -460,7 +486,17 @@ export const actions = {
             type: "success",
             message: response.data.info_txt,
           };
-          dispatch("getTables", rootState.layout.id);
+          const newPayload = {
+            layoutId: rootState.layout.id,
+          };
+
+          if (
+            rootState.layout.master_layout &&
+            Number(rootState.layout.master_layout) > 0
+          ) {
+            payload.masterLayoutId = rootState.layout.master_layout;
+          }
+          dispatch("getTables", newPayload);
           dispatch("notification/add", notification, { root: true });
           EventBus.$emit("data-updated");
           return true;

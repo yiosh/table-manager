@@ -433,7 +433,18 @@ export default {
             this.hostname
           }/fl_api/${endpoint}/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
         );
-        this.$store.dispatch("table/getTables", layoutId);
+
+        const payload = {
+          layoutId,
+        };
+
+        if (
+          this.layout.master_layout &&
+          Number(this.layout.master_layout) > 0
+        ) {
+          payload.masterLayoutId = this.layout.master_layout;
+        }
+        this.$store.dispatch("table/getTables", payload);
 
         console.log(response);
       } catch (error) {

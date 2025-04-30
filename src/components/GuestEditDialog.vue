@@ -218,6 +218,9 @@ export default {
     saveAndContinue: true,
   }),
   computed: {
+    layout() {
+      return this.$store.state.layout;
+    },
     layoutId() {
       return this.$store.state.layout.id;
     },
@@ -401,7 +404,17 @@ export default {
       if (this.eIndex > -1) {
         // Update existing guest
         this.$store.dispatch("guest/updateGuest", guest);
-        this.$store.dispatch("table/getTables", this.layoutId, {
+        const payload = {
+          layoutId: this.layoutId,
+        };
+
+        if (
+          this.layout.master_layout &&
+          Number(this.layout.master_layout) > 0
+        ) {
+          payload.masterLayoutId = this.layout.master_layout;
+        }
+        this.$store.dispatch("table/getTables", payload, {
           root: true,
         });
         this.close();

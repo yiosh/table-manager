@@ -298,8 +298,16 @@ export default {
       return total;
     },
     async getResume() {
+      const payload = {
+        layoutId: this.layoutId,
+      };
+
+      if (this.layout.master_layout && Number(this.layout.master_layout) > 0) {
+        payload.masterLayoutId = this.layout.master_layout;
+      }
+
       try {
-        const response = await TMService.getResume(this.layoutId);
+        const response = await TMService.getResume(payload);
         let tables = response.data.dati;
         tables = tables.filter((t) => {
           if (!t.table_name.includes("HIDDEN")) {

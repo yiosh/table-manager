@@ -46,14 +46,14 @@
         <v-card-text>
           <v-toolbar flat color="white">
             <v-spacer></v-spacer>
-            <MigrationDialog
+            <!-- <MigrationDialog
               :tableId="tableId"
               :layout="layout"
               :tableNumber="tableNumber"
               :maxSeats="maxSeats"
               :numberOfGuests="numberOfGuests"
               @imported="handleImported"
-            />
+            /> -->
             <v-dialog v-model="guestDialog" max-width="500px" persistent>
               <v-btn
                 v-if="info.block_guests == 0"
@@ -714,7 +714,18 @@ export default {
       if (this.editedIndex > -1) {
         // Update existing guest
         this.$store.dispatch("guest/updateGuest", guest);
-        this.$store.dispatch("table/getTables", this.layout.id, {
+
+        const newPayload = {
+          layoutId: this.layout.id,
+        };
+
+        if (
+          this.layout.master_layout &&
+          Number(this.layout.master_layout) > 0
+        ) {
+          payload.masterLayoutId = this.layout.master_layout;
+        }
+        this.$store.dispatch("table/getTables", newPayload, {
           root: true,
         });
         this.close();

@@ -79,8 +79,13 @@ export default {
   fetchTableTypes() {
     return apiClient.get(`${endpoint}get_table_types&token=1`);
   },
-  getTables(layoutId) {
-    return apiClient.get(`${endpoint}get_tables&token=1&board_id=${layoutId}`);
+  getTables({ layoutId, masterLayoutId }) {
+    console.log("layoutId", layoutId, "masterLayoutId", masterLayoutId);
+    return apiClient.get(
+      `${endpoint}get_tables&token=1&board_id=${layoutId}${
+        masterLayoutId ? `&master_layout_id=${masterLayoutId}` : ""
+      }`
+    );
   },
   addTable({
     layoutId,
@@ -262,8 +267,12 @@ export default {
   getGuestTypes() {
     return apiClient.get(`${endpoint}get_guest_types&token=1`);
   },
-  getGuests(layoutId) {
-    return apiClient.get(`${endpoint}get_guests&token=1&layout_id=${layoutId}`);
+  getGuests({ layoutId, masterLayoutId }) {
+    return apiClient.get(
+      `${endpoint}get_guests&token=1&layout_id=${layoutId}${
+        masterLayoutId ? `&master_layout_id=${masterLayoutId}` : ""
+      }`
+    );
   },
   addGuest(layoutId, tableId, guest, eventoId) {
     let menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
@@ -287,18 +296,7 @@ export default {
     let menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
       guest.menu3
     }&menu4=${guest.menu4}`;
-    // if (guest.menu1) {
-    //   menus = `&menu1=${guest.menu1}`;
-    // }
-    // if (guest.menu2) {
-    //   menus = `&menu2=${guest.menu2}`;
-    // }
-    // if (guest.menu3) {
-    //   menus = `&menu3=${guest.menu3}`;
-    // }
-    // if (guest.menu4) {
-    //   menus = `&menu4=${guest.menu4}`;
-    // }
+
     return apiClient.get(
       `${endpoint}update_guest&token=1&guest_id=${guest.id}&guest_type=${
         guest.guest_type
@@ -314,9 +312,11 @@ export default {
   deleteGuest(guestId) {
     return apiClient.get(`${endpoint}delete_guest&token=1&guest_id=${guestId}`);
   },
-  getResume(boardId) {
+  getResume({ layoutId, masterLayoutId }) {
     return apiClient.get(
-      `${endpoint}get_tables_report&token=1&board_id=${boardId}`
+      `${endpoint}get_tables_report&token=1&board_id=${layoutId}${
+        masterLayoutId ? `&master_layout_id=${masterLayoutId}` : ""
+      }`
     );
   },
   getOtherTables({ eventoId, layoutId, tableId, tableNumber }) {

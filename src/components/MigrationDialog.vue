@@ -23,7 +23,11 @@
           <v-card>
             <v-list two-line>
               <template v-for="(item, index) in items">
-                <v-list-tile :key="`${item.id}-list-item`" ripple>
+                <v-list-tile
+                  v-if="!item.table_name.includes('HIDDEN TABLE')"
+                  :key="`${item.id}-list-item`"
+                  ripple
+                >
                   <v-list-tile-content>
                     <v-list-tile-title
                       >{{ item.layout_name }} / {{ item.table_name }}
@@ -67,7 +71,10 @@
                   </v-list-tile-action>
                 </v-list-tile>
                 <v-divider
-                  v-if="index + 1 < items.length"
+                  v-if="
+                    index + 1 < items.length &&
+                      !item.table_name.includes('HIDDEN TABLE')
+                  "
                   :key="index"
                 ></v-divider>
               </template>
@@ -140,7 +147,7 @@ export default {
           this.$store.dispatch("notification/add", notification, {
             root: true,
           });
-          this.$emit("imported", this.items[0]);
+          this.$emit("imported", item);
         }
       } catch (error) {
         const notification = {
