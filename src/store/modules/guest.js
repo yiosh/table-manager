@@ -436,6 +436,7 @@ export const getters = {
     for (let index = 1; index <= guestTypesArray.length; index++) {
       let adultCounter = 0;
       let babyCounter = 0;
+      let highChairCounter = 0;
       let guestType = guestTypesArray[index - 1];
 
       state.guests.forEach((guest) => {
@@ -447,19 +448,33 @@ export const getters = {
           if (guest.baby) {
             babyCounter += parseInt(guest.baby);
           }
+
+          if (guest.high_chair) {
+            highChairCounter += parseInt(guest.high_chair);
+          }
         }
       });
-      if (adultCounter > 0 || babyCounter > 0) {
+      if (adultCounter > 0 || babyCounter > 0 || highChairCounter > 0) {
         counterText += `${guestType.label}: `;
         if (adultCounter > 0) {
           counterText += `Adulti ${adultCounter}`;
-          if (babyCounter > 0) {
+          if (babyCounter > 0 || highChairCounter > 0) {
             counterText += ",";
           }
         }
 
         if (babyCounter > 0) {
           counterText += ` Bambini ${babyCounter}`;
+          if (highChairCounter > 0 && rootState.info.show_high_chair == 1) {
+            counterText += ",";
+          }
+        }
+
+        if (highChairCounter > 0 && rootState.info.show_high_chair == 1) {
+          let highchairsLabel = rootState.labels.high_chair_label
+            ? rootState.labels.high_chair_label
+            : "H";
+          counterText += ` ${highchairsLabel} ${highChairCounter}`;
         }
 
         counterText += `\n`;
