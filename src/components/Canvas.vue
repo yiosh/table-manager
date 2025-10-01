@@ -431,7 +431,7 @@ export default {
         const response = await axios.get(
           `https://${
             this.hostname
-          }/fl_api/${endpoint}/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
+          }/api/${endpoint}/?move_table&token=1&table_id=${tableId}&layout_id=${layoutId}&x=${x}&y=${y}`
         );
 
         const payload = {
@@ -462,7 +462,7 @@ export default {
           const response = await axios.get(
             `https://${
               this.hostname
-            }/fl_api/tables-v2/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
+            }/api/tables-v3/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
           );
           console.log(response);
         } catch (error) {
@@ -473,7 +473,7 @@ export default {
         const response = await axios.get(
           `https://${
             this.hostname
-          }/fl_api/tables-v2/?rotate_table&token=1&table_id=${tableId}&layout_id=${layoutId}&angolare=${rotation}`
+          }/api/tables-v3/?rotate_table&token=1&table_id=${tableId}&layout_id=${layoutId}&angolare=${rotation}`
         );
         console.log(response);
       } catch (error) {

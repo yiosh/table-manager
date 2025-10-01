@@ -11,13 +11,9 @@ if (!location.hostname.includes("localhost")) {
 //   : location.hostname;
 const baseURL = protocol + "://" + hostname;
 let endpoint =
-  location.hostname !== "localhost"
-    ? "/fl_api/tables-v3/?"
-    : "/fl_api/tables-dev/?";
+  location.hostname !== "localhost" ? "/api/tables-v3/?" : "/api/tables-dev/?";
 let simpleEndpoint =
-  location.hostname !== "localhost"
-    ? "/fl_api/tables-v3/"
-    : "/fl_api/tables-dev/";
+  location.hostname !== "localhost" ? "/api/tables-v3/" : "/api/tables-dev/";
 
 const apiClient = axios.create({
   baseURL,
