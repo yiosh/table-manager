@@ -6,16 +6,14 @@ let protocol = "https";
 if (!location.hostname.includes("localhost")) {
   hostname = location.hostname;
 }
-// location.hostname == "localhost"
-//   ? "calderonimartini.condivision.cloud"
-//   : location.hostname;
+
 const baseURL = protocol + "://" + hostname;
-let endpoint =
-  location.hostname !== "localhost"
-    ? "/api/tables-v3/?"
-    : "/fl_api/tables-v3/?";
-let simpleEndpoint =
-  location.hostname !== "localhost" ? "/api/tables-v3/" : "/fl_api/tables-v3/";
+let endpoint = location.hostname.includes("localhost")
+  ? "/fl_api/tables-dev/?"
+  : "/fl_api/tables-v3/?";
+let simpleEndpoint = location.hostname.includes("localhost")
+  ? "/fl_api/tables-dev/"
+  : "/fl_api/tables-v3/";
 
 const apiClient = axios.create({
   baseURL,

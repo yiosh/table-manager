@@ -22,78 +22,7 @@
           @click.self="stageClick"
         ></v-rect>
         <!-- @click="stageClick" -->
-        <v-group
-          :ref="group.name"
-          @click="tableSelect(group.name)"
-          @dragend="moveTable"
-          @dragstart="handleDragStart"
-          @mousemove="handleMouseMove"
-          @mouseout="handleMouseOut"
-          v-for="group in tableGroups"
-          :config="group"
-          :key="group.name"
-        >
-          <v-circle
-            v-if="group.table.type === 'circle'"
-            :ref="group.table.tableConfig.name"
-            @transformend="handleTableTransform"
-            :config="group.table.tableConfig"
-          ></v-circle>
-          <v-rect
-            v-if="
-              group.table.type === 'square' || group.table.type === 'rectangle'
-            "
-            :ref="group.table.tableConfig.name"
-            @transformend="handleTableTransform"
-            :config="group.table.tableConfig"
-          ></v-rect>
-          <v-ellipse
-            v-if="group.table.type === 'ellipse'"
-            :ref="group.table.tableConfig.name"
-            @transformend="handleTableTransform"
-            :config="group.table.tableConfig"
-          ></v-ellipse>
-          <!-- TABLE TITLE -->
-          <v-text
-            :ref="group.table.textConfig.name"
-            :config="group.table.textConfig"
-          ></v-text>
-          <!-- COUNTERS -->
-          <v-text
-            v-if="showTablesCounters"
-            :ref="group.guestCounters.name"
-            :config="group.guestCounters"
-          ></v-text>
-          <v-text
-            v-if="
-              group.guestSeraleCounters.text.replace(' ', '') &&
-                showTablesCounters
-            "
-            :ref="group.seraLabel.name"
-            :config="group.seraLabel"
-          ></v-text>
-          <v-text
-            v-if="showTablesCounters"
-            :ref="group.guestSeraleCounters.name"
-            :config="group.guestSeraleCounters"
-          ></v-text>
-          <v-text
-            v-if="showTablesTotal"
-            :ref="group.guestCountersTotal.name"
-            :config="group.guestCountersTotal"
-          ></v-text>
 
-          <v-text
-            v-if="showClientTableName"
-            :ref="group.table.textConfig.nomeCliente + group.table.id"
-            :config="group.nomeClienteText"
-          ></v-text>
-          <v-text
-            v-if="group.asteriscTextConfig.state"
-            :ref="group.asteriscTextConfig.name"
-            :config="group.asteriscTextConfig"
-          ></v-text>
-        </v-group>
         <v-group
           v-if="tooltipConfig.text != null"
           ref="tooltip-group"
@@ -112,6 +41,44 @@
           ref="title"
           :config="printTitleConfig"
         ></v-text>
+        <v-group
+          @dragend="moveTable"
+          @dragstart="handleDragStart"
+          @mousemove="handleMouseMove"
+          @mouseout="handleMouseOut"
+          :config="{ draggable: true }"
+        >
+          <!-- Central Rectangle -->
+          <v-rect :config="rectangleConfig"></v-rect>
+
+          <!-- Left Side Names -->
+          <v-text
+            v-for="(name, index) in leftNames"
+            :key="'left-' + index"
+            :config="{
+              x: rectangleConfig.x - 20 - getTextWidth(name, '16px Arial'),
+              y: rectangleConfig.y + index * 40,
+              text: name,
+              fontSize: 16,
+              fill: '#2c3e50',
+              fontFamily: 'Arial',
+            }"
+          ></v-text>
+
+          <!-- Right Side Names -->
+          <v-text
+            v-for="(name, index) in rightNames"
+            :key="'right-' + index"
+            :config="{
+              x: rectangleConfig.x + rectangleConfig.width + 20,
+              y: rectangleConfig.y + index * 40,
+              text: name,
+              fontSize: 16,
+              fill: '#2c3e50',
+              fontFamily: 'Arial',
+            }"
+          ></v-text>
+        </v-group>
       </v-layer>
     </v-stage>
   </v-card>
@@ -189,6 +156,47 @@ export default {
     },
     groupsBackup: null,
     tablesBackup: null,
+    rectangleConfig: {
+      x: 200,
+      y: 20,
+      width: 80,
+      height: 600,
+      fill: "#3498db",
+      stroke: "#2980b9",
+      strokeWidth: 2,
+    },
+    namesList: [
+      "Alice Johnson",
+      "Bob Smith",
+      "Carol White",
+      "David Brown",
+      "Emma Davis",
+      "Frank Miller",
+      "Grace Wilson",
+      "Henry Moore",
+      "Ivy Taylor",
+      "Jack Anderson",
+      "Kate Thomas",
+      "Liam Jackson",
+      "Maya Martin",
+      "Noah Lee",
+      "Olivia Harris",
+      "Peter Clark",
+      "Quinn Lewis",
+      "Ruby Walker",
+      "Sam Hall",
+      "Tina Allen",
+      "Uma Young",
+      "Victor King",
+      "Wendy Wright",
+      "Xavier Lopez",
+      "Yara Hill",
+      "Zack Scott",
+      "Anna Green",
+      "Ben Adams",
+      "Cara Baker",
+      "Dan Nelson",
+    ],
   }),
   computed: {
     info() {
@@ -233,6 +241,12 @@ export default {
     selectedGroup() {
       return this.$store.state.selectedGroup;
     },
+    leftNames: function() {
+      return this.getRandomNames(15);
+    },
+    rightNames: function() {
+      return this.getRandomNames(15);
+    },
     ...mapGetters({
       guestTotalsV2: "guest/guestTotalsV2",
       tableGroups: "table/getGroups",
@@ -248,6 +262,26 @@ export default {
     }),
   },
   methods: {
+    getTextWidth(text, font) {
+      // Re-use canvas object for better performance
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+
+      // Set the context font to match the desired text style
+      context.font = font;
+
+      // Measure the text
+      const metrics = context.measureText(text);
+
+      // Return the width in pixels
+      return metrics.width;
+    },
+    getRandomNames: function(count) {
+      var shuffled = this.namesList.slice().sort(function() {
+        return Math.random() - 0.5;
+      });
+      return shuffled.slice(0, count);
+    },
     handleDragStart() {
       this.tooltipConfig.text = null;
       this.groupsBackup = JSON.parse(JSON.stringify(this.tableGroups));
