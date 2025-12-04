@@ -432,8 +432,6 @@ export default {
         layoutId: this.layoutId,
       };
 
-      console.log("updatedItem", updatedItem);
-
       // if (
       //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
       // ) {
@@ -447,8 +445,6 @@ export default {
         numeroAlternativo: string,
         layoutId: this.layoutId,
       };
-
-      console.log("updatedItem", updatedItem);
 
       // if (
       //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
@@ -464,8 +460,6 @@ export default {
         layoutId: this.layoutId,
       };
 
-      console.log("updatedItem", updatedItem);
-
       // if (
       //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
       // ) {
@@ -474,9 +468,7 @@ export default {
       this.$store.state.stage.draw();
     },
     editItem(item) {
-      console.log("item", item);
       this.editForm = true;
-      console.log("item", item);
       item.peoples = Number(item.peoples);
       item.baby = Number(item.baby);
       item.chairs_only = Number(item.chairs_only);

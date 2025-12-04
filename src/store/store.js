@@ -55,7 +55,6 @@ export default new Vuex.Store({
     },
     SET_LABELS(state, payload) {
       state.info = Object.assign({}, payload);
-      console.log("labels", payload);
       state.labels = Object.assign({}, payload);
     },
     SET_LAYOUT(state, payload) {
@@ -89,7 +88,6 @@ export default new Vuex.Store({
   },
   actions: {
     redrawCanvas({ state }) {
-      console.log(state);
       state.stage.draw();
     },
     startProgress() {
@@ -135,11 +133,9 @@ export default new Vuex.Store({
           }
 
           if (info) {
-            console.log("info", info);
             commit("SET_LABELS", info);
           }
           if (layout) {
-            console.log("layout", layout);
             commit("SET_LAYOUT", layout);
             const payload = {
               layoutId,

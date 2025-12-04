@@ -127,14 +127,12 @@ export default {
   methods: {
     async handleImport(item) {
       item.loading = true;
-      console.log("handleImport", item);
       let params = `&token=1&table_id=${item.id}&layout_id=${
         this.layout.id
       }&new_table_id=${this.tableId}`;
 
       try {
         const response = await TMService.copyGuests(params);
-        console.log("importGuests", response);
         if (response.data.esito == "OK") {
           this.$store.dispatch("guest/getGuests", this.layout.id, {
             root: true,
@@ -188,7 +186,6 @@ export default {
           });
           this.items = items;
         }
-        console.log("getOtherTables", await response);
       } catch (error) {
         const notification = {
           type: "error",

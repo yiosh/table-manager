@@ -289,8 +289,6 @@ export default {
     },
     fetchSelectedTable(group) {
       let table = group.attrs.table;
-      console.log("table", table);
-      // console.log("table", table);
       let size;
 
       if (table.type == "circle") {
@@ -343,8 +341,6 @@ export default {
         angolare = 0;
       }
 
-      console.log("editedItem", this.editedItem);
-
       let borderColor =
         typeof this.editedItem.borderColor != "object"
           ? this.editedItem.borderColor
@@ -372,8 +368,6 @@ export default {
         noteCliente: this.editedItem.noteCliente,
       };
 
-      console.log("updatedItem", updatedItem);
-
       // if (
       //   JSON.stringify(this.editedItem) !== JSON.stringify(this.defaultItem)
       // ) {
@@ -386,7 +380,6 @@ export default {
     },
     remove() {
       let answer = confirm("Sei sicuro di voler rimuovere questo tavolo?");
-      console.log("Confirm", answer);
       if (answer) {
         let item = {
           layoutId: this.$store.state.layout.id,
@@ -439,7 +432,6 @@ export default {
     // });
 
     EventBus.$on("table-select", (group) => {
-      console.log("groupselected", group);
       this.fetchSelectedTable(group);
     });
 

@@ -46,8 +46,6 @@ export const mutations = {
     state.counter++;
   },
   HANDLE_ASTERISC(state, payload) {
-    console.log("payload", payload);
-
     const groupToEdit = _find(state.groups, (group) => {
       return group.table.id == payload.tableId;
     });
@@ -55,8 +53,6 @@ export const mutations = {
     if (groupToEdit) {
       groupToEdit.asteriscTextConfig.state = payload.state;
     }
-
-    console.log("groupToEdit", groupToEdit);
   },
   UPDATE_TABLE_CLIENT_NAME(state, table) {
     const groupToEdit = _find(state.groups, (group) => {
@@ -65,8 +61,6 @@ export const mutations = {
     const tableFound = _find(state.tablesFetched, (t) => {
       return t.id == table.id;
     });
-    console.log("groupToEditTable", table);
-    console.log("groupToEdit", groupToEdit);
 
     if (groupToEdit) {
       groupToEdit.nomeClienteText.nomeCliente = table.nomeCliente;
@@ -87,15 +81,7 @@ export const mutations = {
     const tableFound = _find(state.tablesFetched, (t) => {
       return t.id == table.id;
     });
-    console.log("groupToEdit", groupToEdit);
-    console.log("tableFound", tableFound);
 
-    // if (groupToEdit) {
-    //   groupToEdit.noteClienteText.noteCliente = groupToEdit.noteCliente;
-    //   groupToEdit.noteClienteText.text = groupToEdit.noteCliente;
-    //   const tableToEdit = groupToEdit.table;
-    //   tableToEdit.textConfig.noteCliente = groupToEdit.noteCliente;
-    // }
     if (tableFound) {
       tableFound.note_tavolo = table.noteCliente;
     }
@@ -105,13 +91,7 @@ export const mutations = {
     const groupToEdit = _find(state.groups, (group) => {
       return group.table.id == table.id;
     });
-    console.log("groupToEdit", groupToEdit, table);
-    // if (groupToEdit) {
-    //   groupToEdit.noteClienteText.noteCliente = groupToEdit.noteCliente;
-    //   groupToEdit.noteClienteText.text = groupToEdit.noteCliente;
-    //   const tableToEdit = groupToEdit.table;
-    //   tableToEdit.textConfig.noteCliente = groupToEdit.noteCliente;
-    // }
+
     table.rootState.stage.draw();
   },
   UPDATE_TABLE(state, table) {
@@ -217,7 +197,6 @@ export const actions = {
       .then((response) => {
         this.tablesFetched = [];
         // handle success
-        console.log("Tables Fetched:", response.data.dati);
         if (response.data.dati.length == 0) {
           dispatch("endProgress", null, { root: true });
 
@@ -304,7 +283,6 @@ export const actions = {
   moveTable({ commit, dispatch }, payload) {
     TMService.moveTable(payload)
       .then((response) => {
-        console.log("response", response);
         payload.group.table.id = response.data.id;
 
         const notification = {
@@ -326,10 +304,8 @@ export const actions = {
   },
   addTable({ commit, dispatch, rootState }, payload) {
     if (payload.isNew === true) {
-      console.log("payload", payload);
       TMService.addTable(payload.details)
         .then((response) => {
-          console.log("response", response);
           if (response.data.esito) {
             payload.group.table.id = response.data.dati.id;
             const newPayload = {
@@ -378,14 +354,12 @@ export const actions = {
   },
   duplicateTable({ commit, dispatch, rootState }, payload) {
     if (payload.isNew === true) {
-      console.log("payload", payload);
       let form = JSON.parse(JSON.stringify(payload.details));
       form.scaleX = payload.group.table.tableConfig.scaleX;
       form.scaleY = payload.group.table.tableConfig.scaleY;
 
       TMService.duplicateTable(form)
         .then((response) => {
-          console.log("response", response);
           if (response.data.esito) {
             payload.group.table.id = response.data.dati.id;
 
@@ -576,8 +550,6 @@ export const actions = {
   ) {
     TMService.updateClientNote(payload)
       .then((response) => {
-        console.log("workup", response);
-
         if (response.data.esito) {
           payload.rootState = rootState;
           commit("UPDATE_TABLE_CLIENT_NOTE", payload);

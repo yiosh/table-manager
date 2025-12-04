@@ -315,20 +315,15 @@ export default {
         layoutId: this.layoutId,
       };
 
-      console.log("updatedItem", updatedItem);
-
       this.$store.dispatch("table/updateNumeroAlternativo", updatedItem);
       this.$store.state.stage.draw();
     },
     updateTableName(string, table) {
-      console.log(string, table);
       let updatedItem = {
         id: table.id,
         nomeCliente: string,
         layoutId: this.layoutId,
       };
-
-      console.log("updatedItem", updatedItem);
 
       this.$store.dispatch("table/updateClientName", updatedItem);
 
@@ -345,7 +340,6 @@ export default {
         noteCliente: string,
         layoutId: this.layoutId,
       };
-      console.log("updatedItem", updatedItem);
 
       this.$store.dispatch("table/updateClientNote", updatedItem);
       this.$store.state.stage.draw();

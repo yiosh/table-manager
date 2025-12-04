@@ -10,12 +10,12 @@ if (!location.hostname.includes("localhost")) {
 //   ? "calderonimartini.condivision.cloud"
 //   : location.hostname;
 const baseURL = protocol + "://" + hostname;
-let endpoint =
-  location.hostname !== "localhost"
-    ? "/api/tables-v3/?"
-    : "/fl_api/tables-v3/?";
-let simpleEndpoint =
-  location.hostname !== "localhost" ? "/api/tables-v3/" : "/fl_api/tables-v3/";
+let endpoint = location.hostname.includes("localhost")
+  ? "/api/tables-v3/?"
+  : "/api/tables-v3/?";
+let simpleEndpoint = location.hostname.includes("localhost")
+  ? "/api/tables-v3/?"
+  : "/api/tables-v3/?";
 
 const apiClient = axios.create({
   baseURL,
@@ -30,10 +30,6 @@ const apiClient = axios.create({
 
 apiClient.interceptors.response.use(
   (response) => {
-    // // console.log("reeessss", response);
-    // if (response.data) {
-    //   console.log("response.data", typeof response.data);
-    // }
     if (response.data && response.data.status == 401) {
       alert(response.data.message);
       window.location = "/login.php";
@@ -42,17 +38,7 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.log("errrrrror", error);
-    // const status = error.response.status || 500;
-    // const isEmpty =
-    //   !error.response.data || Object.keys(error.response.data).length === 0;
-
-    // if (isEmpty && status !== 401) {
-    //   // Not empty response for Unauthorized (401)
-    //   window.location = "/login"; // Replace with your login route
-    // }
-
-    // return Promise.reject(error);
+    console.log("error", error);
   }
 );
 
@@ -78,7 +64,6 @@ export default {
     return apiClient.get(`${endpoint}get_table_types&token=1`);
   },
   getTables({ layoutId, masterLayoutId }) {
-    console.log("layoutId", layoutId, "masterLayoutId", masterLayoutId);
     return apiClient.get(
       `${endpoint}get_tables&token=1&board_id=${layoutId}${
         masterLayoutId ? `&master_layout_id=${masterLayoutId}` : ""
@@ -102,7 +87,6 @@ export default {
     maxSeats,
     noteCliente,
   }) {
-    console.log("back", backgroundColor, "border", borderColor);
     borderColor = borderColor.replace("#", "");
     backgroundColor = backgroundColor.replace("#", "");
 
@@ -130,7 +114,6 @@ export default {
     scaleY,
     eventoId,
   }) {
-    console.log("back", backgroundColor, "border", borderColor);
     borderColor = borderColor.replace("#", "");
     backgroundColor = backgroundColor.replace("#", "");
 
@@ -276,7 +259,6 @@ export default {
     let menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
       guest.menu3
     }&menu4=${guest.menu4}`;
-    console.log("eventoId", eventoId);
     return apiClient.get(
       `${endpoint}insert_guest&token=1&layout_id=${layoutId}&evento_id=${eventoId}&guest_type=${
         guest.guest_type
@@ -286,11 +268,10 @@ export default {
         guest.chairs_only
       }&highchair=${guest.high_chair}&note_intolleranze=${
         guest.note_intolleranze
-      }${menus}`
+      }${menus}${guest.side_seat ? "&side_seat=" + guest.side_seat : ""}`
     );
   },
   updateGuest(guest) {
-    console.log("guest", guest);
     let menus = `&menu1=${guest.menu1}&menu2=${guest.menu2}&menu3=${
       guest.menu3
     }&menu4=${guest.menu4}`;
@@ -304,7 +285,7 @@ export default {
         guest.high_chair
       }&note_intolleranze=${guest.note_intolleranze}${menus}&table_id=${
         guest.table_id
-      }`
+      }${guest.side_seat ? "&side_seat=" + guest.side_seat : ""}`
     );
   },
   deleteGuest(guestId) {

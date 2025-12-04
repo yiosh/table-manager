@@ -34,7 +34,6 @@ export const mutations = {
     let index = state.guests.findIndex((guest) => {
       return guest.id == updatedGuest.id;
     });
-    console.log("updatedGuest", updatedGuest);
     Object.assign(state.guests[index], updatedGuest);
   },
   DELETE_GUEST(state, guest) {

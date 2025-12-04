@@ -46,14 +46,9 @@
         <v-card-text>
           <v-toolbar flat color="white">
             <v-spacer></v-spacer>
-            <!-- <MigrationDialog
-              :tableId="tableId"
-              :layout="layout"
-              :tableNumber="tableNumber"
-              :maxSeats="maxSeats"
-              :numberOfGuests="numberOfGuests"
-              @imported="handleImported"
-            /> -->
+
+            <TableReport v-if="info.guest_seat_side_manage == 1" />
+
             <v-dialog v-model="guestDialog" max-width="500px" persistent>
               <v-btn
                 v-if="info.block_guests == 0"
@@ -180,13 +175,22 @@
                           ></v-select>
                         </v-flex>
 
-                        <v-flex xs12>
+                        <v-flex xs6>
                           <v-select
                             item-text="text"
                             item-value="value"
                             v-model.number="editedItem.table_id"
                             :items="tableList"
                             label="Associa al tavolo"
+                          ></v-select>
+                        </v-flex>
+                        <v-flex xs6>
+                          <v-select
+                            item-text="text"
+                            item-value="value"
+                            v-model="editedItem.side_seat"
+                            :items="tableSides"
+                            label="Lato"
                           ></v-select>
                         </v-flex>
                         <v-flex xs12 v-if="!editForm">
@@ -272,11 +276,13 @@
 import { EventBus } from "../event-bus.js";
 import { mapState, mapGetters } from "vuex";
 import MigrationDialog from "./MigrationDialog";
+import TableReport from "./TableReport";
 
 export default {
   name: "GuestList",
   components: {
     MigrationDialog,
+    TableReport,
   },
   data: (vue) => {
     return {
@@ -285,6 +291,25 @@ export default {
         descending: true,
         rowsPerPage: -1,
       },
+      tableSides: [
+        {
+          text: "Sinistra",
+          value: "0",
+        },
+        {
+          text: "Sopra",
+          value: "1",
+        },
+        {
+          text: "Destra",
+          value: "2",
+        },
+
+        {
+          text: "Sotto",
+          value: "3",
+        },
+      ],
       nome_tavolo_cliente: null,
       note_tavolo_cliente: null,
       currentTable: null,
@@ -335,6 +360,7 @@ export default {
         menu2: 0,
         menu3: 0,
         menu4: 0,
+        side_seat: "0",
       },
       defaultItem: {
         id: null,
@@ -350,6 +376,7 @@ export default {
         menu2: 0,
         menu3: 0,
         menu4: 0,
+        side_seat: "0",
       },
       numberRules: [
         (v) => typeof v === "number" || "Per favore inserisci un numero",
@@ -384,7 +411,6 @@ export default {
           this.$store.dispatch("notification/add", notification, {
             root: true,
           });
-          console.log("tableIds", oldId, newId);
           if (newId != oldId) {
             setTimeout(() => {
               this.editedItem.table_id = oldId;
@@ -545,8 +571,6 @@ export default {
       this.updateTableName(payload.nome_cliente);
       this.note_tavolo_cliente = payload.note_tavolo;
       this.updateTableNote(payload.note_tavolo);
-
-      console.log("payload", payload);
     },
     onInput(event) {
       // Prevent the default input event from being triggered,
@@ -560,8 +584,6 @@ export default {
         layoutId: this.layout.id,
       };
 
-      console.log("updatedItem", updatedItem);
-
       this.$store.dispatch("table/updateClientName", updatedItem, true);
       this.$store.state.stage.draw();
     },
@@ -571,8 +593,6 @@ export default {
         noteCliente: string,
         layoutId: this.layout.id,
       };
-
-      console.log("updatedItem", updatedItem);
 
       this.$store.dispatch("table/updateClientNote", updatedItem);
       this.$store.state.stage.draw();
@@ -638,7 +658,6 @@ export default {
       this.dialog = false;
     },
     editItem(item) {
-      console.log("item", item);
       this.editForm = true;
       item.peoples = Number(item.peoples);
       item.baby = Number(item.baby);
@@ -754,7 +773,6 @@ export default {
     // On table select grab the table's id and other data
     EventBus.$on("table-select", (group) => {
       let table = group.attrs.table;
-      console.log("group", table.textConfig);
       this.tableId = table.id;
       this.$store.commit("SET_CURRENT_TABLE_ID", table.id);
       this.tableName = table.textConfig.name;
@@ -778,7 +796,6 @@ export default {
     });
 
     EventBus.$on("guest-list-select", () => {
-      console.log("wtf");
       if (this.$store.state.selectedGroup != null) {
         this.dialog = true;
       } else {

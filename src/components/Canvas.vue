@@ -374,7 +374,6 @@ export default {
       }
     },
     handlePrintTitle() {
-      console.log("title", this.printTitle);
       let { eventName, eventDate } = this.printTitle;
       eventDate = eventDate != "0000-00-00" ? `- ${eventDate}` : "";
 
@@ -388,7 +387,6 @@ export default {
       return count;
     },
     log(e) {
-      console.log(e);
       EventBus.$emit("guest-list-select");
     },
     async moveTable(e) {
@@ -445,8 +443,6 @@ export default {
           payload.masterLayoutId = this.layout.master_layout;
         }
         this.$store.dispatch("table/getTables", payload);
-
-        console.log(response);
       } catch (error) {
         console.log(error);
       }
@@ -464,7 +460,6 @@ export default {
               this.hostname
             }/api/tables-v3/?scale_table&token=1&table_id=${tableId}&layout_id=${layoutId}&scale_x=${scaleX}&scale_y=${scaleY}`
           );
-          console.log(response);
         } catch (error) {
           console.log(error);
         }
@@ -475,14 +470,12 @@ export default {
             this.hostname
           }/api/tables-v3/?rotate_table&token=1&table_id=${tableId}&layout_id=${layoutId}&angolare=${rotation}`
         );
-        console.log(response);
       } catch (error) {
         console.log(error);
       }
     },
     stageClick(e) {
       const { stage } = this.$store.state;
-      console.log("stageClick", e);
       // if click on empty area - remove all transformers
       if (e.target === stage || e.target.index == 0) {
         if (this.selectedGroup != null) {
@@ -503,7 +496,6 @@ export default {
         !this.$store.state.selectedGroup ||
         this.$store.state.selectedGroup.name !== group.attrs.name
       ) {
-        console.log("Group selected", group);
         let name = `.${String(groupName)}-tbl`;
         stage.find("Transformer").destroy();
         // create new transformer
@@ -571,13 +563,10 @@ export default {
     const layer = this.$refs.layer;
     this.$store.dispatch("setLayer", layer);
     if (this.orientation === "1") {
-      console.log("1");
       this.backgroundConfig.height = 1200;
       this.backgroundConfig.width = 792;
     }
     if (this.orientation === "0") {
-      console.log("0");
-
       this.backgroundConfig.height = 792;
       this.backgroundConfig.width = 1200;
     }

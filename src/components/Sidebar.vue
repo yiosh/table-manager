@@ -49,7 +49,11 @@
     </v-navigation-drawer>
     <GuestList v-if="this.$store.state.layout.evento_id != 0"></GuestList>
     <TablesResume v-if="this.$store.state.layout.evento_id != 0"></TablesResume>
-
+    <ReportTables
+      v-if="this.$store.state.layout.guest_seat_side_manage != 0"
+      :tableReportDialog="tableReportDialog"
+      @tables-report-close="tableReportDialog = false"
+    ></ReportTables>
     <TableList
       :tableListDialog="tableListDialog"
       @dialog-closed="tableListDialog = false"
@@ -66,6 +70,7 @@ import GuestList from "./GuestList";
 import TablesResume from "./TablesResume";
 
 import TableList from "./TableList";
+import ReportTables from "./ReportTables";
 
 import PrintCanvas from "./PrintCanvas";
 import { EventBus } from "../event-bus.js";
@@ -79,6 +84,7 @@ export default {
     TablesResume,
     PrintCanvas,
     TableList,
+    ReportTables,
   },
   data: () => ({
     drawer: true,
@@ -95,6 +101,7 @@ export default {
         "È necessario selezionare un tavolo per aprire il suo elenco di ospiti",
     },
     tableListDialog: false,
+    tableReportDialog: false,
   }),
   computed: {
     logo() {
@@ -111,6 +118,7 @@ export default {
       return this.$store.state.layout;
     },
   },
+
   methods: {
     handleDialog(element) {
       switch (element.icon) {
@@ -138,7 +146,6 @@ export default {
           break;
         case "people":
           EventBus.$emit("table-resume-select");
-          console.log("worked");
           break;
         case "list":
           this.tableListDialog = true;
@@ -148,6 +155,9 @@ export default {
           break;
         case "fact_check":
           window.open(element.href, "_blank");
+          break;
+        case "table_restaurant":
+          this.tableReportDialog = true;
           break;
       }
     },
@@ -183,6 +193,13 @@ export default {
           icon: "checklist",
           ref: "printguestlist",
           href: this.$store.state.info.print_guest_list,
+        });
+      }
+      if (this.$store.state.info.guest_seat_side_manage) {
+        this.items.unshift({
+          title: "Report Tavoli",
+          icon: "table_restaurant",
+          ref: "reporttavoli",
         });
       }
       if (this.$store.state.layout.evento_id !== "0") {

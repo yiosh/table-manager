@@ -277,7 +277,6 @@ export default {
             "Non ci sono abbastanza posti su quel tavolo per spostare lì questo ospite",
         };
         this.$store.dispatch("notification/add", notification, { root: true });
-        console.log("tableIds", oldId, newId);
         setTimeout(() => {
           this.editedItem.table_id = oldId;
         }, 500);
