@@ -4,11 +4,11 @@
       >Tavolo Report</v-btn
     >
     <v-card id="print">
-      <v-card-title>
+      <!-- <v-card-title>
         <span class="headline">{{ tableName }} {{ tableNumber }}</span>
-      </v-card-title>
+      </v-card-title> -->
 
-      <v-card-text>
+      <!-- <v-card-text>
         <v-container grid-list-md class="py-0">
           <v-layout wrap>
             <v-flex xs4> </v-flex>
@@ -74,7 +74,98 @@
             <v-flex xs4> </v-flex>
           </v-layout>
         </v-container>
-      </v-card-text>
+      </v-card-text> -->
+      <div id="print" ref="captureElement" class="table-container-wrapper">
+        <div class="custom-card" v-if="computedTableSelected">
+          <div class="custom-card-title">
+            <span class="headline"> {{ tableName }} {{ tableNumber }} </span>
+          </div>
+
+          <div class="custom-card-text">
+            <div class="custom-grid-container">
+              <div class="guest-row top-row">
+                <div class="guest-col col-1"></div>
+                <div class="guest-col col-2 center-content">
+                  <small
+                    v-if="topGuests && topGuests.length"
+                    v-for="(guest, index) in topGuests"
+                    :key="'top-' + index"
+                    class="guest-name"
+                  >
+                    {{ guest.cognome }} {{ guest.nome }}
+                  </small>
+                </div>
+                <div class="guest-col col-3"></div>
+              </div>
+
+              <div class="guest-row middle-row">
+                <div class="guest-col col-1 right-align-content">
+                  <p
+                    v-if="leftGuests && leftGuests.length"
+                    v-for="(guest, index) in leftGuests"
+                    :key="'left-' + index"
+                    class="guest-label mb-2"
+                  >
+                    <small>{{ guest.cognome }} {{ guest.nome }}</small>
+                  </p>
+                </div>
+
+                <div class="guest-col col-2 center-content">
+                  <div
+                    :style="{
+                      width:
+                        Math.round(
+                          Number(
+                            computedTableSelected.tableConfig.width
+                              ? computedTableSelected.tableConfig.width
+                              : 150
+                          ) * computedTableSelected.tableConfig.scaleX
+                        ) + 'px',
+                      height:
+                        Math.round(
+                          Number(
+                            computedTableSelected.tableConfig.height
+                              ? computedTableSelected.tableConfig.height
+                              : 150
+                          ) * computedTableSelected.tableConfig.scaleY
+                        ) + 'px',
+                      border: '2px solid #000000',
+                      borderRadius:
+                        computedTableSelected.type == 'circle' ? '50%' : 0,
+                    }"
+                  ></div>
+                </div>
+
+                <div class="guest-col col-3">
+                  <p
+                    v-if="rightGuests && rightGuests.length"
+                    v-for="(guest, index) in rightGuests"
+                    :key="'right-' + index"
+                    class="guest-label mb-2"
+                  >
+                    <small>{{ guest.cognome }} {{ guest.nome }}</small>
+                  </p>
+                </div>
+              </div>
+
+              <div class="guest-row bottom-row">
+                <div class="guest-col col-1"></div>
+                <div class="guest-col col-2 center-content">
+                  <small
+                    v-if="bottomGuests && bottomGuests.length"
+                    v-for="(guest, index) in bottomGuests"
+                    :key="'bottom-' + index"
+                    class="guest-name"
+                  >
+                    {{ guest.cognome }} {{ guest.nome }}
+                  </small>
+                </div>
+                <div class="guest-col col-3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <v-card-actions>
         <v-btn flat @click="printElm">
@@ -390,7 +481,89 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+/* Styling for the overall card structure */
+.custom-card {
+  border-bottom: 1px solid #ccc; /* Simple border for v-card elevation/outline */
+  margin-top: 20px; /* Space between cards */
+  padding: 16px; /* Inner padding */
+}
+
+.custom-card-title {
+  padding-bottom: 8px;
+}
+
+.headline {
+  font-size: 1.5rem; /* Equivalent to Vuetify's headline */
+  font-weight: 500;
+}
+
+.custom-card-text {
+  /* Remove Vuetify's py-0 equivalent padding if desired */
+}
+
+/* Layout for the Seating Arrangement (v-container/v-layout/v-flex replacement) */
+.custom-grid-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.guest-row {
+  display: flex;
+  width: 100%;
+}
+
+.guest-col {
+  /* Simulates v-flex xs4 (12/3 = 4) */
+  flex-basis: 33.333333%;
+  max-width: 33.333333%;
+  padding: 8px 4px; /* Small padding */
+}
+
+/* Specific Layout Adjustments */
+.center-content {
+  display: flex;
+  justify-content: center; /* Equivalent to d-flex justify-center */
+  align-items: center;
+  flex-wrap: wrap; /* Allow guests to wrap if needed */
+}
+
+.right-align-content {
+  display: flex;
+  flex-direction: column; /* To stack the p tags */
+  justify-content: flex-end; /* Equivalent to justify-end */
+  align-items: flex-end; /* To align text to the right side of the column */
+}
+
+.guest-name {
+  margin: 0 4px; /* Space between names in top/bottom rows */
+}
+
+/* Paragraph styling for left/right guests */
+.guest-label {
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-bottom: 8px; /* Equivalent to mb-2 */
+  line-height: 1.2;
+}
+
+.guest-label:last-child {
+  margin-bottom: 0; /* Remove margin from last element */
+}
+
+.right-align-content .guest-label {
+  text-align: right; /* Equivalent to style="text-align: end;" */
+}
+
+/* Styling for the table visual placeholder */
+.table-visual-placeholder {
+  /* This is where the tableFormatted.styles will apply. */
+  /* Example style for a circular table when tableFormatted.styles is not defined: */
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid black;
+}
 .vertical-rectangle {
   /* The height is greater than the width to make it vertical/long */
   width: 100px;

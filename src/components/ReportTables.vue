@@ -164,7 +164,9 @@ export default {
           };
         }
 
-        this.tablesFormatted = [...this.tablesFormatted, t];
+        if (!t.table_name.includes("HIDDEN")) {
+          this.tablesFormatted = [...this.tablesFormatted, t];
+        }
       });
     },
     close() {

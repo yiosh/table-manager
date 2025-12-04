@@ -29,22 +29,24 @@
       </v-toolbar>
 
       <v-list class="pt-0" dense>
-        <v-list-tile
-          v-for="item in items"
-          :key="item.title"
-          @click.stop="handleDialog(item)"
-        >
-          <v-list-tile-action>
-            <v-tooltip left slot="activator">
-              <v-icon slot="activator">{{ item.icon }}</v-icon>
-              <span>{{ item.title }}</span>
-            </v-tooltip>
-          </v-list-tile-action>
+        <template v-for="item in items">
+          <v-list-tile
+            v-if="item.hide == false"
+            @click.stop="handleDialog(item)"
+            :key="item.title"
+          >
+            <v-list-tile-action>
+              <v-tooltip left slot="activator">
+                <v-icon slot="activator">{{ item.icon }}</v-icon>
+                <span>{{ item.title }}</span>
+              </v-tooltip>
+            </v-list-tile-action>
 
-          <v-list-tile-content>
-            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </template>
       </v-list>
     </v-navigation-drawer>
     <GuestList v-if="this.$store.state.layout.evento_id != 0"></GuestList>
@@ -122,22 +124,6 @@ export default {
   methods: {
     handleDialog(element) {
       switch (element.icon) {
-        // case "people":
-        //   if (this.$store.state.selectedGroup != null) {
-        //     EventBus.$emit("guest-list-select");
-        //     this.$store.commit("GUEST_LIST_DIALOG", true);
-        //   } else {
-        //     const notification = {
-        //       type: "warning",
-        //       multiLine: true,
-        //       message:
-        //         "È necessario selezionare un tavolo per aprire il suo elenco di ospiti",
-        //     };
-        //     this.$store.dispatch("notification/add", notification, {
-        //       root: true,
-        //     });
-        //   }
-        //   break;
         case "format_list_numbered":
           window.open(element.href, "_blank");
           break;
@@ -175,7 +161,9 @@ export default {
         }
       }
 
-      this.items = [{ title: "Stampa Schema", icon: "print", ref: "print" }];
+      this.items = [
+        { title: "Stampa Schema", icon: "print", ref: "print", hide: false },
+      ];
       if (this.layout.master_layout && Number(this.layout.master_layout) > 0) {
         return;
       }
@@ -185,6 +173,7 @@ export default {
           icon: "format_list_numbered",
           ref: "printguestneeds",
           href: this.$store.state.info.print_guest_needs,
+          hide: false,
         });
       }
       if (this.$store.state.info.print_guest_list) {
@@ -193,6 +182,7 @@ export default {
           icon: "checklist",
           ref: "printguestlist",
           href: this.$store.state.info.print_guest_list,
+          hide: false,
         });
       }
       if (this.$store.state.info.guest_seat_side_manage) {
@@ -200,6 +190,10 @@ export default {
           title: "Report Tavoli",
           icon: "table_restaurant",
           ref: "reporttavoli",
+          hide:
+            Number(this.$store.state.info.guest_seat_side_manage) == 0
+              ? true
+              : false,
         });
       }
       if (this.$store.state.layout.evento_id !== "0") {
@@ -207,11 +201,13 @@ export default {
           title: "Elenco Tavoli",
           icon: "list",
           ref: "tablelist",
+          hide: false,
         });
         this.items.unshift({
           title: "Report Ospiti",
           icon: "people",
           ref: "guestlist",
+          hide: false,
         });
       }
       if (this.$store.state.info.print_tableau) {
@@ -220,6 +216,7 @@ export default {
           icon: "fact_check",
           ref: "printtableau",
           href: this.$store.state.info.print_tableau,
+          hide: false,
         });
       }
     });
