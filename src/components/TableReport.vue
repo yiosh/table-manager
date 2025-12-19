@@ -99,7 +99,7 @@
               </div>
 
               <div class="guest-row middle-row">
-                <div class="guest-col col-1 right-align-content">
+                <div style="text-align: right" class="guest-col col-1">
                   <p
                     v-if="leftGuests && leftGuests.length"
                     v-for="(guest, index) in leftGuests"

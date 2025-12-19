@@ -117,7 +117,7 @@
                 ></v-text-field>
               </v-flex>
 
-              <v-flex xs12>
+              <v-flex xs6>
                 <v-select
                   item-text="text"
                   item-value="value"
@@ -126,6 +126,16 @@
                   label="Associa al tavolo"
                 ></v-select>
               </v-flex>
+              <v-flex xs6 v-if="info.guest_seat_side_manage == 1">
+                <v-select
+                  item-text="text"
+                  item-value="value"
+                  v-model="editedItem.side_seat"
+                  :items="tableSides"
+                  label="Lato"
+                ></v-select>
+              </v-flex>
+
               <v-flex xs12 v-if="eIndex < 0">
                 <v-checkbox
                   v-model="saveAndContinue"
@@ -172,7 +182,25 @@ export default {
     valid: true,
     dialog: false,
     editForm: false,
+    tableSides: [
+      {
+        text: "Sinistra",
+        value: "0",
+      },
+      {
+        text: "Sopra",
+        value: "1",
+      },
+      {
+        text: "Destra",
+        value: "2",
+      },
 
+      {
+        text: "Sotto",
+        value: "3",
+      },
+    ],
     editedItem: {
       id: null,
       table_id: null,
@@ -188,6 +216,7 @@ export default {
       menu2: 0,
       menu3: 0,
       menu4: 0,
+      side_seat: "0",
     },
     defaultItem: {
       id: null,
@@ -204,6 +233,7 @@ export default {
       menu2: 0,
       menu3: 0,
       menu4: 0,
+      side_seat: "0",
     },
     numberRules: [
       (v) => typeof v === "number" || "Per favore inserisci un numero",
@@ -352,16 +382,9 @@ export default {
           maxReached = true;
         }
       }
+      console.log("totalPeople", totalPeople);
 
-      if (totalPeople > maxSeats) {
-        maxReached = true;
-      }
-
-      if (maxReached) {
-        return true;
-      } else {
-        return false;
-      }
+      return totalPeople > maxSeats;
     },
     save() {
       let guest = Object.assign({}, this.editedItem);

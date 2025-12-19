@@ -184,7 +184,7 @@
                             label="Associa al tavolo"
                           ></v-select>
                         </v-flex>
-                        <v-flex xs6>
+                        <v-flex xs6 v-if="info.guest_seat_side_manage == 1">
                           <v-select
                             item-text="text"
                             item-value="value"
@@ -644,15 +644,9 @@ export default {
         }
       }
 
-      if (totalPeople > maxSeats) {
-        maxReached = true;
-      }
+      console.log("totalPeople", totalPeople);
 
-      if (maxReached) {
-        return true;
-      } else {
-        return false;
-      }
+      return totalPeople > maxSeats;
     },
     closeDialog() {
       this.dialog = false;
