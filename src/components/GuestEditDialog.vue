@@ -50,7 +50,7 @@
                   type="number"
                 ></v-text-field>
               </v-flex>
-              <v-flex xs12 sm6 md3>
+              <v-flex v-if="info.show_chairs_only == 1" xs12 sm6 md3>
                 <v-text-field
                   v-model.number="editedItem.chairs_only"
                   :rules="numberRules"
@@ -58,7 +58,7 @@
                   type="number"
                 ></v-text-field>
               </v-flex>
-              <v-flex xs12 sm6 md3>
+              <v-flex v-if="info.show_high_chair == 1" xs12 sm6 md3>
                 <v-text-field
                   v-model.number="editedItem.high_chair"
                   :rules="numberRules"
@@ -68,7 +68,13 @@
               </v-flex>
 
               <!-- New Guest Section -->
-              <template v-if="info.show_tables_menu">
+              <template
+                v-if="
+                  info.show_tables_menu &&
+                    Number(editedItem.baby) < 1 &&
+                    Number(editedItem.high_chair) < 1
+                "
+              >
                 <v-flex xs12>
                   <v-toolbar flat height="24" dark color="#424242">
                     <v-toolbar-title>PASTI SPECIALI</v-toolbar-title>
@@ -241,6 +247,11 @@ export default {
         Number(v) <= Number(vue.info.max_seats_each_row) ||
         "Per favore inserisci un numero minore o uguale a " +
           vue.info.max_seats_each_row,
+      (v) =>
+        vue.seatCount <= Number(vue.info.max_seats_each_row) ||
+        "Numero massimo per riga raggiunto (" +
+          vue.info.max_seats_each_row +
+          " per riga)",
     ],
     numberRules2: [
       (v) => typeof v === "number" || "Per favore inserisci un numero",
@@ -248,6 +259,14 @@ export default {
     saveAndContinue: true,
   }),
   computed: {
+    seatCount() {
+      return (
+        Number(this.editedItem.peoples) +
+        Number(this.editedItem.baby) +
+        Number(this.editedItem.high_chair) +
+        Number(this.editedItem.chairs_only)
+      );
+    },
     layout() {
       return this.$store.state.layout;
     },
@@ -384,7 +403,7 @@ export default {
       }
       console.log("totalPeople", totalPeople);
 
-      return totalPeople > maxSeats;
+      return maxReached ? maxReached : totalPeople > maxSeats;
     },
     save() {
       let guest = Object.assign({}, this.editedItem);

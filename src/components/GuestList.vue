@@ -118,7 +118,13 @@
                         </v-flex>
 
                         <!-- New Guest Section -->
-                        <template v-if="info.show_tables_menu">
+                        <template
+                          v-if="
+                            info.show_tables_menu &&
+                              Number(editedItem.baby) < 1 &&
+                              Number(editedItem.high_chair) < 1
+                          "
+                        >
                           <v-flex xs12>
                             <v-toolbar flat height="24" dark color="#424242">
                               <v-toolbar-title>PASTI SPECIALI</v-toolbar-title>
@@ -384,6 +390,11 @@ export default {
           Number(v) <= Number(vue.info.max_seats_each_row) ||
           "Per favore inserisci un numero minore o uguale a " +
             vue.info.max_seats_each_row,
+        (v) =>
+          vue.seatCount <= Number(vue.info.max_seats_each_row) ||
+          "Numero massimo per riga raggiunto (" +
+            vue.info.max_seats_each_row +
+            " per riga)",
       ],
       numberRules2: [
         (v) => typeof v === "number" || "Per favore inserisci un numero",
@@ -421,6 +432,14 @@ export default {
     },
   },
   computed: {
+    seatCount() {
+      return (
+        Number(this.editedItem.peoples) +
+        Number(this.editedItem.baby) +
+        Number(this.editedItem.high_chair) +
+        Number(this.editedItem.chairs_only)
+      );
+    },
     nome() {
       return this.editedItem.nome;
     },
@@ -494,7 +513,7 @@ export default {
               value: "chairs_only",
             },
           ],
-          arr.slice(indexAdded)
+          arr.slice(indexAdded),
         );
         indexAdded++;
       }
@@ -508,7 +527,7 @@ export default {
               value: "high_chair",
             },
           ],
-          arr.slice(indexAdded)
+          arr.slice(indexAdded),
         );
         indexAdded++;
       }
@@ -644,9 +663,7 @@ export default {
         }
       }
 
-      console.log("totalPeople", totalPeople);
-
-      return totalPeople > maxSeats;
+      return maxReached ? maxReached : totalPeople > maxSeats;
     },
     closeDialog() {
       this.dialog = false;
@@ -670,7 +687,7 @@ export default {
     },
     deleteGuest(guest) {
       confirm(
-        `${this.labels.delete_guest_confirm} ${guest.nome} ${guest.cognome}?`
+        `${this.labels.delete_guest_confirm} ${guest.nome} ${guest.cognome}?`,
       ) &&
         // Delete Guest
         this.$store.dispatch("guest/deleteGuest", guest);
