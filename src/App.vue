@@ -106,13 +106,10 @@ export default {
       }
     }
     document.addEventListener("dblclick", (event) => {
-      console.log("trigger");
       if (
         event.target.tagName == "CANVAS" &&
         this.$store.state.selectedGroup !== null
       ) {
-        console.log("trigger2");
-
         EventBus.$emit("guest-list-select");
       }
     });

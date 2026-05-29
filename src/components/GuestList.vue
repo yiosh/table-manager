@@ -60,7 +60,7 @@
                 >{{ labels.create_new_guest }}</v-btn
               >
               <v-card>
-                <v-form v-model="valid" @submit.prevent="save">
+                <v-form ref="form" v-model="valid" @submit.prevent="save">
                   <v-card-title>
                     <span class="headline">{{ formTitle }}</span>
                   </v-card-title>
@@ -89,6 +89,7 @@
                             v-model.number="editedItem.peoples"
                             :rules="numberRules"
                             :label="info.peoples_label"
+                            @input="resetValidation"
                             type="number"
                           ></v-text-field>
                         </v-flex>
@@ -97,6 +98,7 @@
                             v-model.number="editedItem.baby"
                             :rules="numberRules"
                             :label="info.baby_label"
+                            @input="resetValidation"
                             type="number"
                           ></v-text-field>
                         </v-flex>
@@ -105,6 +107,7 @@
                             v-model.number="editedItem.chairs_only"
                             :rules="numberRules"
                             :label="info.chairs_only_label"
+                            @input="resetValidation"
                             type="number"
                           ></v-text-field>
                         </v-flex>
@@ -113,6 +116,7 @@
                             v-model.number="editedItem.high_chair"
                             :rules="numberRules"
                             :label="info.high_chair_label"
+                            @input="resetValidation"
                             type="number"
                           ></v-text-field>
                         </v-flex>
@@ -585,6 +589,9 @@ export default {
     ...mapGetters({ guests: "guest/guests", guestTypes: "guest/guestTypes" }),
   },
   methods: {
+    resetValidation() {
+      this.$refs.form.resetValidation();
+    },
     handleImported(payload) {
       this.nome_tavolo_cliente = payload.nome_cliente;
       this.updateTableName(payload.nome_cliente);
@@ -633,7 +640,7 @@ export default {
       }
       let totalPasti = 0;
       let totalPeople = 0;
-      let maxReached = false;
+      // let maxReached = false;
       for (const guest of guests) {
         const sumPeople =
           Number(guest.baby) +
@@ -641,29 +648,37 @@ export default {
           Number(guest.high_chair) +
           Number(guest.peoples);
         totalPeople += sumPeople;
-        if (sumPeople > Number(this.info.max_seats_each_row)) {
-          maxReached = true;
-        }
+        // if (sumPeople > Number(this.info.max_seats_each_row)) {
+        //   maxReached = true;
+        //   console.log(
+        //     "maxReachedsumPeople",
+        //     sumPeople,
+        //     this.info.max_seats_each_row,
+        //     guest,
+        //   );
+        // }
 
-        if (this.info.show_tables_menu == 1) {
-          const sumMenus =
-            Number(guest.menu1) +
-            Number(guest.menu2) +
-            Number(guest.menu3) +
-            Number(guest.menu4);
-          totalPasti += sumMenus;
-          if (sumMenus > Number(this.info.max_seats_each_row)) {
-            maxReached = true;
-          }
-        }
+        // if (this.info.show_tables_menu == 1) {
+        //   const sumMenus =
+        //     Number(guest.menu1) +
+        //     Number(guest.menu2) +
+        //     Number(guest.menu3) +
+        //     Number(guest.menu4);
+        //   totalPasti += sumMenus;
+        //   if (sumMenus > Number(this.info.max_seats_each_row)) {
+        //     maxReached = true;
+        //     console.log("maxReachedsumMenus");
+        //   }
+        // }
       }
-      if (this.info.show_tables_menu == 1) {
-        if (totalPasti > maxSeats) {
-          maxReached = true;
-        }
-      }
+      // if (this.info.show_tables_menu == 1) {
+      //   if (totalPasti > maxSeats) {
+      //     maxReached = true;
+      //   }
+      // }
 
-      return maxReached ? maxReached : totalPeople > maxSeats;
+      return totalPeople > maxSeats;
+      // return totalPeople > maxSeats;
     },
     closeDialog() {
       this.dialog = false;
@@ -724,16 +739,57 @@ export default {
         this.$store.dispatch("notification/add", notification, { root: true });
         return;
       }
+
+      if (this.info.max_seats_each_row) {
+        if (sumPeople > Number(this.info.max_seats_each_row)) {
+          const notification = {
+            type: "error",
+            multiLine: true,
+            message:
+              "Numero massimo di ospite per riga raggiunto (" +
+              this.info.max_seats_each_row +
+              " per riga)",
+          };
+          this.$store.dispatch("notification/add", notification, {
+            root: true,
+          });
+          return;
+        }
+      }
+
       if (this.maxSeatsCheck(guest)) {
         const notification = {
           type: "error",
           multiLine: true,
           message:
-            "Hai inserito più ospiti o pasti, di quelli consentiti da questo tavolo",
+            "Hai inserito più ospiti, di quelli consentiti da questo tavolo",
         };
         this.$store.dispatch("notification/add", notification, { root: true });
         return;
       }
+
+      if (this.info.show_tables_menu == 1) {
+        let totalPasti = 0;
+        const sumMenus =
+          Number(guest.menu1) +
+          Number(guest.menu2) +
+          Number(guest.menu3) +
+          Number(guest.menu4);
+        totalPasti += sumMenus;
+        if (sumMenus > Number(this.info.max_seats_each_row)) {
+          const notification = {
+            type: "error",
+            multiLine: true,
+            message:
+              "Hai inserito più pasti, di quelli consentiti da questo tavolo",
+          };
+          this.$store.dispatch("notification/add", notification, {
+            root: true,
+          });
+          return;
+        }
+      }
+
       if (guest.note_intolleranze != "") {
         const payload = {
           tableId: this.tableId,
