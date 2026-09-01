@@ -316,7 +316,7 @@ export const actions = {
               rootState.layout.master_layout &&
               Number(rootState.layout.master_layout) > 0
             ) {
-              payload.masterLayoutId = rootState.layout.master_layout;
+              newPayload.masterLayoutId = rootState.layout.master_layout;
             }
             dispatch("getTables", newPayload);
 
@@ -371,7 +371,7 @@ export const actions = {
               rootState.layout.master_layout &&
               Number(rootState.layout.master_layout) > 0
             ) {
-              payload.masterLayoutId = rootState.layout.master_layout;
+              newPayload.masterLayoutId = rootState.layout.master_layout;
             }
             dispatch("getTables", newPayload);
 
@@ -420,7 +420,7 @@ export const actions = {
             rootState.layout.master_layout &&
             Number(rootState.layout.master_layout) > 0
           ) {
-            payload.masterLayoutId = rootState.layout.master_layout;
+            newPayload.masterLayoutId = rootState.layout.master_layout;
           }
           dispatch("getTables", newPayload);
 
@@ -468,7 +468,7 @@ export const actions = {
             rootState.layout.master_layout &&
             Number(rootState.layout.master_layout) > 0
           ) {
-            payload.masterLayoutId = rootState.layout.master_layout;
+            newPayload.masterLayoutId = rootState.layout.master_layout;
           }
           dispatch("getTables", newPayload);
           dispatch("notification/add", notification, { root: true });
