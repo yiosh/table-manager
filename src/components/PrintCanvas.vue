@@ -71,12 +71,53 @@ export default {
     },
   },
   methods: {
+    exportBlocked() {
+      // A cross origin map drawn on the stage taints the canvas: Konva then
+      // returns an empty string instead of throwing, so every export would
+      // silently produce a blank preview / file.
+      this.$store.dispatch("notification/add", {
+        type: "error",
+        multiLine: true,
+        message:
+          "Non è possibile esportare la piantina: l'immagine della mappa " +
+          "viene servita da un dominio diverso e senza header CORS.",
+      });
+    },
     previewCanvas() {
-      let dataURL = this.$store.state.stage.toDataURL({ pixelRatio: 1 });
+      const dataURL = this.$store.state.stage.toDataURL({ pixelRatio: 1 });
+
+      // konva swallows the SecurityError of a tainted canvas and returns ""
+      if (!dataURL || dataURL === "data:,") {
+        this.src = null;
+        this.exportBlocked();
+        return false;
+      }
 
       this.src = dataURL;
+      return true;
+    },
+    jpegFromCanvas() {
+      const source = this.$store.state.stage.toCanvas({ pixelRatio: 1 });
+      const canvas = document.createElement("canvas");
+      canvas.width = source.width;
+      canvas.height = source.height;
+
+      const context = canvas.getContext("2d");
+      // jpeg has no transparency, without this the empty areas turn black
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(source, 0, 0);
+
+      try {
+        return canvas.toDataURL("image/jpeg", 0.92);
+      } catch (e) {
+        return null;
+      }
     },
     downloadURI(uri, name) {
+      if (!uri) {
+        return this.exportBlocked();
+      }
       let link = document.createElement("a");
       link.download = name;
       link.href = uri;
@@ -89,7 +130,7 @@ export default {
       this.dialog = false;
     },
     downloadCanvasJPG() {
-      this.downloadURI(this.src, "stage.jpg");
+      this.downloadURI(this.jpegFromCanvas(), "stage.jpg");
       this.dialog = false;
     },
     ImagetoPrint(source) {
@@ -132,7 +173,19 @@ export default {
       }
     },
     PrintImage(source) {
+      if (!source) {
+        return this.exportBlocked();
+      }
       let pwa = window.open("", "_new");
+      if (!pwa) {
+        return this.$store.dispatch("notification/add", {
+          type: "error",
+          multiLine: true,
+          message:
+            "La finestra di stampa è stata bloccata dal browser, " +
+            "abilita i popup per questo sito.",
+        });
+      }
       pwa.document.open();
       pwa.document.write(this.ImagetoPrint(source));
       pwa.document.close();
@@ -153,15 +206,15 @@ export default {
     // });
 
     EventBus.$on("preview-select", () => {
-      console.log("recieved");
       let stage = this.$store.state.stage;
       // if click on empty area - remove all transformers
       this.$store.dispatch("selectGroup", null);
       stage.find("Transformer").destroy();
       stage.draw();
 
-      this.previewCanvas();
-      this.dialog = true;
+      if (this.previewCanvas()) {
+        this.dialog = true;
+      }
     });
   },
 };

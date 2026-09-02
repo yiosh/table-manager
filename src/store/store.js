@@ -37,6 +37,9 @@ export default new Vuex.Store({
     },
     stage: null,
     layer: null,
+    // false when the map drawn on the stage tainted the canvas, which makes
+    // every export (preview, print, download) come back empty
+    backgroundExportable: true,
     configKonva: {
       width: 1200,
       height: 792,
@@ -85,6 +88,9 @@ export default new Vuex.Store({
     SET_CURRENT_TABLE_ID(state, payload) {
       state.currentTableId = payload;
     },
+    SET_BACKGROUND_EXPORTABLE(state, payload) {
+      state.backgroundExportable = payload;
+    },
   },
   actions: {
     redrawCanvas({ state }) {
@@ -102,6 +108,9 @@ export default new Vuex.Store({
     },
     setLayer(state, payload) {
       state.commit("SET_LAYER", payload);
+    },
+    setBackgroundExportable(state, payload) {
+      state.commit("SET_BACKGROUND_EXPORTABLE", payload);
     },
     selectGroup(state, payload) {
       state.commit("SELECT_GROUP", payload);

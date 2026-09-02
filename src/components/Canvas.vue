@@ -122,6 +122,7 @@ import axios from "axios";
 import Toolbar from "./Toolbar";
 import { EventBus } from "../event-bus.js";
 import { mapGetters, mapState } from "vuex";
+import { loadCanvasImage } from "@/utils";
 
 export default {
   name: "Canvas",
@@ -543,13 +544,33 @@ export default {
       }
     },
     backgroundImg() {
-      const image = new window.Image();
-      image.src = this.backgroundImg;
-      image.onload = () => {
+      if (!this.backgroundImg) {
+        this.imageSrc = null;
+        this.backgroundConfig.fillPatternImage = null;
+        this.$store.dispatch("setBackgroundExportable", true);
+        return;
+      }
+
+      loadCanvasImage(this.backgroundImg).then(({ image, exportable }) => {
+        this.$store.dispatch("setBackgroundExportable", exportable);
+
+        if (!image) {
+          this.imageSrc = null;
+          this.backgroundConfig.fillPatternImage = null;
+          this.$store.dispatch("notification/add", {
+            type: "error",
+            multiLine: true,
+            message:
+              "Non è stato possibile caricare la mappa del layout: " +
+              this.backgroundImg
+          });
+          return;
+        }
+
         // set image only when it is loaded
         this.imageSrc = image;
         this.backgroundConfig.fillPatternImage = image;
-      };
+      });
     },
     loading() {
       if (this.loading === false) {
